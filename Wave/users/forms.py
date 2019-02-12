@@ -11,10 +11,4 @@ class UserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm):
         model = User
-        fields = ("first_name", "last_name", "github", "bio")
-        # fields = UserCreationForm.Meta.fields + (
-        #     "first_name",
-        #     "last_name",
-        #     "github",
-        #     "bio"
-        # )
+        fields = ("username", "first_name", "last_name", "github", "bio")

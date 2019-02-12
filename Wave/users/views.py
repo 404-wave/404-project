@@ -6,9 +6,9 @@ from .forms import UserCreationForm
 
 def index(request):
     if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse("home"))
+        return HttpResponseRedirect(reverse('home'))
     else:
-        return HttpResponseRedirect(reverse("login"))
+        return HttpResponseRedirect(reverse('login'))
 # Create your views here.
 def register(request):
 
