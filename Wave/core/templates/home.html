@@ -1,3 +1,10 @@
 <!-- templates/home.html -->
+
+
+{% if user.is_authenticated %}
 <h1>Homepage</h1>
 <a href="{% url 'logout' %}">Logout</a>
+{% else %}
+<p>Please <a href="{% url 'login' %}">login</a>.</p>
+
+{% endif %}
