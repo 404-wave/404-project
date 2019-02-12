@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import HttpResponseRedirect
+from django.template import RequestContext
 from django.urls import reverse
-#from django.contrib.auth.forms import UserCreationForm
+
 from .forms import UserCreationForm
 
 def index(request):
@@ -9,11 +10,21 @@ def index(request):
         return HttpResponseRedirect(reverse('home'))
     else:
         return HttpResponseRedirect(reverse('login'))
-# Create your views here.
+
 def register(request):
 
-    # TODO: We will need a custom user creation form to hanlde all of the
-    # required inputs
-    form = UserCreationForm()
-    context = {'form' : form}
-    return render(request, 'registration/register.html', context)
+    if request.method == 'POST':
+        
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save();
+            return HttpResponseRedirect(reverse('login'))
+        else :
+            form = UserCreationForm(request.POST)
+            context = {'form' : form}
+            return render(request, 'registration/register.html', context)
+
+    else:
+        form = UserCreationForm()
+        context = {'form' : form}
+        return render(request, 'registration/register.html', context)
