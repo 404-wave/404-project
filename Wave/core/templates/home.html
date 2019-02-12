@@ -4,6 +4,9 @@
 {% if user.is_authenticated %}
 <h1>Homepage</h1>
 <a href="{% url 'logout' %}">Logout</a>
+{% if user.is_admin %}
+<p><a href="{% url 'administration' %}">Admin</a></p>
+{% endif %}
 {% else %}
 <p>Please <a href="{% url 'login' %}">login</a>.</p>
 
