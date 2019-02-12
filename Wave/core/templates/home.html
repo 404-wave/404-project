@@ -1,6 +1,6 @@
 <!-- templates/home.html -->
 
-
+<!-- Note: we can change this to be more robust by redirecting to a different homepage if the user is not authenticated -->
 {% if user.is_authenticated %}
 <h1>Homepage</h1>
 <a href="{% url 'logout' %}">Logout</a>
