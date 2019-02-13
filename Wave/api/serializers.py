@@ -21,3 +21,19 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('user_id', 'content', 'date')
+
+
+# class FriendSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = Friend
+#         fields = ()
+#         http_method_names = ['post']
+#
+#
+# class FriendToFriendSerializer(serializers.ModelSerializer):
+#
+#     class MEta:
+#         model = Friend
+#         fields = ()
+#         http_method_names ['get']
