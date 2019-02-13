@@ -1,8 +1,9 @@
 from django.db import models
 
-# Create your models here.
 from django.contrib.auth.models import AbstractUser
 
+
+# TODO: Will need to add UUIDs at some point.
 class User(AbstractUser):
 
     bio = models.TextField(max_length=500, blank=True)
