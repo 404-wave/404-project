@@ -8,4 +8,19 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ('is_active', 'is_superuser')
     ordering = ('-date_joined',)
 
+
+class NodeAdmin(admin.ModelAdmin):
+
+    search_fields = ['url']
+    list_display = ['id', 'url', 'sharing']
+    list_filter = ('sharing',)
+
+
+class NodeSettingAdmin(admin.ModelAdmin):
+
+    list_display = ['id', 'node_limit', 'require_auth']
+
+
 admin.site.register(User, UserAdmin)
+admin.site.register(Node, NodeAdmin)
+admin.site.register(NodeSetting, NodeSettingAdmin)
