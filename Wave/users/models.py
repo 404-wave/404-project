@@ -1,12 +1,40 @@
 from django.db import models
 
-# Create your models here.
 from django.contrib.auth.models import AbstractUser
 
+
+# TODO: Will need to add UUIDs at some point.
 class User(AbstractUser):
 
     bio = models.TextField(max_length=500, blank=True)
-    github = models.TextField(max_length=500, blank=True)
+    github = models.TextField(max_length=500, blank=True) # TODO: Find reasonable length
+    is_active = models.BooleanField(('active'), default=False)
+    is_admin = models.BooleanField(('admin'), default=False)
 
     def __str__(self):
-        return self.first_name + ' ' + self.last_name
+        return self.username
+
+
+class Node(models.Model):
+
+    url = models.CharField(max_length = 500) # TODO: Find reasonable length
+    sharing = models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.id)
+
+
+class NodeSetting(models.Model):
+
+    id = models.IntegerField(default=1, primary_key=True)
+    node_limit = models.IntegerField(default=10)
+    require_auth = models.BooleanField(default=True)
+
+    # Override database save method to force a max of one entry in the table
+    def save(self, *args, **kwargs):
+        if NodeSetting.objects.count() == 1:
+            NodeSetting.objects.all()[0].delete()
+        super(NodeSetting, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return str(self.id)
