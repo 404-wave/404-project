@@ -1,0 +1,22 @@
+<!-- TODO: Do not auto redirect to homepage without admin approval on new accounts -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Create Account</title>
+</head>
+<body>
+  <form method="post" action="{% url 'register' %}">
+    {% csrf_token %}
+    {% if form.errors %}
+    <p>There is an error in your information.</p>
+    {% endif %}
+
+    <!-- TODO: Lay out form elements better -->
+    {{ form }}
+    <input type="submit" value="Register" />
+  </form>
+
+</body>
+</html>
