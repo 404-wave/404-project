@@ -13,6 +13,18 @@ html {
     align-items: center;
     justify-content: center;
 }
+.fieldinput label {
+	margin-bottom: 0px;
+}
+.fieldinput input {
+	margin-bottom: .7em;
+	height: 2.5em;
+}
+.fieldinput {
+	display: flex;
+	flex-direction: column;
+}
+
 .login_box {
     background-color: #fffefc;
     width: 500px;
@@ -31,6 +43,7 @@ html {
 	background-color: #fffefc;
 	height: -webkit-fill-available;
 	padding: 5% 10%;
+	min-width: 675px;
 }
 .logo_wrapper {
    display: flex;
