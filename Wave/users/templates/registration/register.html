@@ -19,19 +19,24 @@
     <div class="logo_wrapper">
       <img src="{% static 'images/happysloth.png' %}" class="logo" alt="Logo">
     </div>
-    <div class = "login">
-        <p>Want to <a href="{% url 'login' %}">login</a> instead?</p>
-        </div>
+    <div class ="register_form">
     <form method="post" action="{% url 'register' %}">
     {% csrf_token %}
-    {% if form.errors %}
-    <p>There is an error in your information.</p>
-    {% endif %}
-
+    <div class = "login">
+        <p>Want to <a href="{% url 'login' %}">login</a> instead?</p>
+    </div>
     <!-- TODO: Lay out form elements better -->
-    {{ form }}
+    <div class="fieldWrapper">
+     {% for field in form.visible_fields %}
+     {{ field.label_tag }}
+     {{ field.errors }}
+     {{ field }}
+     {{ field.help_text }}
+     {% endfor %}
+    </div>
     <input class ="btn" type="submit" value="Register" />
     </form>
+  </div>
   </div>
 </body>
 </html>

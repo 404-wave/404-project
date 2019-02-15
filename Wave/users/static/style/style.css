@@ -14,7 +14,7 @@ html {
     justify-content: center;
 }
 .login_box {
-    background-color: whitesmoke;
+    background-color: #fffefc;
     width: 500px;
     display: flex;
     flex-direction: column;
@@ -26,6 +26,11 @@ html {
 	-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border-radius: 5px;
+}
+.register_form{
+	background-color: #fffefc;
+	height: -webkit-fill-available;
+	padding: 5% 10%;
 }
 .logo_wrapper {
    display: flex;
