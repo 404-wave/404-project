@@ -1,0 +1,45 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #21adff;
+}
+.logo {
+    height: 60%;
+    width: 60%;
+    align-items: center;
+    margin: 5%;
+}
+.login_btn {
+    width: 100%;
+	background: #f76425;
+	color: white;
+	border-radius: 5px;
+	padding: .5em;
+}
+.login_btn:focus {
+	box-shadow: none !important;
+	outline: 0px !important;
+}
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login_box {
+    background-color: whitesmoke;
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    margin: 10%;
+    padding: 10px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	border-radius: 5px;
+}
+.logo_wrapper {
+   display: flex;
+   justify-content: center;
+}
