@@ -4,22 +4,9 @@ html {
     padding: 0;
     height: 100%;
     background: #21adff;
-}
-.logo {
-    height: 60%;
-    width: 60%;
-    margin: 5%;
-}
-.login_btn {
-    width: 100%;
-	background: #f76425;
-	color: white;
-	border-radius: 5px;
-	padding: .5em;
-}
-.login_btn:focus {
-	box-shadow: none !important;
-	outline: 0px !important;
+    font-size: 1em;
+    font-family: 'Roboto', sans-serif;
+    color: #848181
 }
 .wrapper {
     display: flex;
@@ -34,15 +21,35 @@ html {
     align-items: center;
     justify-content: center;
     margin: 10%;
-    padding: 10px;
+    padding: 30px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border-radius: 5px;
 }
-
-
 .logo_wrapper {
    display: flex;
    justify-content: center;
+}
+.login_area {
+	padding: 20px;
+}
+.logo {
+    height: 60%;
+    width: 60%;
+    margin: 5%;
+}
+.login_btn {
+    width: 100%;
+	background: #f76425;
+	color: white;
+	border-radius: 5px;
+	padding: .5em;
+	text-transform: uppercase;
+	margin-bottom: 20px;
+}
+.login_btn:hover {
+	box-shadow: none !important;
+	outline: 0px !important;
+	background: #f74d05;
 }
