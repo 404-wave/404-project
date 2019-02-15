@@ -18,21 +18,21 @@
 </head>
 <body>
 <div class = "wrapper">
-   <div class = "login_box">
+  <div class = "login_box">
     <div class="logo_wrapper">
       <img src="{% static 'images/happysloth.png' %}" class="logo" alt="Logo">
     </div>
     <div class = "login_area">
-    <div class = "register">
-    <p>Want to <a href="{% url 'register' %}">create an account</a> instead?</p>
-  </div>
-    <form method="post" action="{% url 'login' %}">
+      <div class = "register">
+      <p>Want to <a href="{% url 'register' %}">create an account</a> instead?</p>
+      </div>
+      <form method="post" action="{% url 'login' %}">
       {% csrf_token %}
       <p>Username: {{ form.username }}</p>
       <p>Password: {{ form.password }}</p>
       <input class ="login_btn" type="submit" value="login" />
       <input type="hidden" name="next" value="{{ next }}">
-      <div class = "errors">
+        <div class = "errors">
           {% if form.errors %}
           <p>Your username and password did not match.</p>
           {% endif %}
@@ -40,9 +40,9 @@
           {% if next %}
           <p>You do not have access to view this page.</p>
           {% endif %}
-          </div>
-    </form>
-  </div>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 </body>
