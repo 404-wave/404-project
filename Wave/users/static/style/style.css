@@ -8,7 +8,6 @@ html {
 .logo {
     height: 60%;
     width: 60%;
-    align-items: center;
     margin: 5%;
 }
 .login_btn {
@@ -32,6 +31,8 @@ html {
     width: 500px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     margin: 10%;
     padding: 10px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -39,6 +40,8 @@ html {
 	-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border-radius: 5px;
 }
+
+
 .logo_wrapper {
    display: flex;
    justify-content: center;
