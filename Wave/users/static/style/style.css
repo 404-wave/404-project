@@ -39,7 +39,7 @@ html {
     width: 60%;
     margin: 5%;
 }
-.login_btn {
+.btn {
     width: 100%;
 	background: #f76425;
 	color: white;
@@ -48,7 +48,7 @@ html {
 	text-transform: uppercase;
 	margin-bottom: 20px;
 }
-.login_btn:hover {
+.btn:hover {
 	box-shadow: none !important;
 	outline: 0px !important;
 	background: #f74d05;

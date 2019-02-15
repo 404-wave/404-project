@@ -19,6 +19,9 @@
     <div class="logo_wrapper">
       <img src="{% static 'images/happysloth.png' %}" class="logo" alt="Logo">
     </div>
+    <div class = "login">
+        <p>Want to <a href="{% url 'login' %}">login</a> instead?</p>
+        </div>
     <form method="post" action="{% url 'register' %}">
     {% csrf_token %}
     {% if form.errors %}
@@ -27,7 +30,7 @@
 
     <!-- TODO: Lay out form elements better -->
     {{ form }}
-    <input type="submit" value="Register" />
+    <input class ="btn" type="submit" value="Register" />
     </form>
   </div>
 </body>

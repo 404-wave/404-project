@@ -30,7 +30,7 @@
       {% csrf_token %}
       <p>Username: {{ form.username }}</p>
       <p>Password: {{ form.password }}</p>
-      <input class ="login_btn" type="submit" value="login" />
+      <input class ="btn" type="submit" value="login" />
       <input type="hidden" name="next" value="{{ next }}">
         <div class = "errors">
           {% if form.errors %}
