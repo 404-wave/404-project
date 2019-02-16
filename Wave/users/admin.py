@@ -9,6 +9,11 @@ class UserAdmin(admin.ModelAdmin):
     ordering = ('-date_joined',)
 
 
+class FollowAdmin(admin.ModelAdmin):
+    search_fields = ['user1_id', 'user2_id']
+    list_display = ['user1_id', 'user2_id']
+
+
 class NodeAdmin(admin.ModelAdmin):
 
     search_fields = ['url']
@@ -22,5 +27,6 @@ class NodeSettingAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, UserAdmin)
+admin.site.register(Follow, FollowAdmin)
 admin.site.register(Node, NodeAdmin)
 admin.site.register(NodeSetting, NodeSettingAdmin)

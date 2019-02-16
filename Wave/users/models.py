@@ -15,8 +15,16 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
-#class Friend(models.Model):
+class Follow(models.Model):
 
+    user1 = models.ForeignKey(User, related_name="first_user", on_delete=models.CASCADE)
+    user2 = models.ForeignKey(User, related_name="second_user", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('user1', 'user2'), )
+
+    def __str__(self):
+        return str(self.id)
 
 
 class Node(models.Model):
