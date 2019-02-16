@@ -6,6 +6,8 @@ from users.models import User
 from core.models import Post, Comment
 from .serializers import UserSerializer, PostSerializer, CommentSerializer
 
+# TODO: Learn accept query params
+# TODO: Learn pagination
 
 class UserViewSet(viewsets.ModelViewSet):
 
@@ -13,6 +15,9 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     http_method_names = ['get']
 
+    # How to ship a custom query set
+    # def get_queryset(self):
+    #     return User.objects.filter(is_active=True)
 
 
 class PostViewSet(viewsets.ModelViewSet):

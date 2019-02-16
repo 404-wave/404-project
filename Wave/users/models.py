@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 # TODO: Will need to add UUIDs at some point.
+# TODO: When using UUIDs the username column will need to be UNIQUE
 class User(AbstractUser):
 
     bio = models.TextField(max_length=500, blank=True)
