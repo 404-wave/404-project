@@ -32,7 +32,7 @@ def following(request):
     return HttpResponse(data, content_type="application/json")
 
 
-# Get a list of users who follow the current user
+# Get a list of Users who follow the current user
 def followers(request):
 
     # People that follow me
@@ -47,5 +47,8 @@ def followers(request):
 # Get a list of Users who the current user is friends with
 def friends(request):
 
-    data = dict()
+    followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
+    following = User.objects.filter(followee__user1=request.user.id, is_active=True)
+    friends = following & followers
+    data = serializers.serialize('json', friends)
     return HttpResponse(data, content_type="application/json")
