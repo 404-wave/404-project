@@ -23,37 +23,25 @@ def find(request):
 # Get a list of Users who the current user follows
 def following(request):
 
-    users = list()
-    following = Follow.objects.filter(user1=request.user.id)
-    for f in following.values():
+    # People that I follow
+    # User.objects.filter(followee__user1=request.user.id)
+    # E.g., look at Follow table results where I am the followee
 
-        try:
-            user = User.objects.get(pk=f['user2_id'], is_active=True)
-        except:
-            continue
-
-        users.append(user)
-
-    user_data = serializers.serialize('json', users)
-    return HttpResponse(user_data, content_type="application/json")
+    following = User.objects.filter(followee__user1=request.user.id, is_active=True)
+    data = serializers.serialize('json', following)
+    return HttpResponse(data, content_type="application/json")
 
 
 # Get a list of users who follow the current user
 def followers(request):
 
-    users = list()
-    followers = Follow.objects.filter(user2=request.user.id)
-    for f in followers.values():
+    # People that follow me
+    # User.objects.filter(follower__user2=request.user.id)
+    # E.g., look at Follow table results where I am the follower
 
-        try:
-            user = User.objects.get(pk=f['user1_id'], is_active=True)
-        except:
-            continue
-
-        users.append(user)
-
-    user_data = serializers.serialize('json', users)
-    return HttpResponse(user_data, content_type="application/json")
+    followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
+    data = serializers.serialize('json', followers)
+    return HttpResponse(data, content_type="application/json")
 
 
 # Get a list of Users who the current user is friends with

@@ -17,8 +17,8 @@ class User(AbstractUser):
 
 class Follow(models.Model):
 
-    user1 = models.ForeignKey(User, related_name="first_user", on_delete=models.CASCADE)
-    user2 = models.ForeignKey(User, related_name="second_user", on_delete=models.CASCADE)
+    user1 = models.ForeignKey(User, related_name="follower", on_delete=models.CASCADE)
+    user2 = models.ForeignKey(User, related_name="followee", on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (('user1', 'user2'), )
