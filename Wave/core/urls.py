@@ -5,4 +5,5 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('friends/', include('friends.urls')),
+    path('profile/', views.profile, name='profile'),
 ]
