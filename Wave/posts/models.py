@@ -20,4 +20,4 @@ class Post(models.Model):
     #                           width_field="width_field")
 
     def __str__(self):
-        return str(self.content)
+        return str(self.user.username)

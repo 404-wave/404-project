@@ -11,7 +11,7 @@ from .models import Post
 
 class PostModelAdmin(admin.ModelAdmin):
     list_display = ["id", "user", "timestamp", "updated"]
-    list_display_links = ["id", "user", "updated"]
+    list_display_links = ["id", "user", "timestamp", "updated"]
     list_filter = ["updated", "timestamp"]
     search_fields = ["content", "user__username"]
 
