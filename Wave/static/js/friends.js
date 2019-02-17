@@ -24,6 +24,7 @@ function populateFriendsList(data) {
   }
 
   // Insert the new users
+  // TODO: Create a "card" for each user to be displayed in the list
   for (var i = 0; i < data.length; ++i) {
     $("#friendContainer").append("<div>" + data[i]["fields"]["username"] + "</div>");
   }
