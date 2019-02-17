@@ -17,28 +17,40 @@
 <body>
   <div class = "wrapper">
     <div class = "left_register">
-    <div class="logo_wrapper">
-      <img src="{% static 'images/happysloth_center.png' %}" class="logo" alt="Logo">
+      <div class="logo_wrapper">
+        <img src="{% static 'images/happysloth_center.png' %}" class="logo" alt="Logo">
+      </div>
     </div>
-  </div>
     <div class ="register_form">
-    <form method="post" action="{% url 'register' %}">
-    {% csrf_token %}
-    <div class = "login">
+      <div class = "login">
         <p>Want to <a href="{% url 'login' %}">login</a> instead?</p>
-    </div>
-    <!-- TODO: Lay out form elements better -->
-    <div class="fieldWrapper">
-     {% for field in form.visible_fields %}
-      <div class="fieldinput">
-      {{ field.label_tag }} 
-      {{ field }}
-    </div>
-     {% endfor %}
-    </div>
-    <input class ="btn" type="submit" value="Register" />
+      </div>
+      <form method="post" action="{% url 'register' %}">
+      {% csrf_token %}
+      <!-- TODO: add in validation for unique id -->
+      <div class="fieldWrapper">
+      {% for field in form.visible_fields %}
+        <div class="form-group has-danger">
+        {{ field.label_tag }} 
+        {{ field }}
+        {% if field.errors%}
+          <div class="invalid-feedback">
+          {% for error in field.errors %}
+            {{error}}
+          {% endfor %}
+          </div>
+        {% endif %}
+        {% if field.help_text %}
+          <div class="form-text text-muted help">
+          {{field.help_text}}
+          </div>
+        {% endif %}
+        </div>
+      {% endfor %}
+      </div>
+      <input class ="btn" type="submit" value="Register" />
     </form>
-  </div>
+    </div>
   </div>
 </body>
 </html>

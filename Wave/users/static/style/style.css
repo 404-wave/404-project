@@ -5,24 +5,21 @@ html {
     height: 100%;
     background: #21adff;
     font-size: 1em;
+    font-weight: 400;
     font-family: 'Roboto', sans-serif;
-    color: #848181
+    color: #4e4d4d;
 }
 .wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.fieldinput label {
+.form-group label {
 	margin-bottom: 0px;
 }
-.fieldinput input {
-	margin-bottom: .7em;
-	height: 2.5em;
-}
-.fieldinput {
-	display: flex;
-	flex-direction: column;
+.help{
+	font-size: .9em;
+	font-weight: 300;
 }
 
 .login_box {
@@ -41,7 +38,6 @@ html {
 }
 .register_form{
 	background-color: #fffefc;
-	height: -webkit-fill-available;
 	padding: 5% 10%;
 	min-width: 675px;
 }
@@ -70,4 +66,5 @@ html {
 	box-shadow: none !important;
 	outline: 0px !important;
 	background: #f74d05;
+	color: white;
 }

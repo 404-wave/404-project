@@ -18,14 +18,20 @@ class UserCreationForm(UserCreationForm):
         self.set_placeholder('username', 'Your username')
         self.set_placeholder('first_name', 'Your first name')
         self.set_placeholder('last_name', 'Your last name')
+        self.set_form_class()
 
     #customize help text associated with field
     def set_help_text(self, field, text):
         self.fields[field].help_text = text
- 
+
     #add placeholder text to fields
     def set_placeholder(self, field, text):
         self.fields[field].widget.attrs['placeholder'] = text
+
+    #add class for css
+    def set_form_class(self):
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = "form-control"
 
     class Meta(UserCreationForm):
         model = User
