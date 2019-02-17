@@ -2,7 +2,7 @@
 
 {% if user.is_authenticated %}
 <h1>Profile</h1>
-<p>Welcome {{ request.user.first_name }}</p>
+<p>Welcome {{ user.first_name }}</p>
 <a href="{% url 'home' %}">Home<a><br>
 <a href="{% url 'logout' %}">Logout</a>
 
