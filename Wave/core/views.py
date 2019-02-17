@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 from users.models import User
+from friends.views import follows
 
 
 
@@ -25,7 +26,12 @@ def profile(request, pk = None):
     try:
         user = User.objects.get(pk=pk)
     except ObjectDoesNotExist:
-        # TODO: Return a custom 404 page 
+        # TODO: Return a custom 404 page
         return HttpResponseNotFound("That user does not exist")
 
-    return render(request, 'profile.html', {'user': user})
+    # Check if we follow the user whose profile we are looking at
+    following = False
+    if request.user.id is not pk:
+        following = follows(request.user.id, pk)
+
+    return render(request, 'profile.html', {'user': user, 'following': following})
