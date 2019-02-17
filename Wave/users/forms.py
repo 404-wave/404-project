@@ -9,9 +9,23 @@ class UserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(UserCreationForm, self).__init__(*args, **kwargs)
-        self.fields['password1'].help_text = "Make sure it's more than 30 characters and includes a number and a lowercase letter."
-        self.fields['password2'].help_text = "Enter the same password as above."
-        self.fields['username'].help_text = None
+        #customize help text
+        self.set_help_text('password1', "Make sure it's more than 30 characters and includes a number and a lowercase letter.")
+        self.set_help_text('password2', "Enter the same password as above.")
+        self.set_help_text('username', None)
+        #add in placeholder text to form input
+        self.set_placeholder('email', 'your_email@address.com')
+        self.set_placeholder('username', 'Your username')
+        self.set_placeholder('first_name', 'Your first name')
+        self.set_placeholder('last_name', 'Your last name')
+
+    #customize help text associated with field
+    def set_help_text(self, field, text):
+        self.fields[field].help_text = text
+ 
+    #add placeholder text to fields
+    def set_placeholder(self, field, text):
+        self.fields[field].widget.attrs['placeholder'] = text
 
     class Meta(UserCreationForm):
         model = User
