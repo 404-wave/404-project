@@ -16,7 +16,7 @@ def home(request):
 def find(request):
 
     server_users = User.objects.exclude(pk=request.user.id).filter(is_active=True)
-    data = serializers.serialize('json', server_users)
+    data = serializers.serialize('json', server_users, fields=('username'))
     return HttpResponse(data, content_type="application/json")
 
 
@@ -28,7 +28,7 @@ def following(request):
     # E.g., look at Follow table results where I am the followee
 
     following = User.objects.filter(followee__user1=request.user.id, is_active=True)
-    data = serializers.serialize('json', following)
+    data = serializers.serialize('json', following, fields=('username'))
     return HttpResponse(data, content_type="application/json")
 
 
@@ -40,7 +40,7 @@ def followers(request):
     # E.g., look at Follow table results where I am the follower
 
     followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
-    data = serializers.serialize('json', followers)
+    data = serializers.serialize('json', followers, fields=('username'))
     return HttpResponse(data, content_type="application/json")
 
 
@@ -50,5 +50,5 @@ def friends(request):
     followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
     following = User.objects.filter(followee__user1=request.user.id, is_active=True)
     friends = following & followers
-    data = serializers.serialize('json', friends)
+    data = serializers.serialize('json', friends, fields=('username'))
     return HttpResponse(data, content_type="application/json")
