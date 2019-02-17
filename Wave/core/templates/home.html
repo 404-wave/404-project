@@ -9,5 +9,8 @@
 {% endif %}
 {% else %}
 <p>Please <a href="{% url 'login' %}">login</a>.</p>
-
 {% endif %}
+
+<!-- form must specify two things: -->
+<!-- where: the URL to which the data corresponding to the user’s input should be returned -->
+<!-- how: the HTTP method the data should be returned by -->
