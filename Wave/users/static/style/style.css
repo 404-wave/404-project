@@ -3,25 +3,28 @@ html {
     margin: 0;
     padding: 0;
     height: 100%;
-    background: #21adff;
+    background: #00405E;
     font-size: 1em;
-    font-weight: 400;
     font-family: 'Roboto', sans-serif;
-    color: #4e4d4d;
+    color: #848181
 }
 .wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: row;
 }
-.form-group label {
+.filler{
+	height: auto;
+	flex-grow: 3;
+	}
+label {
 	margin-bottom: 0px;
 }
-.help{
+.help {
 	font-size: .9em;
 	font-weight: 300;
 }
-
 .login_box {
     background-color: #fffefc;
     width: 500px;
@@ -36,22 +39,40 @@ html {
 	-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border-radius: 5px;
 }
+.left_register{
+	height: -webkit-fill-available;
+	display: flex;
+   	flex-direction: column;
+   	flex-grow: 1;
+}
 .register_form{
 	background-color: #fffefc;
 	padding: 5% 10%;
 	min-width: 675px;
+	flex-grow: 2;
+ 	align-self: flex-end;
 }
 .logo_wrapper {
    display: flex;
    justify-content: center;
+   width: 150px;
 }
 .login_area {
-	padding: 20px;
+	padding: 0px 20px;
 }
 .logo {
-    height: 60%;
-    width: 60%;
-    margin: 5%;
+    width: 50%;
+    height: 50%;
+}
+.title {
+	font-weight: 600;
+	font-size: 1.5em;
+	color: black;
+	margin-top: 10%;
+}
+.left_register *{
+	color: white;
+	padding: 15% 4% 0 12%;
 }
 .btn {
     width: 100%;
@@ -65,6 +86,6 @@ html {
 .btn:hover {
 	box-shadow: none !important;
 	outline: 0px !important;
-	background: #f74d05;
-	color: white;
+    background: #f74d05;
+    color: white;
 }

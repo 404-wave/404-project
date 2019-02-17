@@ -20,12 +20,11 @@
 <div class = "wrapper">
   <div class = "login_box">
     <div class="logo_wrapper">
-      <img src="{% static 'images/happysloth.png' %}" class="logo" alt="Logo">
+      <img src="{% static 'images/slothblack.png' %}" class="logo" alt="Logo">
     </div>
+    <p class = "title">Login</p>
     <div class = "login_area">
-      <div class = "register">
-      <p>Want to <a href="{% url 'register' %}">create an account</a> instead?</p>
-      </div>
+      <p class = "register">Want to <a href="{% url 'register' %}">create an account</a> instead?</p>
       <form method="post" action="{% url 'login' %}">
       {% csrf_token %}
       <p>Username: {{ form.username }}</p>
