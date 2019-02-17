@@ -5,6 +5,7 @@ from django.urls import reverse
 
 from .forms import UserCreationForm
 
+
 def index(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('home'))
@@ -14,7 +15,7 @@ def index(request):
 def register(request):
 
     if request.method == 'POST':
-        
+
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save();
