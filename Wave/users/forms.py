@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User
 
+
 class UserCreationForm(UserCreationForm):
     first_name = forms.CharField(max_length=User._meta.get_field("first_name").max_length, required=False)
     last_name = forms.CharField(max_length=User._meta.get_field("last_name").max_length, required=False)

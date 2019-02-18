@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 # TODO: Will need to add UUIDs at some point.
+# TODO: When using UUIDs the username column will need to be UNIQUE
 class User(AbstractUser):
 
     bio = models.TextField(max_length=500, blank=True)
@@ -27,8 +28,14 @@ class Node(models.Model):
 class NodeSetting(models.Model):
 
     id = models.IntegerField(default=1, primary_key=True)
-    node_limit = models.IntegerField(default=10)
-    require_auth = models.BooleanField(default=True)
+    node_limit = models.IntegerField(default=10,
+        help_text='The maximum number of servers that should be connected at one time.')
+    require_auth = models.BooleanField(default=True,
+        help_text='Specify if incoming server connections require authentication.')
+    share_posts = models.BooleanField(default=True,
+        help_text='Specify if posts should be shared with other servers.')
+    share_imgs = models.BooleanField(default=True,
+        help_text='Specify if images should be shared with other servers.')
 
     # Override database save method to force a max of one entry in the table
     def save(self, *args, **kwargs):
