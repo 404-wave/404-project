@@ -1,4 +1,7 @@
+from django.http import HttpResponse
 from django.shortcuts import render
+from posts import views
+
 
 def home(request):
     # TODO: If the user is not authenticated then don't show the home page,

@@ -1,0 +1,5 @@
+{% for obj in object_list %} {{ obj.user }} <br />
+<a href="{{ obj.get_absolute_url }}">{{ obj.status }}</a> <br />
+{{ obj.content }} <br />
+{{ obj.timestamp }} <br />
+{% endfor %}

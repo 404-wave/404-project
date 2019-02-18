@@ -1,0 +1,28 @@
+<!-- Reason for having the templates folder at the root.-->
+<!-- https://stackoverflow.com/questions/54730747/how-do-i-use-a-template-from-one-app-in-another-app/54731001#54731001 -->
+<!-- templates/home.html -->
+
+<!-- Note: we can change this to be more robust by redirecting to a different homepage if the user is not authenticated -->
+
+<html>
+  <body>
+    <h1>Homepage</h1>
+    {% if user.is_authenticated %}
+    <h1>What's on your mind, {{ user }}</h1>
+    {% for obj in object_list %} {{ obj.user }} <br />
+    {{ obj.content }} <br />
+    {{ obj.timestamp }} <br />
+    {% endfor %}
+
+    <a href="{% url 'logout' %}">Logout</a>
+    {% if user.is_admin %}
+    <p><a href="{% url 'administration' %}">Admin</a></p>
+    {% endif %} {% else %}
+    <p>Please <a href="{% url 'login' %}">login</a>.</p>
+    {% endif %}
+  </body>
+</html>
+
+<!-- form must specify two things: -->
+<!-- where: the URL to which the data corresponding to the user’s input should be returned -->
+<!-- how: the HTTP method the data should be returned by -->
