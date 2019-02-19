@@ -1,11 +1,45 @@
 <!DOCTYPE html>
 <body>
 
-    <h1> {{ user }} </h1>
+    <h1> User: {{ user }} </h1>
+    {% if instance.image %}
+    <img src="{{ instance.image.url }}" alt="" /><br/>
+    {% endif %}
     {{ instance.content }} <br/>
     {{ instance.timestamp }} <br/>
     {{ instance.id }} <br/>
 
+    <p>
+        <a
+            href="{{ instance.get_delete_absolute_url }}"
+            class="btn btn-primary"
+            role="button"
+            >Delete</a
+        >
+    </p>
+
+
+    <p>
+            <a
+                href="{{ instance.get_absolute_url }}"
+                class="btn btn-primary"
+                role="button"
+                >Back</a
+            >
+    </p>
+    
+
+    <div>
+        <p class="lead">Comments</p>
+        {% for comment in comments %}
+        <div class="">
+            {{ comment.content }}
+            <br/>
+            by {{comment.user}} on {{comment.timestamp}}
+        </div>
+
+        {% endfor %}
+    </div>
     
 </body>
 </html>
