@@ -1,0 +1,35 @@
+.navbar{
+	background-color: white;
+	text-transform: uppercase;
+	font-family: 'Nunito', sans-serif;
+	font-size: 1.1em;
+}
+#navbarNav{
+	justify-content: flex-end;	
+}
+#navbarNav *{
+	margin-right: 15px;
+}
+.dropdown-item {
+	padding-left: .95em;  
+	color:  #848181;
+}
+.dropdown-toggle::after{
+	border-top-color: black;
+	border-bottom-color: black;
+}
+.dropdown-item:hover{
+  text-decoration: underline;
+  background-color: unset;
+}
+.dropdown-item:active{
+	background-color: #f79825
+}
+.nav-link {
+	color:  #848181;
+}
+.username {
+	font-style:italic;
+	color: #00405E;
+	font-weight: bold;
+}
