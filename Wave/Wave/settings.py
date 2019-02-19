@@ -43,8 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # local apps
+    'rest_framework',
+    'friends',
     'users',
     'core',
+    'api',
     'comments',
     'posts'
 ]
@@ -64,8 +67,8 @@ ROOT_URLCONF = 'Wave.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Add this line
-        # 'DIRS': [],
+
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -133,6 +136,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media_cdn")
+

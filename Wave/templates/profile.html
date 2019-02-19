@@ -1,0 +1,40 @@
+<!-- templates/profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Friends</title>
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+</head>
+<body>
+
+  {% if user.is_authenticated %}
+  <h1>Profile</h1>
+  <p>Welcome {{ user.first_name }}</p>
+  <a href="{% url 'home' %}">Home<a><br>
+  <a href="{% url 'logout' %}">Logout</a>
+
+  <!-- Display follow buttons only if you aren't looking at your own profile -->
+  <div id="followBtnContainer">
+    {% if user.id is not request.user.id %}
+    {% if following is False %}
+    <button onclick="follow({{ request.user.id }}, {{ user.id }})">Follow</button>
+    {% else %}
+    <button onclick="unfollow({{ request.user.id }}, {{ user.id }})">Unfollow</button>
+    {% endif %}
+    {% endif %}
+  </div>
+
+  {% else %}
+  <p>Please <a href="{% url 'login' %}">login</a>.</p>
+  {% endif %}
+
+  <!-- Local js -->
+  {% load static %}
+  <script src="{% static 'js/friends.js' %}"></script>
+
+</body>
+</html>

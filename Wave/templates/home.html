@@ -21,6 +21,10 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
+    
+    
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <title>Hello, world!</title>
   </head>
@@ -39,6 +43,21 @@
     </form>
 
     <h1>What's on your mind, {{ user }}</h1>
+    
+        <!-- Friends List -->
+    <div>
+      <div id="friendBtnContainer">
+        <button onclick="filterFriends('find')">Find</button>
+        <button onclick="filterFriends('following')">Following</button>
+        <button onclick="filterFriends('followers')">Followers</button>
+        <button onclick="filterFriends('friends')">Friends</button>
+      </div>
+
+      <div id="friendContainer">
+        <!-- Friend objects/divs will appear within here -->
+        <!-- TODO: Investigate a nice structure for showing a user via a div -->
+      </div>
+    </div>
 
     <h3>Create Post</h3>
 
@@ -91,6 +110,10 @@
       </div>
       {% endfor %}
     </div>
+    
+      <!-- Local js -->
+    {% load static %}
+    <script src="{% static 'js/friends.js' %}"></script>
 
     <a href="{% url 'logout' %}">Logout</a>
     {% if user.is_admin %}
