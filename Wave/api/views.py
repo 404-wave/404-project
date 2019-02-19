@@ -3,7 +3,8 @@ from django.shortcuts import render
 from rest_framework import viewsets
 
 from users.models import User
-from core.models import Post, Comment
+from posts.models import Post
+from comments.models import Comment
 from .serializers import UserSerializer, PostSerializer, CommentSerializer
 
 # TODO: Learn accept query params
