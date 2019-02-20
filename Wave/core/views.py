@@ -53,7 +53,8 @@ def home(request):
 		streamlist = list(Post.objects.all().order_by("-timestamp"))
 		user = request.user
 
-		#Validate user github?
+		#TODO: increase rate limit with OAuth?
+		#if so, do pagination of API call
 		#make call to Github API
 		build_request = 'https://api.github.com/users/' + request.user.github + '/events'
 		r=requests.get(build_request)
@@ -108,6 +109,8 @@ def home(request):
 		user = request.user
 		streamlist = list(Post.objects.all().order_by("-timestamp"))
 
+		#TODO: increase rate limit with OAuth?
+		#if so, do pagination of API call
 		#Validate user github?
 		#make call to Github API
 		build_request = 'https://api.github.com/users/' + request.user.github + '/events'
