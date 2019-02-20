@@ -84,6 +84,7 @@
 
     <div class="row">
       {% for obj in object_list %}
+        <!-- check if is Post object -->
         {% if obj.user %}
         <div class="col-sm-6 col-md-4">
           <!-- column 1 -->
@@ -129,11 +130,6 @@
             <p>{{obj}}</p>
           </div>
         {% endif %}
-      {% endfor %}
-      {% for event in events %}
-      <div class="col-sm-6 col-md-4">
-        <p>{{event}}</p>
-      </div>
       {% endfor %}
     </div>
 
