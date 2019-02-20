@@ -58,48 +58,49 @@ def home(request):
 		build_request = 'https://api.github.com/users/' + request.user.github + '/events'
 		r=requests.get(build_request)
 		response = r.json()
-		#print(response)
-		events =[]
-		for event in response:
-			#parse through output of API call and formulate into coherent message
-			event_type = ''
-			#Parse event type into multiple words
-			#eg: PushEvent -> Push event
-			for word in re.findall('[A-Z][^A-Z]*', event['type']):
-				event_type += word + ' '
-			#Parse date into more readbale format
-			#https://stackoverflow.com/questions/18795713/parse-and-format-the-date-from-the-github-api-in-python
-			#Credit: IQAndreas (https://stackoverflow.com/users/617937/iqandreas)
-			date = datetime.strptime(event['created_at'], "%Y-%m-%dT%H:%M:%SZ")
-			event_datetime = date.strftime('%A %b %d, %Y at %H:%M GMT')
-			#Parse url
-			event_repo = 'https://github.com/' + event['repo']['name']
-			message = "You had a " + event_type + 'on ' + event_datetime + ' for repo ' + event_repo
 
-			#Flag for determining if a github event is older than all posts
-			is_oldest = True
-			#sort based on datetime
-			for item in streamlist:
-				if isinstance(item, Post):
-					#Note that the time returned by the github api is timezone naive
-					#We must give it local timezone information in order to compare with timestamp
-					#of a post
-					#https://stackoverflow.com/questions/15307623/cant-compare-naive-and-aware-datetime-now-challenge-datetime-end
-					#Credit: Viren Rajput (https://stackoverflow.com/users/997562/viren-rajput)
-					if item.timestamp < utc.localize(date):
-						is_oldest = False
-						streamlist.insert(streamlist.index(item), message)
-						break
+		if r.status_code == 200:
+			for event in response:
+				#parse through output of API call and formulate into readable message
+				event_type = ''
+				#Parse event type into multiple words
+				#eg: PushEvent -> Push event
+				#https://stackoverflow.com/questions/2277352/split-a-string-at-uppercase-letters
+				#Credit: Mark Byers (https://stackoverflow.com/users/61974/mark-byers)
+				for word in re.findall('[A-Z][^A-Z]*', event['type']):
+					event_type += word + ' '
+				#Parse date into more readbale format
+				#https://stackoverflow.com/questions/18795713/parse-and-format-the-date-from-the-github-api-in-python
+				#Credit: IQAndreas (https://stackoverflow.com/users/617937/iqandreas)
+				date = datetime.strptime(event['created_at'], "%Y-%m-%dT%H:%M:%SZ")
+				event_datetime = date.strftime('%A %b %d, %Y at %H:%M GMT')
+				#Parse url
+				event_repo = 'https://github.com/' + event['repo']['name']
+				message = "You had a " + event_type + 'on ' + event_datetime + ' for repo ' + event_repo
 
-			if is_oldest:
-				streamlist.append(message)
+				#Flag for determining if a github event is older than all posts
+				is_oldest = True
+				#sort based on datetime
+				for item in streamlist:
+					if isinstance(item, Post):
+						#Note that the time returned by the github api is timezone naive
+						#We must give it local timezone information in order to compare with timestamp
+						#of a post
+						#https://stackoverflow.com/questions/15307623/cant-compare-naive-and-aware-datetime-now-challenge-datetime-end
+						#Credit: Viren Rajput (https://stackoverflow.com/users/997562/viren-rajput)
+						if item.timestamp < utc.localize(date):
+							is_oldest = False
+							streamlist.insert(streamlist.index(item), message)
+							break
+
+				if is_oldest:
+					streamlist.append(message)
 
 
 		context = {
 			"object_list": streamlist,
 			"user": user,
 			"form": form,
-			"events": events
 		}
 	else:
 
@@ -112,47 +113,48 @@ def home(request):
 		build_request = 'https://api.github.com/users/' + request.user.github + '/events'
 		r=requests.get(build_request)
 		response = r.json()
-		#print(response)
-		events =[]
-		for event in response:
-			#parse through output of API call and formulate into coherent message
-			event_type = ''
-			#Parse event type into multiple words
-			#eg: PushEvent -> Push event
-			for word in re.findall('[A-Z][^A-Z]*', event['type']):
-				event_type += word + ' '
-			#Parse date into more readbale format
-			#https://stackoverflow.com/questions/18795713/parse-and-format-the-date-from-the-github-api-in-python
-			#Credit: IQAndreas (https://stackoverflow.com/users/617937/iqandreas)
-			date = datetime.strptime(event['created_at'], "%Y-%m-%dT%H:%M:%SZ")
-			event_datetime = date.strftime('%A %b %d, %Y at %H:%M GMT')
-			#Parse url
-			event_repo = 'https://github.com/' + event['repo']['name']
-			message = "You had a " + event_type + 'on ' + event_datetime + ' for repo ' + event_repo
 
-			#Flag for determining if a github event is older than all posts
-			is_oldest = True
-			#sort based on datetime
-			for item in streamlist:
-				if isinstance(item, Post):
-					#Note that the time returned by the github api is timezone naive
-					#We must give it local timezone information in order to compare with timestamp
-					#of a post
-					#https://stackoverflow.com/questions/15307623/cant-compare-naive-and-aware-datetime-now-challenge-datetime-end
-					#Credit: Viren Rajput (https://stackoverflow.com/users/997562/viren-rajput)
-					if item.timestamp < utc.localize(date):
-						is_oldest = False
-						streamlist.insert(streamlist.index(item), message)
-						break
+		if r.status_code == 200:
+			for event in response:
+				#parse through output of API call and formulate into readable message
+				event_type = ''
+				#Parse event type into multiple words
+				#eg: PushEvent -> Push event
+				#https://stackoverflow.com/questions/2277352/split-a-string-at-uppercase-letters
+				#Credit: Mark Byers (https://stackoverflow.com/users/61974/mark-byers)
+				for word in re.findall('[A-Z][^A-Z]*', event['type']):
+					event_type += word + ' '
+				#Parse date into more readbale format
+				#https://stackoverflow.com/questions/18795713/parse-and-format-the-date-from-the-github-api-in-python
+				#Credit: IQAndreas (https://stackoverflow.com/users/617937/iqandreas)
+				date = datetime.strptime(event['created_at'], "%Y-%m-%dT%H:%M:%SZ")
+				event_datetime = date.strftime('%A %b %d, %Y at %H:%M GMT')
+				#Parse url
+				event_repo = 'https://github.com/' + event['repo']['name']
+				message = "You had a " + event_type + 'on ' + event_datetime + ' for repo ' + event_repo
 
-			if is_oldest:
-				streamlist.append(message)
+				#Flag for determining if a github event is older than all posts
+				is_oldest = True
+				#sort based on datetime
+				for item in streamlist:
+					if isinstance(item, Post):
+						#Note that the time returned by the github api is timezone naive
+						#We must give it local timezone information in order to compare with timestamp
+						#of a post
+						#https://stackoverflow.com/questions/15307623/cant-compare-naive-and-aware-datetime-now-challenge-datetime-end
+						#Credit: Viren Rajput (https://stackoverflow.com/users/997562/viren-rajput)
+						if item.timestamp < utc.localize(date):
+							is_oldest = False
+							streamlist.insert(streamlist.index(item), message)
+							break
+
+				if is_oldest:
+					streamlist.append(message)
 
 		context = {
 			"object_list": streamlist,
 			"user": user,
 			"form": form,
-			"events": events
 		}
 
 	return render(request, "home.html", context)
