@@ -19,11 +19,13 @@ from friends.views import follows
 
 import requests
 import re
+import pytz
 
 
 
 # TODO: use the REST API once it is established
 def home(request):
+	utc=pytz.UTC
 
 	# TODO: If the user is not authenticated then don't show the home page,
 	# but instead show soe other page reporting the error. (Maybe just the login page).
@@ -41,6 +43,15 @@ def home(request):
 	#####################################################################################
 
 	if request.method == "POST":
+
+		form = PostForm(request.POST or None, request.FILES or None)
+		if form.is_valid():
+			instance = form.save(commit=False)
+			instance.user = request.user
+			instance.publish = datetime.now()
+			instance.save()
+		streamlist = list(Post.objects.all().order_by("-timestamp"))
+		user = request.user
 
 		#Validate user github?
 		#make call to Github API
@@ -64,25 +75,37 @@ def home(request):
 			#Parse url
 			event_repo = 'https://github.com/' + event['repo']['name']
 			message = "You had a " + event_type + 'on ' + event_datetime + ' for repo ' + event_repo
-			events.append(message)
 
-		form = PostForm(request.POST or None, request.FILES or None)
-		if form.is_valid():
-			instance = form.save(commit=False)
-			instance.user = request.user
-			instance.publish = datetime.now()
-			instance.save()
-		queryset = list(Post.objects.all().order_by("-timestamp"))
-		queryset.extend(events)
-		user = request.user
+			#Flag for determining if a github event is older than all posts
+			is_oldest = True
+			#sort based on datetime
+			for item in streamlist:
+				if isinstance(item, Post):
+					#Note that the time returned by the github api is timezone naive
+					#We must give it local timezone information in order to compare with timestamp
+					#of a post
+					#https://stackoverflow.com/questions/15307623/cant-compare-naive-and-aware-datetime-now-challenge-datetime-end
+					#Credit: Viren Rajput (https://stackoverflow.com/users/997562/viren-rajput)
+					if item.timestamp < utc.localize(date):
+						is_oldest = False
+						streamlist.insert(streamlist.index(item), message)
+						break
+
+			if is_oldest:
+				streamlist.append(message)
+
 
 		context = {
-			"object_list": queryset,
+			"object_list": streamlist,
 			"user": user,
 			"form": form,
 			"events": events
 		}
 	else:
+
+		form = PostForm()
+		user = request.user
+		streamlist = list(Post.objects.all().order_by("-timestamp"))
 
 		#Validate user github?
 		#make call to Github API
@@ -101,20 +124,32 @@ def home(request):
 			#Parse date into more readbale format
 			#https://stackoverflow.com/questions/18795713/parse-and-format-the-date-from-the-github-api-in-python
 			#Credit: IQAndreas (https://stackoverflow.com/users/617937/iqandreas)
-			date = datetime.datetime.strptime(event['created_at'], "%Y-%m-%dT%H:%M:%SZ")
+			date = datetime.strptime(event['created_at'], "%Y-%m-%dT%H:%M:%SZ")
 			event_datetime = date.strftime('%A %b %d, %Y at %H:%M GMT')
 			#Parse url
 			event_repo = 'https://github.com/' + event['repo']['name']
 			message = "You had a " + event_type + 'on ' + event_datetime + ' for repo ' + event_repo
-			events.append(message)
 
-		form = PostForm()
-		user = request.user
-		queryset = list(Post.objects.all().order_by("-timestamp"))
-		#queryset = list(queryset)
-		queryset.extend(events)
+			#Flag for determining if a github event is older than all posts
+			is_oldest = True
+			#sort based on datetime
+			for item in streamlist:
+				if isinstance(item, Post):
+					#Note that the time returned by the github api is timezone naive
+					#We must give it local timezone information in order to compare with timestamp
+					#of a post
+					#https://stackoverflow.com/questions/15307623/cant-compare-naive-and-aware-datetime-now-challenge-datetime-end
+					#Credit: Viren Rajput (https://stackoverflow.com/users/997562/viren-rajput)
+					if item.timestamp < utc.localize(date):
+						is_oldest = False
+						streamlist.insert(streamlist.index(item), message)
+						break
+
+			if is_oldest:
+				streamlist.append(message)
+
 		context = {
-			"object_list": queryset,
+			"object_list": streamlist,
 			"user": user,
 			"form": form,
 			"events": events
