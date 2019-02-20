@@ -33,21 +33,6 @@
     <h1>Homepage</h1>
     {% if user.is_authenticated %}
 
-      {% block content %}
-        <p><a href="{% url 'post_repos' %}">Repos</a></p>
-        {% for repo in repos %}
-          <div><a href="https://github.com/{{github}}/{{repo}}">{{repo}}</a></div>
-        {% endfor %}
-
-        <p><a href="{% url 'list_events' %}">Events</a></p>
-        {% for event_type in event_types %}
-          <div><a href="{% url 'event_details' event_type %}">{{event_type}}</a></div>
-        {% endfor %}
-        {% for event in events %}
-          <div>{{event}}</div>
-        {% endfor %}
-      {% endblock %}
-
     <a href="{% url 'logout' %}">Logout</a>
     {% if user.is_admin %}
     <p><a href="{% url 'administration' %}">Admin</a></p>
@@ -92,44 +77,55 @@
 
     <div class="row">
       {% for obj in object_list %}
-      <div class="col-sm-6 col-md-4">
-        <!-- column 1 -->
-        <div class="thumbnail">
-          <!--  thumbnail 1  -->
-          <br />
-          {% if obj.image %}
-          <img src="{{ obj.image.url }}" alt="" /> <br />
-          {% endif %}
-          <div class="caption">
-            <!-- caption -->
-            <h4>
-              {{ obj.user }}
-              <a href="{{ obj.get_detail_absolute_url }}">{{ obj.status }}</a>
-              {{ obj.timestamp }}
-              <!-- | timesince | ago  -->
-            </h4>
-            <p>
-              {{ obj.content | linebreaks }}
-            </p>
-            <p>
-              <a
-                href="{{ obj.get_detail_absolute_url }}"
-                class="btn btn-primary"
-                role="button"
-                >View</a
-              >
-            </p>
-            <!-- btn 2 -->
-            <p>
-              <a
-                href="{{ obj.get_delete_absolute_url }}"
-                class="btn btn-primary"
-                role="button"
-                >Delete</a
-              >
-            </p>
+        {% if obj.user %}
+        <div class="col-sm-6 col-md-4">
+          <!-- column 1 -->
+          <div class="thumbnail">
+            <!--  thumbnail 1  -->
+            <br />
+            {% if obj.image %}
+            <img src="{{ obj.image.url }}" alt="" /> <br />
+            {% endif %}
+            <div class="caption">
+              <!-- caption -->
+              <h4>
+                {{ obj.user }}
+                <a href="{{ obj.get_detail_absolute_url }}">{{ obj.status }}</a>
+                {{ obj.timestamp }}
+                <!-- | timesince | ago  -->
+              </h4>
+              <p>
+                {{ obj.content | linebreaks }}
+              </p>
+              <p>
+                <a
+                  href="{{ obj.get_detail_absolute_url }}"
+                  class="btn btn-primary"
+                  role="button"
+                  >View</a
+                >
+              </p>
+              <!-- btn 2 -->
+              <p>
+                <a
+                  href="{{ obj.get_delete_absolute_url }}"
+                  class="btn btn-primary"
+                  role="button"
+                  >Delete</a
+                >
+              </p>
+            </div>
           </div>
         </div>
+        {% else %}
+          <div class="col-sm-6 col-md-4">
+            <p>{{obj}}</p>
+          </div>
+        {% endif %}
+      {% endfor %}
+      {% for event in events %}
+      <div class="col-sm-6 col-md-4">
+        <p>{{event}}</p>
       </div>
       {% endfor %}
     </div>
