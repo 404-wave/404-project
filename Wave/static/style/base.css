@@ -1,3 +1,6 @@
+.body * {
+	font-family: Roboto, sans-serif;
+}
 .navbar{
 	background-color: white;
 	text-transform: uppercase;
@@ -42,13 +45,15 @@
 .wrapper {
 	background-image: linear-gradient(to right,#00615c, #004160);
 	height: -webkit-fill-available;
-	font-family: 'Roboto Slab', serif;
 	display: flex;
 	align-items: center;
 	flex-direction: column;
 }
 .person_info{
-	padding: 5%;
+	padding: 5% 0% 1% 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 .details_tabs {
 	width:90%;
@@ -59,10 +64,17 @@
 	display: none;
 }
 .greeting{
-   font-weight:900;
+   font-weight:500;
+   font-family: 'Roboto Slab', serif;
+   text-align: center;
    font-size: 2em;
    color: white;}
-
+.hello {
+	font-size: 1.3em;
+}
+.name {
+	color:#f9af50;
+}
    #tabs {
 	overflow: hidden;
 	margin: 0;
@@ -116,4 +128,21 @@
 	z-index: 2;
 	border-radius: 0 1px 1px 1px;
 	box-shadow: 0 -2px 3px -2px rgba(0, 0, 0, .5);
+}
+.friend_btn {
+    width: 100%;
+    background-color: Transparent;
+	border-top-color: white;
+	border-width: 2px;
+	color: white;
+	border-radius: 5px;
+	padding: .5em;
+	text-transform: uppercase;
+	margin-bottom: 20px;
+	padding-left: 50px;
+    padding-right: 50px;
+}
+.friend_btn:hover {
+	box-shadow: 3px 2px 15px -3px rgba(255, 255, 255, 0.75);
+	outline: 0px !important;
 }
