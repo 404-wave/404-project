@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <script src="{% static 'js/validation.js' %}"></script>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'style/style.css' %}">
@@ -28,24 +28,26 @@
       <!-- TODO: add in validation for unique id -->
       <div class="fieldWrapper">
       {% for field in form.visible_fields %}
-        <div class="form-group has-danger">
-        {{ field.label_tag }} 
-        {{ field }}
-        {% if field.errors%}
-          <div class="invalid-feedback">
-          {% for error in field.errors %}
-            {{error}}
-          {% endfor %}
-          </div>
-        {% endif %}
-        {% if field.help_text %}
-          <div class="form-text text-muted help">
-          {{field.help_text}}
-          </div>
-        {% endif %}
-        </div>
-      {% endfor %}
+        <div class="form-group">
+          {{ field.label_tag }} 
+          {{ field }}
+            {% if form.errors %}
+
+              {% for error in field.errors %}
+                <script type='text/javascript'>
+                redAlert("{{field.name}}")</script>
+                <div class="form_error">
+                  {{ error|escape }}
+                </div>
+              {% endfor %}
+            {% endif %}
+            {% if field.help_text %}
+              <div class="form-text text-muted help">
+                {{field.help_text}}
+              </div>
+            {% endif %}
       </div>
+      {% endfor %}
       <input class ="btn" type="submit" value="Register" />
     </form>
     </div>
