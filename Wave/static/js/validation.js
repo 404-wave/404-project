@@ -5,6 +5,7 @@ function redAlert(errorField) {
     el = document.getElementById("id_"+errorField).parentElement
     el.classList.add("redAlert");
 }  
+//will show tabs if selected
 function showTab(){
     el = document.getElementById("content").children;
     tabs = document.getElementById("tabs").children;
@@ -19,7 +20,9 @@ function showTab(){
         }
     }
 }
-function myFunction() {
+//set up tabs 
+//TODO - set up animation (still working on)
+function setTabs() {
     el = document.getElementById("content").children;
     tabs = document.getElementById("tabs").children;
     for (var i = 0; i < el.length; i++) {
@@ -30,4 +33,4 @@ function myFunction() {
     el[0].setAttribute("id", "current");
     tabs[0].setAttribute("id", "current_tab")
 }
-window.onload = myFunction;
+
