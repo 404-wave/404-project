@@ -31,7 +31,7 @@
       <div id="tab1">      
         <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
         <p>Email: {{ user.email }}</p>
-        <p>G {{ user.github }}</p>
+        <p>Github: {{ user.github }}</p>
         <p class = 'bio'> {{ user.bio }}</p>
         {% if user.id is request.user.id %}
         <input type=button onclick="location.href='edit'" value = "Edit Profile">
