@@ -6,6 +6,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
@@ -83,45 +84,52 @@
 
     <div class="row">
       {% for obj in object_list %}
-      <div class="col-sm-6 col-md-4">
-        <!-- column 1 -->
-        <div class="thumbnail">
-          <!--  thumbnail 1  -->
-          <br />
-          {% if obj.image %}
-          <img src="{{ obj.image.url }}" alt="" /> <br />
-          {% endif %}
-          <div class="caption">
-            <!-- caption -->
-            <h4>
-              {{ obj.user }}
-              <a href="{{ obj.get_detail_absolute_url }}">{{ obj.status }}</a>
-              {{ obj.timestamp }}
-              <!-- | timesince | ago  -->
-            </h4>
-            <p>
-              {{ obj.content | linebreaks }}
-            </p>
-            <p>
-              <a
-                href="{{ obj.get_detail_absolute_url }}"
-                class="btn btn-primary"
-                role="button"
-                >View</a
-              >
-            </p>
-            <!-- btn 2 -->
-            <p>
-              <a
-                href="{{ obj.get_delete_absolute_url }}"
-                class="btn btn-primary"
-                role="button"
-                >Delete</a
-              >
-            </p>
+        <!-- check if is Post object -->
+        {% if obj.user %}
+        <div class="col-sm-6 col-md-4">
+          <!-- column 1 -->
+          <div class="thumbnail">
+            <!--  thumbnail 1  -->
+            <br />
+            {% if obj.image %}
+            <img src="{{ obj.image.url }}" alt="" /> <br />
+            {% endif %}
+            <div class="caption">
+              <!-- caption -->
+              <h4>
+                {{ obj.user }}
+                <a href="{{ obj.get_detail_absolute_url }}">{{ obj.status }}</a>
+                {{ obj.timestamp }}
+                <!-- | timesince | ago  -->
+              </h4>
+              <p>
+                {{ obj.content | linebreaks }}
+              </p>
+              <p>
+                <a
+                  href="{{ obj.get_detail_absolute_url }}"
+                  class="btn btn-primary"
+                  role="button"
+                  >View</a
+                >
+              </p>
+              <!-- btn 2 -->
+              <p>
+                <a
+                  href="{{ obj.get_delete_absolute_url }}"
+                  class="btn btn-primary"
+                  role="button"
+                  >Delete</a
+                >
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+        {% else %}
+          <div class="col-sm-6 col-md-4">
+            <p>{{obj}}</p>
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
 
