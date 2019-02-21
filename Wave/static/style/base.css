@@ -33,3 +33,87 @@
 	color: #00405E;
 	font-weight: bold;
 }
+.navbar{
+	background-color: white;
+	text-transform: uppercase;
+	font-family: 'Nunito', sans-serif;
+	font-size: 1.1em;
+}
+.wrapper {
+	background-image: linear-gradient(to right,#00615c, #004160);
+	height: -webkit-fill-available;
+	font-family: 'Roboto Slab', serif;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+.person_info{
+	padding: 5%;
+}
+.details_tabs {
+	width:90%;
+	background-color: #f9f7f7;
+
+}
+#hide_div {
+	display: none;
+}
+.greeting{
+   font-weight:900;
+   font-size: 2em;
+   color: white;}
+
+   #tabs {
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
+
+  }
+  
+  #tabs li {
+	/* margin: 0 0em 0 0; */
+	flex-grow:1;
+	}
+  
+  #tabs a {
+  	text-align: center;
+  	width: -webkit-fill-available;
+	font-family: 'Nunito', sans-serif;
+	position: relative;
+	background: #f9f7f7;
+	padding: .7em 3.5em;
+	float: left;
+	text-decoration: none;
+	color: #004463;
+	text-shadow: 0 1px 0 rgba(255,255,255,.8);
+	box-shadow: 0 1px 1px rgba(0,0,0,.4);
+	}
+  
+  #tabs a:hover,
+  #tabs a:focus{
+	background: #fff;
+  }
+  
+  #tabs a:focus {
+	outline: 0;
+  }
+  
+  #tabs #current_tab a{
+	background: #fff;
+	z-index: 3;
+	text-decoration: underline;
+	font-weight: 700;
+	color:#00645c
+  }
+  
+  #content {
+	background: #fff;
+	padding: 2em;
+	height:fit-content;
+	position: relative;
+	z-index: 2;
+	border-radius: 0 1px 1px 1px;
+	box-shadow: 0 -2px 3px -2px rgba(0, 0, 0, .5);
+}
