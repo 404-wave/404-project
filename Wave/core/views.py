@@ -21,6 +21,8 @@ import requests
 import re
 import pytz
 
+import base64
+
 
 
 # TODO: use the REST API once it is established

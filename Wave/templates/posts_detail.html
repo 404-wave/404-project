@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+</head>
 <body>
 
     <h1> User: {{ user }} </h1>
@@ -31,15 +38,55 @@
 
     <div>
         <p class="lead">Comments</p>
-        {% for comment in comments %}
-        <div class="">
-            {{ comment.content }}
-            <br/>
-            by {{comment.user}} on {{comment.timestamp}}
-        </div>
+        <form method="POST" action="."> {% csrf_token %}
+            {{comment_form}}
+            <input type = "submit" value="Post comment" class= "btn btn-default">
+        </form>
 
+        {% for comment in comments %}
+        <blockquote>
+        <!-- <div class=""> -->
+        <!-- </div> -->
+            <p>{{ comment.content }}</p>
+            <p>by {{comment.user}} on {{comment.timestamp}} | {% if comment.children.count > 0 %}{{ comment.children.count }} Comment{% if comment.children.count > 1 %}s {% endif %}| {% endif %}<a class="comment-reply-btn" href="#">Reply</a></p>
+     
+ 
+            <div class="comment-reply"  style='display: none'>
+                {% for child_comment in comment.children %}
+                <blockquote>
+                    <p>{{ child_comment.content }}</p>
+                    <p>by {{child_comment.user}} on {{child_comment.timestamp}}</p>
+                </blockquote>
+                {% endfor %}
+
+
+
+                <form method="POST" action="."> {% csrf_token %}
+                    {{comment_form}}
+                    <input type ="hidden" name="parent_id"  value="{{ comment.id }}">
+                    <input type = "submit" value="Reply" class= "btn btn-default">
+                </form>
+            </div>    
+        </blockquote>
         {% endfor %}
     </div>
+
+
+
+
+
+
+<script>
+        $(".comment-reply-btn").click(function(event){
+            console.log("Working")
+            event.preventDefault();
+            $(this).parent().next(".comment-reply").fadeToggle();
+        })
+</script>
+        
+
     
 </body>
+
+
 </html>

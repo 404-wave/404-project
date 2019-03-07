@@ -1,11 +1,17 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+from comments.models import Comment
+from django.contrib.contenttypes.models import ContentType
 # Create your models here.
+
 
 
 def upload_location(instance, filename):
     return "%s/%s" % (instance.id, filename)
+
+
+
 
 
 class Post(models.Model):
@@ -38,6 +44,7 @@ class Post(models.Model):
     status = models.CharField(max_length=6, choices=Status, default=POST)
     content = models.TextField()
     image = models.FileField(upload_to=upload_location, null=True, blank=True)
+    # image = models.TextField()
     # height_field = models.IntegerField(default=0)
     # width_field = models.IntegerField(default=0)
     publish = models.DateField(auto_now=False, auto_now_add=False)
@@ -45,6 +52,7 @@ class Post(models.Model):
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     privacy = models.IntegerField(choices=Privacy, default=PUBLIC)
     unlisted = models.BooleanField(default=False)
+
 
     def __str__(self):
         return str(self.user.username)
@@ -63,3 +71,24 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse("home")
+
+    def decodeImage(self, image):
+        pass
+    
+    def encodeImage(self, image):
+        pass
+
+    @property
+    def comments(self):
+        instance = self
+        query_set = Comment.objects.filter_by_instance(instance)
+        return query_set
+
+    @property
+    def get_content_type(self):
+        instance = self
+        content_type = ContentType.objects.get_for_model(instance.__class__)
+        return content_type
+        
+
+
