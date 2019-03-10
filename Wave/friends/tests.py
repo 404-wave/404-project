@@ -31,5 +31,17 @@ class FollowTestCase(TestCase):
             if follower == expected1 or follower == expected2:
                 correct = True
             self.assertTrue(correct, "Follower does not have correct followees")
+   
+    #TODO change to UUID after PR is merged
+    def test_followersCorrect(self):
+        #tests if the followees have the correct follower's
+        follow_obj2 = Follow.objects.filter(user2=self.person2)
+        follow_obj3 = Follow.objects.filter(user2=self.person3)
 
+        expected = 'person1'
+        assertEqual(follow_obj2.user1.username,expected)
+        assertEqual(follow_obj3.user1.username,expected)
+
+    
+    def 
     
