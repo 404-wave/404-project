@@ -16,7 +16,7 @@
     {{ instance.timestamp }} <br/>
     {{ instance.id }} <br/>
 
-
+    
     {% if instance.user == request.user %}
         <p>
             <a
@@ -93,6 +93,7 @@
             event.preventDefault();
             $(this).parent().next(".comment-reply").fadeToggle();
         })
+
 </script>
         
 
