@@ -5,8 +5,17 @@
 <!-- Note: we can change this to be more robust by redirecting to a different homepage if the user is not authenticated -->
 
 <!DOCTYPE html>
-<html lang="en">
 
+<head>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"
+  />
+</head>
+<html lang="en">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
@@ -33,7 +42,6 @@
       crossorigin="anonymous"
     ></script>
 
-
     <title>Hello, world!</title>
   </head>
   <body>
@@ -55,11 +63,12 @@
         value="{{ request.GET.query }}"
       />
       <input type="Submit" value="Search" />
+      <a href="/home">Clear search</a>
     </form>
 
     <h1>What's on your mind, {{ user }}</h1>
 
-        <!-- Friends List -->
+    <!-- Friends List -->
     <div>
       <div id="friendBtnContainer">
         <button onclick="filterFriends('find')">Find</button>
@@ -74,43 +83,57 @@
       </div>
     </div>
 
+    {% if unlisted_instance %}
+      <p> Your posts was created. Access it <a href="{{ unlisted_instance.get_detail_absolute_url }}"> Here</a></p>
+    {% endif %}
+
     <h3>Create Post</h3>
 
-    <form method="POST" action="" , enctype="multipart/form-data">
+    <form method="POST" action="" , enctype="multipart/form-data" novalidate>
       {% csrf_token %}
       {{ form.as_p }}
       <input type="submit" class="btn btn-primary" value="Share" />
+      </div>
     </form>
 
     <div class="row">
       {% for obj in object_list %}
-        <!-- check if is Post object -->
-        {% if obj.user %}
-        <div class="col-sm-6 col-md-4">
-          <!-- column 1 -->
-          <div class="thumbnail">
-            <!--  thumbnail 1  -->
-            <br />
-            {% if obj.image %}
-            <img src="{{ obj.image.url }}" alt="" /> <br />
-            {% endif %}
-            <div class="caption">
-              <!-- caption -->
-              <h4>
-                {{ obj.user }}
-                <a href="{{ obj.get_detail_absolute_url }}">{{ obj.status }}</a>
-                {{ obj.timestamp }}
-                <!-- | timesince | ago  -->
-              </h4>
-              <p>
-                {{ obj.content | linebreaks }}
-              </p>
+      <!-- check if is Post object -->
+      {% if obj.user %}
+      <div class="col-sm-6 col-md-4">
+        <!-- column 1 -->
+        <div class="thumbnail">
+          <!--  thumbnail 1  -->
+          <br />
+          {% if obj.image %}
+          <img src="{{ obj.image.url }}" alt="" /> <br />
+          {% endif %}
+          <div class="caption">
+            <!-- caption -->
+            <h4>
+              {{ obj.user }}
+              <a href="{{ obj.get_detail_absolute_url }}">{{ obj.status }}</a>
+              {{ obj.timestamp }}
+              <!-- | timesince | ago -->
+            </h4>
+            <p>
+              {{ obj.content | linebreaks }}
+            </p>
+            <p>
+              <a
+                href="{{ obj.get_detail_absolute_url }}"
+                class="btn btn-primary"
+                role="button"
+                >View</a
+              >
+            </p>
+            {% if obj.user == request.user %}
               <p>
                 <a
-                  href="{{ obj.get_detail_absolute_url }}"
+                  href="{{ obj.get_edit_absolute_url }}"
                   class="btn btn-primary"
                   role="button"
-                  >View</a
+                  >Edit</a
                 >
               </p>
               <!-- btn 2 -->
@@ -122,19 +145,58 @@
                   >Delete</a
                 >
               </p>
+            {% endif %}
+
+  
+            
+            <div class="dropdown">
+              <button
+                class="btn btn-secondary dropdown-toggle"
+                type="button"
+                id="dropdownMenuButton"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Privacy setting
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href=""
+                  >{{ obj.get_privacy_display }} </a
+                >
+              </div>
             </div>
           </div>
         </div>
-        {% else %}
-          <div class="col-sm-6 col-md-4">
-            <p>{{obj}}</p>
-          </div>
-        {% endif %}
-      {% endfor %}
+      </div>
+      {% else %}
+      <div class="col-sm-6 col-md-4">
+        <p>{{ obj }}</p>
+      </div>
+
+      {% endif %} {% endfor %}
     </div>
 
-      <!-- Local js -->
+    <!-- Local js -->
     {% load static %}
     <script src="{% static 'js/friends.js' %}"></script>
+    <script>
+
+        function private(){
+          var values = $("#id_privacy").val();
+        if(values == 1){
+          $("#id_accessible_users").parent().show();
+        }
+        else
+          $("#id_accessible_users").parent().hide();
+        }
+
+      $("#id_privacy").change(function(){
+        private();
+      })
+      private();
+    
+    
+    </script>
   </body>
 </html>

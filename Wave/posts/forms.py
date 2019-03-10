@@ -8,5 +8,8 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = [
             "content",
-            "image"
+            "image",
+            "privacy",
+            "accessible_users",
+            "unlisted"
         ]

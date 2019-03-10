@@ -16,15 +16,26 @@
     {{ instance.timestamp }} <br/>
     {{ instance.id }} <br/>
 
-    <p>
-        <a
+
+    {% if instance.user == request.user %}
+        <p>
+            <a
+            href="{{ instance.get_edit_absolute_url }}"
+            class="btn btn-primary"
+            role="button"
+            >Edit</a
+            >
+        </p>
+        <!-- btn 2 -->
+        <p>
+            <a
             href="{{ instance.get_delete_absolute_url }}"
             class="btn btn-primary"
             role="button"
             >Delete</a
-        >
-    </p>
-
+            >
+        </p>
+        {% endif %}
 
     <p>
             <a

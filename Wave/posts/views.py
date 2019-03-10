@@ -82,6 +82,8 @@ def posts_detail(request, id):
         "comment_form": comment_form
     }
     return render(request, "posts_detail.html", context)
+
+    
     # return HttpResponse("<h1> Detail a posts. </h1>")
 
 
@@ -99,6 +101,8 @@ def posts_detail(request, id):
 def posts_update(request, id=None):
     # return HttpResponse("<h1> Update a posts. </h1>")
     instance = get_object_or_404(Post, id=id)
+    if instance.user != request.user:
+        return HttpResponseRedirect(instance.get_detail_absolute_url())
     form = PostForm(request.POST or None,
                     request.FILES or None, instance=instance)
     if form.is_valid():
@@ -116,7 +120,9 @@ def posts_update(request, id=None):
 
 
 def posts_delete(request, id=None):
-    # return HttpResponse("<h1> Delete a posts. </h1>")
+    # return HttpResponse("<h1> Delete a posts. </h1>")\
     instance = get_object_or_404(Post, id=id)
+    if instance.user != request.user:
+        return HttpResponseRedirect(instance.get_detail_absolute_url())
     instance.delete()
     return redirect("/home/")
