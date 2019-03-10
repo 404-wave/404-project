@@ -55,18 +55,6 @@ def home(request):
 	# only_me_posts_list = []
 	streamlist = []
 
-	privacy = request.GET.get('privacy', None)
-	if privacy is not None:
-		streamlist = Post.objects.filter(privacy=privacy)
-		print("GET", streamlist)
-	else:
-		streamlist = Post.objects.filter_user_visible_posts(user=request.user)
-	query = request.GET.get("query")
-	if query:
-		streamlist = streamlist.filter(content__icontains=query)
-
-	print("Stream list len: ", len(streamlist))
-	print("Stream list: ", streamlist)
 
 	instance = None
 	if request.method == "POST":
@@ -77,9 +65,26 @@ def home(request):
 			instance.user = request.user
 			instance.publish = datetime.now()
 			instance.save()
+			form = PostForm()
 		print(form.errors)
 		
 		user = request.user
+
+
+		privacy = request.GET.get('privacy', None)
+
+		if privacy is not None:
+			streamlist = Post.objects.filter(privacy=privacy)
+			print("GET", streamlist)
+		else:
+			streamlist = Post.objects.filter_user_visible_posts(user=request.user)
+		query = request.GET.get("query")
+		if query:
+			streamlist = streamlist.filter(content__icontains=query)
+
+		print("Stream list len: ", len(streamlist))
+		print("Stream list: ", streamlist)
+
 
 		# print("Privacy:", instance.privacy)
 		# if instance.privacy == 0:
@@ -176,6 +181,22 @@ def home(request):
 
 		form = PostForm()
 		user = request.user
+
+
+		privacy = request.GET.get('privacy', None)
+
+		if privacy is not None:
+			streamlist = Post.objects.filter(privacy=privacy)
+			print("GET", streamlist)
+		else:
+			streamlist = Post.objects.filter_user_visible_posts(user=request.user)
+			query = request.GET.get("query")
+		if query:
+			streamlist = streamlist.filter(content__icontains=query)
+
+		print("Stream list len: ", len(streamlist))
+		print("Stream list: ", streamlist)
+
 	
 
 

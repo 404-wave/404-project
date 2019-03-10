@@ -65,8 +65,10 @@ class PostManager(models.Manager):
         friends_of_friends = friends_followers &  friends_following
         friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
 
+        server_only_posts =  super(PostManager, self).filter(privacy=4, user = user)
 
-        all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts
+
+        all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
         all_posts = all_posts.filter(unlisted=False)
         return all_posts.order_by('-timestamp')
 
