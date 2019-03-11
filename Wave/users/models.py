@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 from django.contrib.auth.models import AbstractUser
 
@@ -7,6 +8,7 @@ from django.contrib.auth.models import AbstractUser
 # TODO: When using UUIDs the username column will need to be UNIQUE
 class User(AbstractUser):
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     bio = models.TextField(max_length=500, blank=True)
     github = models.TextField(max_length=500, blank=True) # TODO: Find reasonable length
     is_active = models.BooleanField(('active'), default=False)
