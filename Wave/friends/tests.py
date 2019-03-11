@@ -132,7 +132,6 @@ class FollowTestCase(TestCase):
         timesAppeared = []
         person_query = Follow.objects.filter(Q(user1=target) | Q(user2=target))
         for followobj in person_query:
-            #print("target: " + str(target) + "times: " + str(timesAppeared))
             if followobj.user1 == target :
                 if followobj.user2 in timesAppeared:
                     friendsOfTarget.add(followobj.user2)
