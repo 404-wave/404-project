@@ -38,6 +38,7 @@ def followers(request):
 
     # Look at Follow table results where I am the followee
     followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
+    print("FOLLOWERS: ", followers)
     data = serializers.serialize('json', followers, fields=('username'))
     return HttpResponse(data, content_type="application/json")
 
@@ -51,6 +52,7 @@ def friends(request):
     followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
     following = User.objects.filter(followee__user1=request.user.id, is_active=True)
     friends = following & followers
+    print("FRIENDS",friends)
     data = serializers.serialize('json', friends, fields=('username'))
     return HttpResponse(data, content_type="application/json")
 

@@ -1,4 +1,8 @@
 <html>
+  <head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  </head>
   <body>
     <h3>Create Post</h3>
 
@@ -7,5 +11,24 @@
       {{ form.as_p }}
       <input type="submit" value="Share" />
     </form>
+
+    <script>
+      function private() {
+        var values = $("#id_privacy").val();
+        if (values == 1) {
+          $("#id_accessible_users")
+            .parent()
+            .show();
+        } else
+          $("#id_accessible_users")
+            .parent()
+            .hide();
+      }
+
+      $("#id_privacy").change(function() {
+        private();
+      });
+      private();
+    </script>
   </body>
 </html>
