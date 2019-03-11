@@ -1,35 +1,128 @@
 from django.shortcuts import render
 
-from rest_framework import viewsets
+from rest_framework import pagination, generics, views, status
+from rest_framework.response import Response
+
+# Investigate permissons
+#from rest_framework.permissions import IsAdminUser
 
 from users.models import User
 from posts.models import Post
 from comments.models import Comment
 from .serializers import UserSerializer, PostSerializer, CommentSerializer
+from .paginators import UserPagination, PostPagination, CommentPagination
 
-# TODO: Learn accept query params
-# TODO: Learn pagination
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserAPIView(generics.GenericAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    http_method_names = ['get']
+    pagination_class = UserPagination
 
-    # How to ship a custom query set
-    # def get_queryset(self):
-    #     return User.objects.filter(is_active=True)
+    def get(self, request, *args, **kwargs):
+
+        # Handle GETs for multiple author profiles, or a single profile
+        if 'author_id' in kwargs.keys():
+            author_id = self.kwargs['author_id']
+            queryset = User.objects.filter(id=author_id, is_active=True)
+        else:
+            queryset = User.objects.filter(is_active=True)
+
+        # TODO: Hanld error?
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response({'data': serializer.data, 'request': request})
+
+        serializer = UserSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
-class PostViewSet(viewsets.ModelViewSet):
+class PostAPIView(generics.GenericAPIView):
 
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    http_method_names = ['get', 'post', 'put']
+        queryset = Post.objects.all()
+        serializer_class = PostSerializer
+        pagination_class = PostPagination
+
+        def get(self, request, *args, **kwargs):
+
+            # Handle GETs for all public posts, or just a single post
+            if 'author_id' in self.kwargs.keys():
+                author_id = self.kwargs['author_id']
+                # TODO: Hanlde the privacy concerns of the posts w.r.t authenticated user of API
+                queryset = Post.objects.filter(user=author_id)
+
+            elif 'post_id' in kwargs.keys():
+                post_id = self.kwargs['post_id']
+                # TODO: Hanlde the privacy concerns of the posts w.r.t authenticated user of API
+                queryset = Post.objects.filter(id=post_id)
+
+            else:
+                queryset = Post.objects.filter(privacy=Post.PUBLIC)
+
+            # TODO: Hanld error?
+
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = PostSerializer(queryset, many=True)
+            return Response(serializer.data)
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentAPIView(generics.GenericAPIView):
 
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    http_method_names = ['get', 'post']
+        queryset = Comment.objects.all()
+        serializer_class = CommentSerializer
+        pagination_class = CommentPagination
+
+        def get(self, request, *args, **kwargs):
+
+            # Handle GETs for all comments belonging to a post
+            if 'post_id' in self.kwargs.keys():
+                post_id = self.kwargs['post_id']
+                # TODO: Hanlde the privacy concerns of the post w.r.t authenticated user of API?
+                # E.g., privacy inheritance
+
+                # TODO: This may need altering -- it is not working currently due to model interaction
+                queryset = Comment.objects.filter(post=post_id)
+
+            # TODO: Hanld error?
+
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = CommentSerializer(queryset, many=True)
+            return Response(serializer.data)
+
+
+class FriendAPIView(generics.GenericAPIView):
+
+        queryset = Comment.objects.all()
+        serializer_class = CommentSerializer
+        pagination_class = CommentPagination
+
+        def get(self, request, *args, **kwargs):
+
+            # Handle GETs for all comments belonging to a post
+            friend_list = list()
+            if 'author_id' in self.kwargs.keys():
+                author_id = self.kwargs['author_id']
+
+                # Build queryset for the friends of the specified author
+                followers = User.objects.filter(follower__user2=author_id, is_active=True)
+                following = User.objects.filter(followee__user1=author_id, is_active=True)
+                friends = following & followers
+
+                # Iterate over the queryset to find the IDs of the friends
+                for friend in friends:
+                    friend_list.append(str(friend.id))
+
+            #else:
+                # TODO: Hanld error?
+
+            return Response({"query": "friends", "authors": friend_list})

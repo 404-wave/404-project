@@ -13,15 +13,15 @@ class UserSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = User
-        fields = ('user_id', 'content', 'date', 'privacy')
+        model = Post
+        fields = ('user', 'content', 'publish', 'privacy')
 
 
 class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('user_id', 'content', 'date')
+        fields = ('user', 'content', 'date')
 
 
 # class FriendSerializer(serializers.ModelSerializer):
