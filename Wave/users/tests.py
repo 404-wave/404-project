@@ -15,9 +15,9 @@ class UserUnitTest(TestCase):
                                      github="p1git",is_active = True,is_admin=False)
         self.person2 = User.objects.create(username="person2",bio="i am person2",
                                      github="p2git",is_active = False,is_admin=False)
-        self.person1 = User.objects.create(username="person3",bio="i am person3",
+        self.person3 = User.objects.create(username="person3",bio="i am person3",
                                      github="p3git",is_active = True,is_admin=True)
-        self.person1 = User.objects.create(username="person4",bio="i am person4",
+        self.person4 = User.objects.create(username="person4",bio="i am person4",
                                      github="p4git",is_active = False,is_admin=True)
 
     
@@ -35,6 +35,10 @@ class UserUnitTest(TestCase):
         #checks that different UUID's are generated
         assertNotEqual(self.person1,self.person2)
         assertNotEqual(self.person3,self.person4)
+
+        user = User.objects.filter(self.person3.id)
+        assertTrue(len(user) == 1, "Filtering has 2 or more results")
+
 
     
 
