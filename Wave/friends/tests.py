@@ -51,7 +51,6 @@ class FollowTestCase(TestCase):
 
         
 
-    #TODO change to UUID after PR is merged
     def test_followeesCorrect(self):
         #tests if the follower has the correct followee's
         queryset = Follow.objects.filter(user1=self.person1)
@@ -68,7 +67,7 @@ class FollowTestCase(TestCase):
                 correct = True
             self.assertTrue(correct, "Follower does not have correct followees")
    
-    #TODO change to UUID after PR is merged
+
     def test_followersCorrect(self):
         #tests if the followees have the correct follower's
         follower_objs = Follow.objects.filter(user2=self.person3)
