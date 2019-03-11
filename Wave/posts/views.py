@@ -12,35 +12,8 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 
-# def posts_index(request):
-#     return HttpResponse("<h1> Hello. You're at the posts index. </h1>")
-
-# def posts_create(request):
-#     # return HttpResponse("<h1> Create a posts. </h1>")
-#     form = PostForm(request.POST or None)
-
-#     if form.is_valid():
-#         instance = form.save(commit=False)
-#         instance.user = request.user
-#         instance.publish = datetime.now()
-#         instance.save()
-
-#     context = {
-#         "form": form
-#     }
-
-#     # if request.method == "POST":
-#     #     print("This is the content: ", request.POST.get("content"))
-#     return render(request, "post_form.html", context)
-
-
 def posts_detail(request, id):
     instance = get_object_or_404(Post, id=id)
-    # content_type = ContentType.objects.get_for_model(Post)
-    # obj_id = instance.id
-    # comments = Comment.objects.filter(
-    #     content_type=content_type, object_id=obj_id)
-    # comments = Comment.objects.filter_by_instance(instance)
 
     initial_data = {
         "content_type": instance.get_content_type,
@@ -83,20 +56,6 @@ def posts_detail(request, id):
     }
     return render(request, "posts_detail.html", context)
 
-    
-    # return HttpResponse("<h1> Detail a posts. </h1>")
-
-
-# def posts_list(request):
-#     # return HttpResponse("<h1> List a posts. </h1>")
-#     # TODO: Privacy stuff
-#     queryset = Post.objects.all()
-#     context = {
-#         "object_list": queryset,
-#         "user": "username"
-#     }
-#     return render(request, "home.html", context)
-
 
 def posts_update(request, id=None):
     # return HttpResponse("<h1> Update a posts. </h1>")
@@ -124,5 +83,6 @@ def posts_delete(request, id=None):
     instance = get_object_or_404(Post, id=id)
     if instance.user != request.user:
         return HttpResponseRedirect(instance.get_detail_absolute_url())
+    instance.comments.delete()
     instance.delete()
     return redirect("/home/")

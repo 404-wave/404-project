@@ -4,8 +4,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 # Create your models here.
 
-# from posts.models import Post
-
 
 class CommentManager(models.Manager):
     def all(self):
@@ -24,7 +22,6 @@ class Comment(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
-    # post = models.ForeignKey(Post, on_delete=models.CASCADE)
     parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()

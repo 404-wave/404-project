@@ -32,30 +32,7 @@ def home(request):
 	# TODO: If the user is not authenticated then don't show the home page,
 	# but instead show soe other page reporting the error. (Maybe just the login page).
 
-	# Searches for content
-	# Needs to search for user name as well
-	# Needs a way to show the searched results
-	# maybe pagination
-	# Need to filter properly
-	###################################################################################
-	# queryset_list = Post.objects.all()
-	# query = request.GET.get("query")
-	# if query:
-	# 	queryset_list = queryset_list.filter(content__icontains=query)
-	# 	print("These are the queries", queryset_list)
-	#####################################################################################
-
-
-	
-	# public_posts_list = []
-	# private_posts_list = []
-	# friends_posts_list = []
-	# foaf_posts_list = []
-	# server_posts_list = []
-	# only_me_posts_list = []
 	streamlist = []
-
-
 	instance = None
 	if request.method == "POST":
 
@@ -70,9 +47,7 @@ def home(request):
 		
 		user = request.user
 
-
 		privacy = request.GET.get('privacy', None)
-
 		if privacy is not None:
 			streamlist = Post.objects.filter(privacy=privacy)
 			print("GET", streamlist)
@@ -84,48 +59,6 @@ def home(request):
 
 		print("Stream list len: ", len(streamlist))
 		print("Stream list: ", streamlist)
-
-
-		# print("Privacy:", instance.privacy)
-		# if instance.privacy == 0:
-		# 	streamlist = Post.objects.filter_by_public()
-		# 	print("public length: ", len(streamlist))
-		# 	print("Public list: ", streamlist)
-		
-		# elif instance.privacy == 1:
-		# 	streamlist = Post.objects.filter_by_private()
-		# 	print("private length: ", len(streamlist))
-		# 	print("Private list: ", streamlist)
-
-		# elif instance.privacy == 2:
-		# 	streamlist = Post.objects.filter_by_friends()
-		# 	print("Friends length: ", len(streamlist))
-		# 	print("Friends list: ", streamlist)
-
-
-		# elif instance.privacy == 3:
-		# 	streamlist = Post.objects.filter_by_foaf()
-		# 	print("FOAF length: ", len(streamlist))
-		# 	print("FOAF list: ", streamlist)
-		
-		# elif instance.privacy == 4:
-		# 	streamlist = Post.objects.filter_by_only_server()
-		# 	print("server length: ", len(streamlist))
-		# 	print("Server list: ", streamlist)
-
-		# elif instance.privacy == 5:
-		# 	streamlist = Post.objects.filter_by_only_me(user=request.user)
-		# 	print("only me length: ", len(streamlist))
-		# 	print("Private list: ", streamlist)
-
-		# streamlist = Post.objects.filter_user_visible_posts(user=request.user)
-
-		
-		
-
-		
-		
-	
 
 		#TODO: increase rate limit with OAuth?
 		#if so, do pagination of API call
