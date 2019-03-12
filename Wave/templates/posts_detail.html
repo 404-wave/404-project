@@ -7,14 +7,16 @@
 
 </head>
 <body>
-
     <h1> User: {{ user }} </h1>
     {% if instance.image %}
     <a href="{{ instance.image.url }}">
         <img src="{{ instance.image.url }}" alt="" /><br/>
     </a>
     {% endif %}
-    {{ instance.content }} <br/>
+    {% if instance.is_image %}
+    <img src="{{ instance.data_uri }}">
+    {% endif %}
+    <br/>
     {{ instance.timestamp }} <br/>
     {{ instance.id }} <br/>
 
@@ -99,7 +101,7 @@
 </script>
         
 
-    
+
 </body>
 
 

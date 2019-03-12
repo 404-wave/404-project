@@ -8,9 +8,16 @@ from comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from users.models import User
 from django.dispatch import receiver
+from django.db.models.signals import post_save, m2m_changed
+import base64
+from mimetypes import guess_type
 # Create your models here.
 
-
+def image_to_b64(image_file):
+    with open(image_file.path, "rb") as f:
+        encoded_string = base64.b64encode(f.read()).decode()
+        image_type = guess_type(image_file.path)[0]
+        return image_type, encoded_string
 
 def upload_location(instance, filename):
     return "%s/%s" % (instance.id, filename)
@@ -109,8 +116,10 @@ class Post(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     status = models.CharField(max_length=6, choices=Status, default=POST)
-    content = models.TextField()
+    content = models.TextField(blank=True)
     image = models.FileField(upload_to=upload_location, null=True, blank=True)
+    is_image = models.BooleanField(default=False)
+    data_uri = models.TextField(blank=True)
     publish = models.DateField(auto_now=False, auto_now_add=False)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -182,5 +191,15 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
     if not instance.pk:
         return False
 
-
+@receiver(post_save, sender=Post)
+def create_base64_str(sender, instance=None, created=False, **kwargs):
+    if instance.image and created:
+        image_type, encoded_string = image_to_b64(instance.image)
+        instance.content = encoded_string
+        instance.data_uri = "data:" + image_type + ";base64," + encoded_string
+        instance.is_image = True
+        #make it unlisted here
+        instance.unlisted = True
+        instance.image.delete()
+        instance.save()
 

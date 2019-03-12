@@ -96,6 +96,7 @@
       </div>
     </form>
 
+
     <div class="row">
       {% for obj in object_list %}
       <!-- check if is Post object -->
@@ -103,13 +104,10 @@
       <div class="col-sm-6 col-md-4">
         <!-- column 1 -->
         <div class="thumbnail">
+          
           <!--  thumbnail 1  -->
           <br />
-          {% if obj.image %}
-          <a href="{{ obj.image.url }}">
-            <img src="{{ obj.image.url }}" alt="" /> <br />
-          </a>
-          {% endif %}
+          
           <div class="caption">
             <!-- caption -->
             <h4>
