@@ -65,6 +65,9 @@ def home(request):
 		print("Stream list len: ", len(streamlist))
 		print("Stream list: ", streamlist)
 
+		#Cast QuerySet into a list for Github
+		streamlist = list(streamlist)
+
 		#TODO: increase rate limit with OAuth?
 		#if so, do pagination of API call
 		#make call to Github API
@@ -138,8 +141,8 @@ def home(request):
 		print("Stream list len: ", len(streamlist))
 		print("Stream list: ", streamlist)
 
-	
-
+		#Cast QuerySet to list for Github
+		streamlist = list(streamlist)
 
 
 
