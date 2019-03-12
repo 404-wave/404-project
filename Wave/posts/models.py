@@ -24,6 +24,10 @@ def upload_location(instance, filename):
 
 
 class PostManager(models.Manager):
+
+    """
+        Functions that were made to test individual privacy setting
+    """
     def all(self, *args, **kwargs):
         query_set = super(PostManager, self).order_by("-timestamp")
         return query_set
@@ -31,10 +35,6 @@ class PostManager(models.Manager):
     def filter_by_public(self, *args, **kwargs):
         query_set = super(PostManager, self).filter(privacy=0).order_by("-timestamp")
         return query_set
-
-    # def filter_by_private(self, *args, **kwargs):
-    #     query_set = super(PostManager, self).filter(privacy=1).order_by("-timestamp")
-    #     return query_set
 
     def filter_by_friends(self, *args, **kwargs):
         followers = User.objects.filter(follower__user2=user.id, is_active=True)
@@ -57,10 +57,13 @@ class PostManager(models.Manager):
         return query_set
     
 
+    """
+        Filters all posts based on the privacy setting chosen.
+        Posts are uniquely filtered for a users
+    """
     def filter_user_visible_posts(self, user, *args, **kwargs):
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
         public_posts = super(PostManager, self).filter(privacy=0)
-
 
         private_posts = user.accessible_posts.all()
 
@@ -80,8 +83,18 @@ class PostManager(models.Manager):
 
 
         all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
-        all_posts = all_posts.filter(unlisted=False)
+        
+
+
+        """
+            If unlisted is passed as True, the function will remove unlisted posts from the list. 
+            If it is passed as False, then it will not remove the unlisted posts.
+        """
+        if kwargs.get('remove_unlisted', True):
+            all_posts = all_posts.filter(unlisted=False)
         return all_posts.order_by('-timestamp')
+    
+    # TODO: Not sure if this works yet.
 
     def filter_server_posts(self, user, *args, **kwargs):
         all_posts = self.filter_user_visible_posts(user)
@@ -133,12 +146,11 @@ class Post(models.Model):
         return str(self.user.username)
 
     """
-        Redirects to the individaul posts.
+        Redirects to the specific urls.
     """
     def get_detail_absolute_url(self):
         return reverse("posts-detail", kwargs={"id": self.id})
-        # return "/posts/%s/" % (self.id)
-
+        
     def get_delete_absolute_url(self):
         return reverse("posts-delete", kwargs={"id": self.id})
 
