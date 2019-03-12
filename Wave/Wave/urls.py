@@ -17,9 +17,9 @@ router.register(r'author', UserViewSet)
 #https://blog.majsky.cz/django-protected-media-files/
 #Credit: Michal Májský
 #Note that the default login_url for django is '/accounts/login' which will 404
-@login_required(login_url='/login/')
-def protected_serve(request, path, document_root=None, show_indexes=False):
-    return serve(request, path, document_root, show_indexes)
+# @login_required(login_url='/login/')
+# def protected_serve(request, path, document_root=None, show_indexes=False):
+#     return serve(request, path, document_root, show_indexes)
 
 base64_pattern = r'(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$'
 
@@ -30,8 +30,8 @@ urlpatterns = [
     path('posts/', include('posts.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('service/', include(router.urls)),
-    url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], protected_serve, {'document_root': settings.MEDIA_ROOT}),
-    url(r'^data:image/jpeg;base64,(?P<base64string>{})'.format(base64_pattern), protected_serve, {'document_root': 'data:image/jpeg;base64,'}),
+    #url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], protected_serve, {'document_root': settings.MEDIA_ROOT}),
+    #url(r'^data:image/jpeg;base64,(?P<base64string>{})'.format(base64_pattern), protected_serve, {'document_root': 'data:image/jpeg;base64,'}),
 ]
 
 if settings.DEBUG:
