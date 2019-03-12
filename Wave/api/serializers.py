@@ -10,7 +10,6 @@ class UserSerializer(serializers.ModelSerializer):
     firstName = serializers.SerializerMethodField('get_first_name')
     lastName = serializers.SerializerMethodField('get_last_name')
 
-    # TODO: Add host, url to User model, and to the serializer meta
     class Meta:
         model = User
         fields = ('id', 'host', 'displayName', 'url', 'friends', 'github', 'firstName', 'lastName', 'email', 'bio')
@@ -37,7 +36,6 @@ class UserFriendSerializer(serializers.ModelSerializer):
 
     displayName = serializers.SerializerMethodField('get_username')
 
-    # TODO: Add host, url to User model, and to the serializer meta
     class Meta:
         model = User
         fields = ('id', 'host', 'displayName', 'url')
@@ -55,10 +53,41 @@ class PostSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
 
+    author = serializers.SerializerMethodField('_author')
+    published = serializers.SerializerMethodField('_published')
+    comment = serializers.SerializerMethodField('_comment')
+
+    # TODO: Change comment IDs to UUIDs
+    class Meta:
+        model = Comment
+        fields = ('author', 'comment', 'contentType', 'published', 'id')
+
+    def _author(self, obj):
+        author = User.objects.get(username=obj.user)
+        serialized_author = CommentAuthorSerializer(author, many=False)
+        return serialized_author.data
+
+    def _published(self, obj):
+        return obj.timestamp
+
+    def _comment(self, obj):
+        return obj.content
+
+
+class CommentAuthorSerializer(serializers.ModelSerializer):
+
+    displayName = serializers.SerializerMethodField('get_username')
+    id = serializers.SerializerMethodField('build_id')
+
     class Meta:
         model = User
-        fields = ('user', 'content', 'date')
+        fields = ('id', 'host', 'displayName')
 
+    def get_username(self, obj):
+        return obj.username
+
+    def build_id(self, obj):
+        return str(obj.host) + str(obj.id)
 
 # class FriendSerializer(serializers.ModelSerializer):
 #

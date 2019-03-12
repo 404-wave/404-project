@@ -27,6 +27,10 @@ class Comment(models.Model):
     # post = models.ForeignKey(Post, on_delete=models.CASCADE)
     parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+
+    # TODO: Maybe should change the content of this to be some type of enum, rather than a textfield.
+    contentType = models.TextField(max_length=13, default="text/plain") # Could also be "text/markdown"
+
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     content = models.TextField()
@@ -42,7 +46,7 @@ class Comment(models.Model):
     # replies
     def children(self):
         return Comment.objects.filter(parent=self)
-    
+
     @property
     def is_parent(self):
         if self.parent is not None:
