@@ -6,6 +6,7 @@ from posts.models import Post
 from posts.forms import PostForm
 from users.models import User
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render
 from django.http import HttpResponseForbidden, HttpResponseNotFound
@@ -23,115 +24,46 @@ import pytz
 
 import base64
 
-def friends(request):
-	if not request.user.is_authenticated:
-		return HttpResponseForbidden()
-	user = request.user
-
-	return render(request, 'friends.html', {'user': user})
 
 
 # TODO: use the REST API once it is established
+@login_required(login_url='/login')
 def home(request):
 	utc=pytz.UTC
 
 	# TODO: If the user is not authenticated then don't show the home page,
 	# but instead show soe other page reporting the error. (Maybe just the login page).
 
-	# Searches for content
-	# Needs to search for user name as well
-	# Needs a way to show the searched results
-	# maybe pagination
-	# Need to filter properly
-	###################################################################################
-	# queryset_list = Post.objects.all()
-	# query = request.GET.get("query")
-	# if query:
-	# 	queryset_list = queryset_list.filter(content__icontains=query)
-	# 	print("These are the queries", queryset_list)
-	#####################################################################################
-
-
-	
-	# public_posts_list = []
-	# private_posts_list = []
-	# friends_posts_list = []
-	# foaf_posts_list = []
-	# server_posts_list = []
-	# only_me_posts_list = []
 	streamlist = []
-
-
 	instance = None
 	if request.method == "POST":
-
-		form = PostForm(request.POST or None, request.FILES or None)
+		data = request.POST.copy()
+		data['user'] = request.user.id
+		data['publish'] = datetime.now()
+		form = PostForm(data, request.FILES or None)
 		if form.is_valid():
-			instance = form.save(commit=False)
-			instance.user = request.user
-			instance.publish = datetime.now()
-			instance.save()
+			instance = form.save()
 			form = PostForm()
 		print(form.errors)
-		
 		user = request.user
 
 
 		privacy = request.GET.get('privacy', None)
-
 		if privacy is not None:
 			streamlist = Post.objects.filter(privacy=privacy)
 			print("GET", streamlist)
 		else:
 			streamlist = Post.objects.filter_user_visible_posts(user=request.user)
+		
+		"""
+			Allows you to search for the titles of post
+		"""
 		query = request.GET.get("query")
 		if query:
 			streamlist = streamlist.filter(content__icontains=query)
 
 		print("Stream list len: ", len(streamlist))
 		print("Stream list: ", streamlist)
-
-
-		# print("Privacy:", instance.privacy)
-		# if instance.privacy == 0:
-		# 	streamlist = Post.objects.filter_by_public()
-		# 	print("public length: ", len(streamlist))
-		# 	print("Public list: ", streamlist)
-		
-		# elif instance.privacy == 1:
-		# 	streamlist = Post.objects.filter_by_private()
-		# 	print("private length: ", len(streamlist))
-		# 	print("Private list: ", streamlist)
-
-		# elif instance.privacy == 2:
-		# 	streamlist = Post.objects.filter_by_friends()
-		# 	print("Friends length: ", len(streamlist))
-		# 	print("Friends list: ", streamlist)
-
-
-		# elif instance.privacy == 3:
-		# 	streamlist = Post.objects.filter_by_foaf()
-		# 	print("FOAF length: ", len(streamlist))
-		# 	print("FOAF list: ", streamlist)
-		
-		# elif instance.privacy == 4:
-		# 	streamlist = Post.objects.filter_by_only_server()
-		# 	print("server length: ", len(streamlist))
-		# 	print("Server list: ", streamlist)
-
-		# elif instance.privacy == 5:
-		# 	streamlist = Post.objects.filter_by_only_me(user=request.user)
-		# 	print("only me length: ", len(streamlist))
-		# 	print("Private list: ", streamlist)
-
-		# streamlist = Post.objects.filter_user_visible_posts(user=request.user)
-
-		
-		
-
-		
-		
-	
 
 		#TODO: increase rate limit with OAuth?
 		#if so, do pagination of API call
@@ -190,13 +122,16 @@ def home(request):
 
 
 		privacy = request.GET.get('privacy', None)
-
 		if privacy is not None:
 			streamlist = Post.objects.filter(privacy=privacy)
 			print("GET", streamlist)
 		else:
 			streamlist = Post.objects.filter_user_visible_posts(user=request.user)
-			query = request.GET.get("query")
+		
+		"""
+			Allows you to search for the titles of post
+		"""
+		query = request.GET.get("query")
 		if query:
 			streamlist = streamlist.filter(content__icontains=query)
 
@@ -263,7 +198,7 @@ def home(request):
 
 	return render(request, "home.html", context)
 
-
+@login_required(login_url='/login')
 def profile(request, pk = None):
 
 	if not request.user.is_authenticated:
@@ -288,6 +223,7 @@ def profile(request, pk = None):
 
 
 
+@login_required(login_url='/login')
 def edit_profile(request):
 	
 	if not request.user.is_authenticated:
@@ -315,3 +251,10 @@ def edit_profile(request):
 		context = {'form':form}
 		return render(request,'profileEdit.html',context)
 
+
+def friends(request):
+	if not request.user.is_authenticated:
+		return HttpResponseForbidden()
+	user = request.user
+
+	return render(request, 'friends.html', {'user': user})
