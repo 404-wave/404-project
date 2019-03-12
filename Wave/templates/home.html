@@ -75,14 +75,39 @@ function edit(){
   <form method="POST" action="" , enctype="multipart/form-data" novalidate>
     {% csrf_token %}
     <div class = "settings">
-    {% for field in form.visible_fields %}
-    {% if field.id_for_label != "id_content" %}
-     {{ field }}
-    {{ field.label_tag }} 
-    {% endif %}
-    {% endfor %}
-  </div>
+    <div class="fieldWrapper">
+        {{ form.content.errors }}
+        <label for="{{ form.content.id_for_label }}">Content</label>
+        {{ form.content }}
+    </div>
+
+    <div class = settingss>
+        <div class="fieldWrapper_row">
+        <div class="fieldWrapper_photo">
+            {{ form.image.errors }}
+            <label for="{{ form.image.id_for_label }}">Content</label>
+            {{ form.image }}
+        </div>
+        <div class="fieldWrapper_privacy">
+            {{ form.privacy.errors }}
+            <label for="{{ form.privacy.id_for_label }}">Content</label>
+            {{ form.privacy}}
+            {{ form.accessible_users.errors }}
+            <label for="{{ form.accessible_users.id_for_label }}">Content</label>
+            {{ form.accessible_users }}
+        </div>
+      </div>
+        <div class="fieldWrapper_submit">
+            {{ form.unlisted.errors }}
+            <label for="{{ form.unlisted.id_for_label }}">Content</label>
+            {{ form.unlisted }}
+        
+   
+
     <input type="submit" class="btn btn-primary" value="Share" />
+  </div>
+  </div>  
+  </div>
   </form>
   {% if unlisted_instance %}
   <p> Your posts was created. Access it <a href="{{ unlisted_instance.get_detail_absolute_url }}"> Here</a></p>

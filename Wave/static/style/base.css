@@ -70,6 +70,16 @@ textarea
 .stream {
 	width: 85%;
 }
+.fieldWrapper_submit{
+	display: flex;
+	justify-content: flex-end;
+
+}
+.fieldWrapper_submit *{
+	display: flex;
+	width: fit-content;
+}
+
 
 .stream_post {
 	background-color: white;
