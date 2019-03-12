@@ -106,7 +106,9 @@
           <!--  thumbnail 1  -->
           <br />
           {% if obj.image %}
-          <img src="{{ obj.image.url }}" alt="" /> <br />
+          <a href="{{ obj.image.url }}">
+            <img src="{{ obj.image.url }}" alt="" /> <br />
+          </a>
           {% endif %}
           <div class="caption">
             <!-- caption -->

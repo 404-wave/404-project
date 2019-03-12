@@ -1,9 +1,13 @@
+import os
+import uuid
+
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
 from comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from users.models import User
+from django.dispatch import receiver
 # Create your models here.
 
 
@@ -154,5 +158,28 @@ class Post(models.Model):
         content_type = ContentType.objects.get_for_model(instance.__class__)
         return content_type
          
+
+# These two auto-delete files from filesystem when they are unneeded:
+
+@receiver(models.signals.post_delete, sender=Post)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    """
+    Deletes file from filesystem
+    when corresponding `Post` object is deleted.
+    """
+    if instance.image:
+        if os.path.isfile(instance.image.path):
+            os.remove(instance.image.path)
+
+@receiver(models.signals.pre_save, sender=Post)
+def auto_delete_file_on_change(sender, instance, **kwargs):
+    """
+    Deletes old file from filesystem
+    when corresponding `Post` object is updated
+    with new file.
+    """
+    if not instance.pk:
+        return False
+
 
 

@@ -10,7 +10,9 @@
 
     <h1> User: {{ user }} </h1>
     {% if instance.image %}
-    <img src="{{ instance.image.url }}" alt="" /><br/>
+    <a href="{{ instance.image.url }}">
+        <img src="{{ instance.image.url }}" alt="" /><br/>
+    </a>
     {% endif %}
     {{ instance.content }} <br/>
     {{ instance.timestamp }} <br/>
