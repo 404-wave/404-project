@@ -69,7 +69,10 @@ class PostManager(models.Manager):
 
 
         all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
-        all_posts = all_posts.filter(unlisted=False)
+        
+        
+        if kwargs.get('remove_unlisted', True):
+            all_posts = all_posts.filter(unlisted=False)
         return all_posts.order_by('-timestamp')
 
     def filter_server_posts(self, user, *args, **kwargs):
@@ -105,7 +108,7 @@ class Post(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     status = models.CharField(max_length=6, choices=Status, default=POST)
-    content = models.TextField()
+    content = models.TextField(blank=True)
     image = models.FileField(upload_to=upload_location, null=True, blank=True)
     publish = models.DateField(auto_now=False, auto_now_add=False)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)

@@ -17,7 +17,7 @@ from django.contrib.contenttypes.models import ContentType
 def posts_detail(request, id):
     instance = get_object_or_404(Post, id=id)
 
-    user_posts = Post.objects.filter_user_visible_posts(request.user)
+    user_posts = Post.objects.filter_user_visible_posts(request.user, remove_unlisted=False)
     try: 
         user_posts.get(id=instance.id)
     except Post.DoesNotExist:
