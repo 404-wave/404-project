@@ -45,8 +45,8 @@ def home(request):
 			instance = form.save()
 			form = PostForm()
 		print(form.errors)
-		
 		user = request.user
+
 
 		privacy = request.GET.get('privacy', None)
 		if privacy is not None:
@@ -54,6 +54,10 @@ def home(request):
 			print("GET", streamlist)
 		else:
 			streamlist = Post.objects.filter_user_visible_posts(user=request.user)
+		
+		"""
+			Allows you to search for the titles of post
+		"""
 		query = request.GET.get("query")
 		if query:
 			streamlist = streamlist.filter(content__icontains=query)
@@ -118,13 +122,16 @@ def home(request):
 
 
 		privacy = request.GET.get('privacy', None)
-
 		if privacy is not None:
 			streamlist = Post.objects.filter(privacy=privacy)
 			print("GET", streamlist)
 		else:
 			streamlist = Post.objects.filter_user_visible_posts(user=request.user)
-			query = request.GET.get("query")
+		
+		"""
+			Allows you to search for the titles of post
+		"""
+		query = request.GET.get("query")
 		if query:
 			streamlist = streamlist.filter(content__icontains=query)
 

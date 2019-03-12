@@ -10,7 +10,7 @@ class CommentManager(models.Manager):
         query_set = super(CommentManager,self).filter(parent=None)
         return query_set
 
-
+    
     def filter_by_instance(self, instance):
         content_type = ContentType.objects.get_for_model(instance.__class__)
         obj_id = instance.id
@@ -39,7 +39,8 @@ class Comment(models.Model):
     # replies
     def children(self):
         return Comment.objects.filter(parent=self)
-    
+
+    # parent comment
     @property
     def is_parent(self):
         if self.parent is not None:

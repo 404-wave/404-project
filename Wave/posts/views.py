@@ -13,10 +13,18 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 
+"""
+    Shows the details about a post.
+    Allows use to post comments under the post.
+
+"""
 @login_required(login_url='/login')
 def posts_detail(request, id):
     instance = get_object_or_404(Post, id=id)
 
+    # Checks if the posts is from the user who posted it 
+    # And if it can be seen by the acessible users
+    # If not redirects the user back to the home page
     user_posts = Post.objects.filter_user_visible_posts(request.user, remove_unlisted=False)
     try: 
         user_posts.get(id=instance.id)
@@ -27,6 +35,8 @@ def posts_detail(request, id):
         "content_type": instance.get_content_type,
         "object_id": instance.id
     }
+
+    # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
     if comment_form.is_valid():
         comment_type = comment_form.cleaned_data.get("content_type")
@@ -64,9 +74,15 @@ def posts_detail(request, id):
     }
     return render(request, "posts_detail.html", context)
 
+"""
+    Allows the user to update a post.
+"""
 @login_required(login_url='/login')
 def posts_update(request, id=None):
-    # return HttpResponse("<h1> Update a posts. </h1>")
+
+    
+    # Checks if the user who created the post can update the post
+    # If not redirect the user
     instance = get_object_or_404(Post, id=id)
     if instance.user != request.user:
         return HttpResponseRedirect(instance.get_detail_absolute_url())
@@ -85,9 +101,16 @@ def posts_update(request, id=None):
     }
     return render(request, "posts_form.html", context)
 
+
+"""
+    Allows the user to delete a post
+"""
+
 @login_required(login_url='/login')
 def posts_delete(request, id=None):
-    # return HttpResponse("<h1> Delete a posts. </h1>")\
+
+    # Checks if the user who created the post can delete the post
+    # If not redirect the user
     instance = get_object_or_404(Post, id=id)
     if instance.user != request.user:
         return HttpResponseRedirect(instance.get_detail_absolute_url())
