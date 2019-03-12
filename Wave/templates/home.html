@@ -68,20 +68,7 @@
 
     <h1>What's on your mind, {{ user }}</h1>
 
-    <!-- Friends List -->
-    <div>
-      <div id="friendBtnContainer">
-        <button onclick="filterFriends('find')">Find</button>
-        <button onclick="filterFriends('following')">Following</button>
-        <button onclick="filterFriends('followers')">Followers</button>
-        <button onclick="filterFriends('friends')">Friends</button>
-      </div>
 
-      <div id="friendContainer">
-        <!-- Friend objects/divs will appear within here -->
-        <!-- TODO: Investigate a nice structure for showing a user via a div -->
-      </div>
-    </div>
 
     {% if unlisted_instance %}
       <p> Your posts was created. Access it <a href="{{ unlisted_instance.get_detail_absolute_url }}"> Here</a></p>
@@ -180,7 +167,6 @@
 
     <!-- Local js -->
     {% load static %}
-    <script src="{% static 'js/friends.js' %}"></script>
     <script>
 
         function private(){

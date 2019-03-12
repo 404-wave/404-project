@@ -1,0 +1,66 @@
+
+<!-- Reason for having the templates folder at the root.-->
+<!-- https://stackoverflow.com/questions/54730747/how-do-i-use-a-template-from-one-app-in-another-app/54731001#54731001 -->
+<!-- templates/home.html -->
+
+<!-- Note: we can change this to be more robust by redirecting to a different homepage if the user is not authenticated -->
+{% extends "base.html" %}
+{% load static %}
+{% block script %}
+  <!-- jQuery -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+   <!-- Bootstrap-->
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+  integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+  crossorigin="anonymous"
+/>
+
+
+     <!-- Style-->
+  <link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+  integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+  crossorigin="anonymous"/>
+
+
+   <!-- Javascript-->
+  <script src="{% static 'js/friends.js' %}"></script>
+
+
+   <!-- Cloudflare-->
+  <script
+  src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+  integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+  crossorigin="anonymous"
+></script>
+
+{% endblock %}
+{% block content %}
+    {% if user.is_authenticated %}
+<div class="wrapper">
+    <!-- Friends List -->
+    <div>
+            <div id="friendBtnContainer">
+              <button onclick="filterFriends('find')">Find</button>
+              <button onclick="filterFriends('following')">Following</button>
+              <button onclick="filterFriends('followers')">Followers</button>
+              <button onclick="filterFriends('friends')">Friends</button>
+            </div>
+      
+            <div id="friendContainer">
+              <!-- Friend objects/divs will appear within here -->
+              <!-- TODO: Investigate a nice structure for showing a user via a div -->
+            </div>
+          </div>
+</div>
+  {% endif %} 
+  {% endblock %}
+
+    
+   

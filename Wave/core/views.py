@@ -65,6 +65,9 @@ def home(request):
 		print("Stream list len: ", len(streamlist))
 		print("Stream list: ", streamlist)
 
+		#Cast QuerySet into a list for Github
+		streamlist = list(streamlist)
+
 		#TODO: increase rate limit with OAuth?
 		#if so, do pagination of API call
 		#make call to Github API
@@ -138,8 +141,8 @@ def home(request):
 		print("Stream list len: ", len(streamlist))
 		print("Stream list: ", streamlist)
 
-	
-
+		#Cast QuerySet to list for Github
+		streamlist = list(streamlist)
 
 
 
@@ -221,6 +224,8 @@ def profile(request, pk = None):
 
 	return render(request, 'profile.html', {'user': user, 'following': following})
 
+
+
 @login_required(login_url='/login')
 def edit_profile(request):
 	
@@ -249,3 +254,10 @@ def edit_profile(request):
 		context = {'form':form}
 		return render(request,'profileEdit.html',context)
 
+
+def friends(request):
+	if not request.user.is_authenticated:
+		return HttpResponseForbidden()
+	user = request.user
+
+	return render(request, 'friends.html', {'user': user})

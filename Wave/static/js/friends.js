@@ -1,7 +1,7 @@
 function filterFriends(opt) {
 
   // Fetch a list of friends
-  path = 'friends/' + opt + '/'; // TODO: replace with REST API endpoint when ready
+  path = opt + '/'; // TODO: replace with REST API endpoint when ready
   $.ajax({
     url: path,
     success: function (data) {
@@ -22,13 +22,13 @@ function populateFriendsList(data) {
   while (friendContainer.firstChild) {
     friendContainer.removeChild(friendContainer.firstChild);
   }
-
   // Insert the new users
   // TODO: Create a "card" for each user to be displayed in the list
   for (var i = 0; i < data.length; ++i) {
     let id = data[i]["pk"];
+
     let username = data[i]["fields"]["username"];
-    let div = `<div><a href=\"profile/${id}\">${username}</a></div>`;
+    let div = `<div><a href=\"../profile/${id}\">${username}</a></div>`;
     $("#friendContainer").append(div)
   }
 }
