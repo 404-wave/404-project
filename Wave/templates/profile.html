@@ -1,54 +1,53 @@
 <!-- templates/profile.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Friends</title>
 
-  <!-- jQuery -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-</head>
-<body>
-
+{% extends "base.html" %}
+{% load static %}
+{% block script %}
+ <!-- jQuery -->
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+ <script src="{% static 'js/friends.js' %}"></script>
+ <script src="{% static 'js/validation.js' %}"></script>
+ {% endblock %}
+ {% block content %}
   {% if user.is_authenticated %}
-  <h1>Profile</h1>
-
-  <p>Welcome {{ user.first_name }}</p>
-  <a href="{% url 'home' %}">Home<a><br>
-  <a href="{% url 'logout' %}">Logout</a>
-
+  <div class="wrapper">
+      <div class = 'person_info'>
+        <p class = "greeting"><span class ="hello">Hello,<br> </span>my name is <span class ="name">{{ user }} </span></p>
+          <div id="followBtnContainer">
+            {% if user.id is not request.user.id %}
+              <div id="followBtnContainer">
+                {% if following is False %}
+                <button class = "friend_btn" onclick="follow({{ request.user.id }}, {{ user.id }})">Follow</button>
+                {% else %}
+                <button class = "friend_btn"  onclick="unfollow({{ request.user.id }}, {{ user.id }})">Unfollow</button>
+                {% endif %}
+              </div>
+            {% endif %}
+        </div>
+      </div>
   <!-- Profile details -->
-  <div>
-      <!--TODO FIX HARDCODE FOR ONCLICK-->
-      {% if user.id is request.user.id %}
-      <input type=button onclick="location.href='edit'" value = "Edit Profile">
-      {% endif %}
-      <p>Username: {{ user }}</p>
-      <p>First name: {{ user.first_name }}</p>
-      <p>Last Name: {{ user.last_name }}</p>
-      <p>Github: {{ user.github }}</p>
-      <p>Bio: {{ user.bio }}</p>
+  <div class = "details_tabs">
+  <ul id="tabs">
+      <li><a href="#" name="tab1">About Me</a></li>
+      <li><a href="#" name="tab2">Posts</a></li>  
+  </ul>
+  <div id="content"> 
+      <div id="tab1">      
+        <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
+        <p>Email: {{ user.email }}</p>
+        <p>Github: {{ user.github }}</p>
+        <p class = 'bio'> {{ user.bio }}</p>
+        {% if user.id is request.user.id %}
+        <input type=button onclick="location.href='edit'" value = "Edit Profile">
+        {% endif %}
+      </div>
+      <div id="tab2">...</div>
   </div>
+</div>
+</div> 
 
-  <!-- Display follow buttons only if you aren't looking at your own profile -->
-  <div id="followBtnContainer">
-    {% if user.id is not request.user.id %}
-    {% if following is False %}
-    <button onclick="follow({{ request.user.id }}, {{ user.id }})">Follow</button>
-    {% else %}
-    <button onclick="unfollow({{ request.user.id }}, {{ user.id }})">Unfollow</button>
-    {% endif %}
-    {% endif %}
-  </div>
-
-  {% else %}
-  <p>Please <a href="{% url 'login' %}">login</a>.</p>
+<script>window.onload = setTabs;</script>w
+  <!-- TO DO - redirect to homepage, should not reach this point-->
   {% endif %}
+  {% endblock %}
 
-  <!-- Local js -->
-  {% load static %}
-  <script src="{% static 'js/friends.js' %}"></script>
-
-</body>
-</html>

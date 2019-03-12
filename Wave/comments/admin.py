@@ -6,3 +6,7 @@ from .models import Comment
 
 
 admin.site.register(Comment)
+
+
+class CommentModelAdmin(admin.ModelAdmin):
+    pass

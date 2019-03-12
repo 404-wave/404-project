@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 from django.contrib.auth.models import AbstractUser
 
@@ -9,6 +10,8 @@ class User(AbstractUser):
 
     host = models.TextField(max_length=500, blank=False) # Their host
     url = models.TextField(max_length=500, blank=False) # Url to their profile page
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     bio = models.TextField(max_length=500, blank=True)
     github = models.TextField(max_length=500, blank=True) # TODO: Find reasonable length
     is_active = models.BooleanField(('active'), default=False)

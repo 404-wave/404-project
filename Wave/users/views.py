@@ -4,6 +4,7 @@ from django.template import RequestContext
 from django.urls import reverse
 
 from .forms import UserCreationForm
+import requests
 
 
 def index(request):
@@ -33,3 +34,4 @@ def register(request):
         form = UserCreationForm()
         context = {'form' : form}
         return render(request, 'registration/register.html', context)
+

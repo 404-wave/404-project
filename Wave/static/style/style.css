@@ -21,7 +21,7 @@ html {
 label {
 	margin-bottom: 0px;
 }
-.help {
+.help, .form_error {
 	font-size: .9em;
 	font-weight: 300;
 }
@@ -43,7 +43,7 @@ label {
 	height: -webkit-fill-available;
 	display: flex;
    	flex-direction: column;
-   	flex-grow: 1;
+   	flex-grow: 2;
 }
 .register_form{
 	background-color: #fffefc;
@@ -88,4 +88,21 @@ label {
 	outline: 0px !important;
     background: #f74d05;
     color: white;
+}
+.redAlert{
+	color: red;
+}
+@keyframes alertThrobber {
+  0%   {	border: 1px solid  red;}
+  100%  {	box-shadow: 0px 0px 1px 1px red;}
+}
+
+.redAlert input{
+	-webkit-animation: alertThrobber 5s infinite; /* Safari 4.0 - 8.0 */
+  	-webkit-animation-delay: 2s; /* Safari 4.0 - 8.0 */
+  	animation: alertThrobber 5s infinite;
+  	animation-delay: 1s;
+}
+input {
+    margin-bottom: 7px;
 }
