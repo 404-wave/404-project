@@ -158,9 +158,10 @@ class Post(models.Model):
         content_type = ContentType.objects.get_for_model(instance.__class__)
         return content_type
          
+#https://stackoverflow.com/questions/16041232/django-delete-filefield
+#Credit: Tony (https://stackoverflow.com/users/247441/tony)
 
 # These two auto-delete files from filesystem when they are unneeded:
-
 @receiver(models.signals.post_delete, sender=Post)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
     """

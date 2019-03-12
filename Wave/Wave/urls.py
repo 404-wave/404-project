@@ -14,6 +14,8 @@ from api.views import UserViewSet
 router = routers.DefaultRouter()
 router.register(r'author', UserViewSet)
 
+#https://blog.majsky.cz/django-protected-media-files/
+#Credit: Michal Májský
 #Note that the default login_url for django is '/accounts/login' which will 404
 @login_required(login_url='/login/')
 def protected_serve(request, path, document_root=None, show_indexes=False):
