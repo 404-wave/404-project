@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from posts.models import Post
 from posts.forms import PostForm
 from users.models import User
+from friends.models import FriendRequest
 from datetime import datetime
 
 from django.shortcuts import render
@@ -247,10 +248,16 @@ def home(request):
 				if is_oldest:
 					streamlist.append(message)
 
+		##Friend Requests##
+		#Query to see if any pending friend requests
+		friend_requests = FriendRequest.objects.filter(recipient=user)
+		
+
 		context = {
 			"object_list": streamlist,
 			"user": user,
 			"form": form,
+			"friend_requests": friend_requests,
 		}
 	if instance and instance.unlisted is True:
 		context["unlisted_instance"] = instance

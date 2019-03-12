@@ -17,9 +17,9 @@
             {% if user.id is not request.user.id %}
               <div id="followBtnContainer">
                 {% if following is False %}
-                <button class = "friend_btn" onclick="follow({{ request.user.id }}, {{ user.id }})">Follow</button>
+                <button class = "friend_btn" onclick="follow(&quot;{{ request.user.id }}&quot;, &quot;{{ user.id }}&quot;)">Follow</button>
                 {% else %}
-                <button class = "friend_btn"  onclick="unfollow({{ request.user.id }}, {{ user.id }})">Unfollow</button>
+                <button class = "friend_btn"  onclick="unfollow(&quot;{{ request.user.id }}&quot;, &quot;{{ user.id }}&quot;)">Unfollow</button>
                 {% endif %}
               </div>
             {% endif %}

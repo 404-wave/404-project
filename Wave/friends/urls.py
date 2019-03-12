@@ -7,4 +7,5 @@ urlpatterns = [
     path('following/', views.following, name='following'),
     path('followers/', views.followers, name='followers'),
     path('friends/', views.friends, name='friends'),
+    path('friend_requests/', views.friend_requests, name='friend_requests'),
 ]

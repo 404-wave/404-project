@@ -100,3 +100,17 @@ function replaceUnfollowButton(data) {
 
   $("#followBtnContainer").append(div);
 }
+
+function displayNotifications(data){
+  //TODO should make it look nicer
+  console.log("IM HEREEE");
+  let div = document.getElementById("friend_reqs_container");
+  let button = document.getElementById("friend_reqs_button");
+  div.style.padding= '0';
+  div.style.margin = '0';
+  button.innerText = `Friend Requests (${data}) !`;
+}
+
+function showFriendRequests(){
+
+}
