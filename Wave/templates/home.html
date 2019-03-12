@@ -110,7 +110,14 @@ function edit(){
         <p class = "author">
             {{ obj.user }} </p>
             {% if obj.user == request.user %}
-            <img src="{% static 'images/edit.png' %}" alt="edit" width="40">
+            <div class="dropdown">
+                <input class="edit_button" alt="edit" width="40" type="image" src="{% static 'images/edit.png' %}" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            </input>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                    <a class="dropdown-item" href="{{ obj.get_edit_absolute_url }}">Edit</a>
+                    <a class="dropdown-item" href="{{ obj.get_delete_absolute_url }}">Delete</a>
+                </div>
+              </div>
             {% endif %}
           </div>
             <p class = "post_date">
@@ -140,17 +147,6 @@ function edit(){
           {% endif %}
     
               </div><!-- caption -->
-              <div id = "{{obj.id}}" >
-              <a
-                href="{{ obj.get_edit_absolute_url }}"
-                >Edit</a
-              >
-              <a
-                href="{{ obj.get_delete_absolute_url }}"
-                >Delete</a>
-          </div>
-  
-
       </div>
           <!-- PUT COMMENT SECTION HERE. -->
     

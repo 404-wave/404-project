@@ -81,11 +81,16 @@ textarea
 	display: flex;
  	align-items: center;
 }
-.author_edit img {
+
+.edit_button{
 	height: 100%;
 	width: 33px;
 	margin-left: 10px;
 	vertical-align: middle;
+}
+.edit_button:hover, .edit_button:focus{
+	filter:contrast(200%);
+	outline: none;
 }
 .top_row{
 	display: flex;
