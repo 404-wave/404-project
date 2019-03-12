@@ -7,6 +7,8 @@ from django.contrib.auth.models import AbstractUser
 # TODO: When using UUIDs the username column will need to be UNIQUE
 class User(AbstractUser):
 
+    host = models.TextField(max_length=500, blank=False) # Their host
+    url = models.TextField(max_length=500, blank=False) # Url to their profile page
     bio = models.TextField(max_length=500, blank=True)
     github = models.TextField(max_length=500, blank=True) # TODO: Find reasonable length
     is_active = models.BooleanField(('active'), default=False)

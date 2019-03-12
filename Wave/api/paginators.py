@@ -7,7 +7,7 @@ class PostPagination(pagination.PageNumberPagination):
     page_size_query_param = 'size'
     max_page_size = 50
 
-    def get_paginated_response(self, data):
+    def get_paginated_response(self, context):
 
         request = context['request']
         host = request.scheme + "://" + request.META['HTTP_HOST'] + "/"
@@ -18,7 +18,7 @@ class PostPagination(pagination.PageNumberPagination):
             'size': self.page.paginator.per_page,
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
-            'posts': data
+            'posts': context['data']
         })
 
 
@@ -48,7 +48,7 @@ class CommentPagination(pagination.PageNumberPagination):
     page_size_query_param = 'size'
     max_page_size = 50
 
-    def get_paginated_response(self, data):
+    def get_paginated_response(self, context):
 
         request = context['request']
         host = request.scheme + "://" + request.META['HTTP_HOST'] + "/"
@@ -59,5 +59,5 @@ class CommentPagination(pagination.PageNumberPagination):
             'size': self.page.paginator.per_page,
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
-            'comments': data
+            'comment': context['data']
         })

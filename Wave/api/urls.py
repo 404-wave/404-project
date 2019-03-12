@@ -6,9 +6,9 @@ from .views import UserAPIView, PostAPIView, CommentAPIView, FriendAPIView
 
 urlpatterns = [
 
-    # Users
+    # Author Profiles
     path('author/<int:author_id>/', UserAPIView.as_view(), name="GETSingleAuthor"),
-    path('author/', UserAPIView.as_view(), name="GETAllAuthors"),
+    #path('author/', UserAPIView.as_view(), name="GETAllAuthors"),
 
     # Posts
     path('author/<int:author_id>/posts', PostAPIView.as_view(), name="GETAuthorPosts"),

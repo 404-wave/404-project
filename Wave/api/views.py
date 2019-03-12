@@ -24,18 +24,28 @@ class UserAPIView(generics.GenericAPIView):
         # Handle GETs for multiple author profiles, or a single profile
         if 'author_id' in kwargs.keys():
             author_id = self.kwargs['author_id']
-            queryset = User.objects.filter(id=author_id, is_active=True)
+            try:
+                queryset = User.objects.get(id=author_id, is_active=True)
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             queryset = User.objects.filter(is_active=True)
 
-        # TODO: Hanld error?
+        # TODO: Handle error?
 
+        # NOTE: Don't think we need to paginate here, actually.
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response({'data': serializer.data, 'request': request})
 
-        serializer = UserSerializer(queryset, many=True)
+        # Find the friends of the user...
+        # TODO: Refactor to get_friends(author_id)
+        followers = User.objects.filter(follower__user2=author_id, is_active=True)
+        following = User.objects.filter(followee__user1=author_id, is_active=True)
+        friends = following & followers
+
+        serializer = UserSerializer(queryset, many=False, context={'friends':friends})
         return Response(serializer.data)
 
 
@@ -61,7 +71,7 @@ class PostAPIView(generics.GenericAPIView):
             else:
                 queryset = Post.objects.filter(privacy=Post.PUBLIC)
 
-            # TODO: Hanld error?
+            # TODO: Handle error?
 
             page = self.paginate_queryset(queryset)
             if page is not None:
@@ -89,7 +99,7 @@ class CommentAPIView(generics.GenericAPIView):
                 # TODO: This may need altering -- it is not working currently due to model interaction
                 queryset = Comment.objects.filter(post=post_id)
 
-            # TODO: Hanld error?
+            # TODO: Handle error?
 
             page = self.paginate_queryset(queryset)
             if page is not None:
@@ -123,6 +133,6 @@ class FriendAPIView(generics.GenericAPIView):
                     friend_list.append(str(friend.id))
 
             #else:
-                # TODO: Hanld error?
+                # TODO: Handle error?
 
             return Response({"query": "friends", "authors": friend_list})
