@@ -221,6 +221,8 @@ def profile(request, pk = None):
 
 	return render(request, 'profile.html', {'user': user, 'following': following})
 
+
+
 @login_required(login_url='/login')
 def edit_profile(request):
 	
@@ -249,3 +251,10 @@ def edit_profile(request):
 		context = {'form':form}
 		return render(request,'profileEdit.html',context)
 
+
+def friends(request):
+	if not request.user.is_authenticated:
+		return HttpResponseForbidden()
+	user = request.user
+
+	return render(request, 'friends.html', {'user': user})
