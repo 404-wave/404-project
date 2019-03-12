@@ -16,12 +16,7 @@ def find(request):
     server_users = User.objects.exclude(pk=request.user.id).filter(is_active=True)
     data = serializers.serialize('json', server_users, fields=('username'))
     return HttpResponse(data, content_type="application/json")
-def friends(request):
-	if not request.user.is_authenticated:
-		return HttpResponseForbidden()
-	user = request.user
 
-	return render(request, 'friends.html', {'user': user})
 
 # Get a list of Users who the current user follows
 def following(request):
@@ -49,7 +44,7 @@ def followers(request):
 
 
 # Get a list of Users who the current user is friends with
-""" def friends(request):
+def friends(request):
 
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
@@ -59,7 +54,7 @@ def followers(request):
     friends = following & followers
     print("FRIENDS",friends)
     data = serializers.serialize('json', friends, fields=('username'))
-    return HttpResponse(data, content_type="application/json") """
+    return HttpResponse(data, content_type="application/json") 
 
 
 def follow(request):

@@ -8,7 +8,8 @@ import friends.views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('friends/', friends.views.friends, name='my_friends'),
+    path('friends/', views.friends, name='my_friends'),
+    path('friends/', include('friends.urls')),
     path('profile/', views.profile, name='my_profile'),
     path('profile/<uuid:pk>', views.profile, name='profile'), # TODO: Change to <uuid:pk> when implemented
     path('profile/follow/', friends.views.follow, name='follow'),

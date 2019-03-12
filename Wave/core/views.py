@@ -23,6 +23,12 @@ import pytz
 
 import base64
 
+def friends(request):
+	if not request.user.is_authenticated:
+		return HttpResponseForbidden()
+	user = request.user
+
+	return render(request, 'friends.html', {'user': user})
 
 
 # TODO: use the REST API once it is established
@@ -280,12 +286,7 @@ def profile(request, pk = None):
 
 	return render(request, 'profile.html', {'user': user, 'following': following})
 
-def friends(request):
-	if not request.user.is_authenticated:
-		return HttpResponseForbidden()
-	user = request.user
 
-	return render(request, 'friends.html', {'user': user})
 
 def edit_profile(request):
 	
