@@ -35,9 +35,9 @@
                     <img alt="wave" src="{% static 'images/person.png' %}" width=30>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item username" href="#">{{user}}</a>
+                    <p class="username">{{user}}</p>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="">My Profile</a>
+                    <a class="dropdown-item" href="{% url 'my_profile' %}">My Profile</a>
                     <a class="dropdown-item" href="#">Admin</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
