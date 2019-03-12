@@ -6,6 +6,7 @@ from posts.models import Post
 from posts.forms import PostForm
 from users.models import User
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render
 from django.http import HttpResponseForbidden, HttpResponseNotFound
@@ -26,6 +27,7 @@ import base64
 
 
 # TODO: use the REST API once it is established
+@login_required(login_url='/login')
 def home(request):
 	utc=pytz.UTC
 
@@ -35,13 +37,12 @@ def home(request):
 	streamlist = []
 	instance = None
 	if request.method == "POST":
-
-		form = PostForm(request.POST or None, request.FILES or None)
+		data = request.POST.copy()
+		data['user'] = request.user.id
+		data['publish'] = datetime.now()
+		form = PostForm(data, request.FILES or None)
 		if form.is_valid():
-			instance = form.save(commit=False)
-			instance.user = request.user
-			instance.publish = datetime.now()
-			instance.save()
+			instance = form.save()
 			form = PostForm()
 		print(form.errors)
 		
@@ -190,7 +191,7 @@ def home(request):
 
 	return render(request, "home.html", context)
 
-
+@login_required(login_url='/login')
 def profile(request, pk = None):
 
 	if not request.user.is_authenticated:
@@ -213,7 +214,7 @@ def profile(request, pk = None):
 
 	return render(request, 'profile.html', {'user': user, 'following': following})
 
-
+@login_required(login_url='/login')
 def edit_profile(request):
 	
 	if not request.user.is_authenticated:

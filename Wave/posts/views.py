@@ -1,5 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 from .models import Post
@@ -12,8 +13,15 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 
+@login_required(login_url='/login')
 def posts_detail(request, id):
     instance = get_object_or_404(Post, id=id)
+
+    user_posts = Post.objects.filter_user_visible_posts(request.user)
+    try: 
+        user_posts.get(id=instance.id)
+    except Post.DoesNotExist:
+        return HttpResponseRedirect('/home')
 
     initial_data = {
         "content_type": instance.get_content_type,
@@ -56,7 +64,7 @@ def posts_detail(request, id):
     }
     return render(request, "posts_detail.html", context)
 
-
+@login_required(login_url='/login')
 def posts_update(request, id=None):
     # return HttpResponse("<h1> Update a posts. </h1>")
     instance = get_object_or_404(Post, id=id)
@@ -77,7 +85,7 @@ def posts_update(request, id=None):
     }
     return render(request, "posts_form.html", context)
 
-
+@login_required(login_url='/login')
 def posts_delete(request, id=None):
     # return HttpResponse("<h1> Delete a posts. </h1>")\
     instance = get_object_or_404(Post, id=id)

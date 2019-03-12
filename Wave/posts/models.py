@@ -50,8 +50,8 @@ class PostManager(models.Manager):
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
         public_posts = super(PostManager, self).filter(privacy=0)
 
-
         private_posts = user.accessible_posts.all()
+        print("private posts: ", private_posts)
 
         followers = User.objects.filter(follower__user2=user.id, is_active=True)
         following = User.objects.filter(followee__user1=user.id, is_active=True)
