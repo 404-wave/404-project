@@ -21,6 +21,9 @@ class UserAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
 
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         # Handle GETs for multiple author profiles, or a single profile
         if 'author_id' in kwargs.keys():
             author_id = self.kwargs['author_id']
@@ -49,6 +52,9 @@ class PostAPIView(generics.GenericAPIView):
         pagination_class = PostPagination
 
         def get(self, request, *args, **kwargs):
+
+            if not request.user.is_authenticated:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
 
             # Handle GETs for all public posts, or just a single post
             if 'author_id' in self.kwargs.keys():
@@ -81,6 +87,9 @@ class CommentAPIView(generics.GenericAPIView):
 
         def get(self, request, *args, **kwargs):
 
+            if not request.user.is_authenticated:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+
             # Handle GETs for all comments belonging to a post
             if 'post_id' in self.kwargs.keys():
                 post_id = self.kwargs['post_id']
@@ -108,6 +117,9 @@ class FriendAPIView(generics.GenericAPIView):
         pagination_class = CommentPagination
 
         def get(self, request, *args, **kwargs):
+
+            if not request.user.is_authenticated:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
 
             # GET the friends of a user
             if 'author_id' in self.kwargs.keys():
