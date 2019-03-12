@@ -1,5 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 from .models import Post
@@ -12,40 +13,30 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 
-# def posts_index(request):
-#     return HttpResponse("<h1> Hello. You're at the posts index. </h1>")
+"""
+    Shows the details about a post.
+    Allows use to post comments under the post.
 
-# def posts_create(request):
-#     # return HttpResponse("<h1> Create a posts. </h1>")
-#     form = PostForm(request.POST or None)
-
-#     if form.is_valid():
-#         instance = form.save(commit=False)
-#         instance.user = request.user
-#         instance.publish = datetime.now()
-#         instance.save()
-
-#     context = {
-#         "form": form
-#     }
-
-#     # if request.method == "POST":
-#     #     print("This is the content: ", request.POST.get("content"))
-#     return render(request, "post_form.html", context)
-
-
+"""
+@login_required(login_url='/login')
 def posts_detail(request, id):
     instance = get_object_or_404(Post, id=id)
-    # content_type = ContentType.objects.get_for_model(Post)
-    # obj_id = instance.id
-    # comments = Comment.objects.filter(
-    #     content_type=content_type, object_id=obj_id)
-    # comments = Comment.objects.filter_by_instance(instance)
+
+    # Checks if the posts is from the user who posted it 
+    # And if it can be seen by the acessible users
+    # If not redirects the user back to the home page
+    user_posts = Post.objects.filter_user_visible_posts(request.user, remove_unlisted=False)
+    try: 
+        user_posts.get(id=instance.id)
+    except Post.DoesNotExist:
+        return HttpResponseRedirect('/home')
 
     initial_data = {
         "content_type": instance.get_content_type,
         "object_id": instance.id
     }
+
+    # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
     if comment_form.is_valid():
         comment_type = comment_form.cleaned_data.get("content_type")
@@ -83,23 +74,15 @@ def posts_detail(request, id):
     }
     return render(request, "posts_detail.html", context)
 
-    
-    # return HttpResponse("<h1> Detail a posts. </h1>")
-
-
-# def posts_list(request):
-#     # return HttpResponse("<h1> List a posts. </h1>")
-#     # TODO: Privacy stuff
-#     queryset = Post.objects.all()
-#     context = {
-#         "object_list": queryset,
-#         "user": "username"
-#     }
-#     return render(request, "home.html", context)
-
-
+"""
+    Allows the user to update a post.
+"""
+@login_required(login_url='/login')
 def posts_update(request, id=None):
-    # return HttpResponse("<h1> Update a posts. </h1>")
+
+    
+    # Checks if the user who created the post can update the post
+    # If not redirect the user
     instance = get_object_or_404(Post, id=id)
     if instance.user != request.user:
         return HttpResponseRedirect(instance.get_detail_absolute_url())
@@ -119,10 +102,18 @@ def posts_update(request, id=None):
     return render(request, "posts_form.html", context)
 
 
+"""
+    Allows the user to delete a post
+"""
+
+@login_required(login_url='/login')
 def posts_delete(request, id=None):
-    # return HttpResponse("<h1> Delete a posts. </h1>")\
+
+    # Checks if the user who created the post can delete the post
+    # If not redirect the user
     instance = get_object_or_404(Post, id=id)
     if instance.user != request.user:
         return HttpResponseRedirect(instance.get_detail_absolute_url())
+    instance.comments.delete()
     instance.delete()
     return redirect("/home/")
