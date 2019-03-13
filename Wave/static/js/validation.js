@@ -34,3 +34,5 @@ function setTabs() {
     tabs[0].setAttribute("id", "current_tab")
 }
 
+
+

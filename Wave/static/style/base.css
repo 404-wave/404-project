@@ -43,6 +43,23 @@
 	font-family: 'Nunito', sans-serif;
 	font-size: 1.1em;
 }
+#postContainer{
+	width: 75%;
+	align-items: center;
+	display: flex;	
+    flex-direction: column;
+}
+.github_post p{
+	padding: 10px;
+}
+textarea{
+	width: 500px;
+
+}
+#createPost{
+	width: 80%;
+}
+
 .wrapper {
 	background-image: linear-gradient(to right,#00615c, #004160);
 	height: -webkit-fill-available;
@@ -50,11 +67,116 @@
 	align-items: center;
 	flex-direction: column;
 }
-.person_info{
-	padding: 5% 0% 1% 0;
+
+#home_wrapper{
+	height: unset;
+}
+.stream {
+	width: 90%;
+
+}
+.stream_settings form{
 	display: flex;
-	flex-direction: column;
-	align-items: center;
+	padding: 10px 0 10px 10px;
+	background-color: #fdfdfd;
+	margin-bottom: 10px;
+
+}
+a {
+	padding: 5px;
+}
+
+.fieldWrapper_submit{
+	display: flex;
+	justify-content: flex-end;
+
+
+}
+.fieldWrapper_submit *{
+	display: flex;
+	width: fit-content;
+}
+
+
+.stream_post, .github_post {
+	background-color: white;
+	margin-bottom: 10px;
+	width: 100%;
+	font-family: Roboto, sans-serif;
+}
+.author_edit {
+	display: flex;
+ 	align-items: center;
+}
+
+.edit_button{
+	height: 100%;
+	width: 33px;
+	margin-left: 10px;
+	vertical-align: middle;
+}
+.edit_button:hover, .edit_button:focus{
+	filter:contrast(200%);
+	outline: none;
+}
+.top_row{
+	display: flex;
+	justify-content: space-between;
+	background-color:#e6e5e5;
+}
+.post_content {
+	display: flex;
+
+}
+.link-span{
+position:absolute; 
+  width:100%;
+  height:100%;
+  top:0;
+  left: 0;
+  z-index: 1;
+}
+.post_content {
+	display: flex;
+	position: relative;
+	margin: 20px 20px 0 20px;
+	flex-direction: row;
+	
+}
+.post_content img {
+	width: 150px;
+	
+}
+.top_row > div, .top_row > p {
+	padding: 5px 15px 0 15px;
+}
+.privacy {
+	display: flex;
+	align-items: baseline;
+	background-color: #afafaf;
+	margin-bottom: 0;
+
+}
+.privacy p{
+ 	font-size: .9em;
+}
+.privacy img{
+	width: 28px;
+	margin-right: 10px;
+}
+.author{
+	font-size: 1.2em;
+	margin-bottom: 0px;
+}
+
+html, body {
+	margin: 0;
+	height: 100%;
+}
+.post_date {
+	font-size: .7em;
+	margin-top: .2em;
+	margin-bottom:.1em;
 }
 .details_tabs {
 	width:90%;
@@ -63,6 +185,9 @@
 }
 #hide_div {
 	display: none;
+}
+textarea.form-control{
+	width: -webkit-fill-available;
 }
 .greeting{
    font-weight:500;
@@ -84,7 +209,12 @@
 	display: flex;
 
   }
-  
+  	#stream.showing, #github.showing {
+	font-weight: 500;
+	text-decoration: underline;
+	opacity: unset;
+	background-color: #fdfdfd;
+	}
   #tabs li {
 	/* margin: 0 0em 0 0; */
 	flex-grow:1;
@@ -93,16 +223,16 @@
   #tabs a {
   	text-align: center;
   	width: -webkit-fill-available;
-	font-family: 'Nunito', sans-serif;
-	position: relative;
-	background: #f9f7f7;
-	padding: .7em 3.5em;
-	float: left;
-	text-decoration: none;
-	color: #004463;
-	text-shadow: 0 1px 0 rgba(255,255,255,.8);
-	box-shadow: 0 1px 1px rgba(0,0,0,.4);
-	}
+  	font-family: 'Nunito', sans-serif;
+  	position: relative;
+  	background: #d6d2d2;
+  	opacity: .5;
+  	padding: .7em 3.5em;
+  	float: left;
+  	color: #004463;
+  	text-shadow: 0 1px 0 rgba(255,255,255,.8);
+  	box-shadow: 0 1px 1px rgba(0,0,0,.4);
+ }
   
   #tabs a:hover,
   #tabs a:focus{
@@ -122,13 +252,13 @@
   }
   
   #content {
-	background: #fff;
+	background: #f9f7f7;
 	padding: 2em;
 	height:fit-content;
 	position: relative;
 	z-index: 2;
 	border-radius: 0 1px 1px 1px;
-	box-shadow: 0 -2px 3px -2px rgba(0, 0, 0, .5);
+	box-shadow: 0 0px 3px -2px rgba(0, 0, 0, .5);
 }
 .friend_btn {
     width: 100%;
