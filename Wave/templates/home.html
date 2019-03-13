@@ -1,189 +1,147 @@
 <!-- Reason for having the templates folder at the root.-->
 <!-- https://stackoverflow.com/questions/54730747/how-do-i-use-a-template-from-one-app-in-another-app/54731001#54731001 -->
 <!-- templates/home.html -->
-
 <!-- Note: we can change this to be more robust by redirecting to a different homepage if the user is not authenticated -->
-
 <!DOCTYPE html>
-
+<html>
 <head>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-  <link
-    rel="stylesheet"
-    type="text/css"
-    href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"
-  />
+	<title></title>
 </head>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+<body>
+	{% extends "base.html" %} {% load static %} {% block script %} <!-- jQuery -->
+	 
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js">
+	</script> 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+	</script> <!-- Bootstrap-->
+	 
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
+	</script>
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Style-->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Javascript-->
+	<script src="{% static  'js/home.js'  %}">
+	</script> 
+	<script>
 
-    <!-- Bootstrap CSS -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-      crossorigin="anonymous"
-    />
+	 window.onload = function(){
+	   setTabs();
+	   setEmptyMessage();
+	 }
+	 function private(){
+	   var values = $("#id_privacy").val();
+	 if(values == 1){
+	   $("#id_accessible_users").parent().show();
+	 }
+	 else
+	   $("#id_accessible_users").parent().hide();
+	 }
 
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	$("#id_privacy").change(function(){
+	 private();
+	})
+	private();
 
-    <!-- popper -->
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-      crossorigin="anonymous"
-    ></script>
+	function edit(){
 
-    <title>Hello, world!</title>
-  </head>
-  <body>
-    <h1>Homepage</h1>
-    {% if user.is_authenticated %}
+	}
 
-    <a href="{% url 'logout' %}">Logout</a>
-    {% if user.is_admin %}
-    <p><a href="{% url 'administration' %}">Admin</a></p>
-    {% endif %} {% else %}
-    <p>Please <a href="{% url 'login' %}">login</a>.</p>
-    {% endif %}
-
-    <form method="GET" action="">
-      <input
-        type="text"
-        name="query"
-        placeholder="Search posts"
-        value="{{ request.GET.query }}"
-      />
-      <input type="Submit" value="Search" />
-      <a href="/home">Clear search</a>
-    </form>
-
-    <h1>What's on your mind, {{ user }}</h1>
-
-
-
-    {% if unlisted_instance %}
-      <p> Your posts was created. Access it <a href="{{ unlisted_instance.get_detail_absolute_url }}"> Here</a></p>
-    {% endif %}
-
-    <h3>Create Post</h3>
-
-    <form method="POST" action="" , enctype="multipart/form-data" novalidate>
-      {% csrf_token %}
-      {{ form.as_p }}
-      <input type="submit" class="btn btn-primary" value="Share" />
-      </div>
-    </form>
-
-    <div class="row">
-      {% for obj in object_list %}
-      <!-- check if is Post object -->
-      {% if obj.user %}
-      <div class="col-sm-6 col-md-4">
-        <!-- column 1 -->
-        <div class="thumbnail">
-          <!--  thumbnail 1  -->
-          <br />
-          {% if obj.image %}
-          <img src="{{ obj.image.url }}" alt="" /> <br />
-          {% endif %}
-          <div class="caption">
-            <!-- caption -->
-            <h4>
-              {{ obj.user }}
-              <a href="{{ obj.get_detail_absolute_url }}">{{ obj.status }}</a>
-              {{ obj.timestamp }}
-              <!-- | timesince | ago -->
-            </h4>
-            <p>
-              {{ obj.content | linebreaks }}
-            </p>
-            <p>
-              <a
-                href="{{ obj.get_detail_absolute_url }}"
-                class="btn btn-primary"
-                role="button"
-                >View</a
-              >
-            </p>
-            {% if obj.user == request.user %}
-              <p>
-                <a
-                  href="{{ obj.get_edit_absolute_url }}"
-                  class="btn btn-primary"
-                  role="button"
-                  >Edit</a
-                >
-              </p>
-              <!-- btn 2 -->
-              <p>
-                <a
-                  href="{{ obj.get_delete_absolute_url }}"
-                  class="btn btn-primary"
-                  role="button"
-                  >Delete</a
-                >
-              </p>
-            {% endif %}
-
-  
-            
-            <div class="dropdown">
-              <button
-                class="btn btn-secondary dropdown-toggle"
-                type="button"
-                id="dropdownMenuButton"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                Privacy setting
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href=""
-                  >{{ obj.get_privacy_display }} </a
-                >
-              </div>
-            </div>
-            <!-- PUT COMMENT SECTION HERE. -->
-          </div>
+	</script> <!-- Cloudflare-->
+	 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js">
+  </script> 
+  {% endblock %} 
+  {% block content %} 
+  {% if user.is_authenticated %}
+	<div class="wrapper" id="home_wrapper">
+		<div id="postContainer">
+			<div id="createPost">
+				<p class="greeting">What's on your mind, <span class="name">{{ user }}</span></p>
+				<form action="" enctype="multipart/form-data" method="post" novalidate="">
+					{% csrf_token %}
+					<div class="settings">
+						<div class="fieldWrapper">
+              {{ form.content.errors }} <label for="{{ form.content.id_for_label }}">Content</label> 
+              {{ form.content }}
+						</div>
+						<div class="settingss">
+							<div class="fieldWrapper_row">
+								<div class="fieldWrapper_photo">
+									{{ form.image.errors }} <label for="{{ form.image.id_for_label }}">Image</label> {{ form.image }}
+								</div>
+								<div class="fieldWrapper_privacy">
+									{{ form.privacy.errors }} <label for="{{ form.privacy.id_for_label }}">Privacy</label> {{ form.privacy}} {{ form.accessible_users.errors }} <label for="{{ form.accessible_users.id_for_label }}">Content</label> {{ form.accessible_users }}
+								</div>
+							</div>
+							<div class="fieldWrapper_submit">
+								{{ form.unlisted.errors }} <label for="{{ form.unlisted.id_for_label }}">Unlisted</label> {{ form.unlisted }} <input class="btn btn-primary" type="submit" value="Share">
+							</div>
+						</div>
+					</div>
+				</form>{% if unlisted_instance %}
+				<p>Your posts was created. Access it <a href="{{  unlisted_instance.get_detail_absolute_url  }}">Here</a></p>{% endif %}
+			</div>
+			<div class="stream">
+				<div class="stream_settings">
+					<ul id="tabs">
+						<li>
+							<a class="showing" href="#" id="stream" name="tab1">Stream</a>
+						</li>
+						<li>
+							<a href="#" id="github" name="tab2">Github</a>
+						</li>
+					</ul>
+					<form action="" method="get">
+						<input name="query" placeholder="Search posts" type="text" value="{{ request.GET.query }}"> <input type="submit" value="Search"> <a href="/home">Clear search</a>
+					</form>
         </div>
-      </div>
-      {% else %}
-      <div class="col-sm-6 col-md-4">
-        <p>{{ obj }}</p>
-      </div>
-
-      {% endif %} {% endfor %}
-    </div>
-
-    <!-- Local js -->
-    {% load static %}
-    <script>
-
-        function private(){
-          var values = $("#id_privacy").val();
-        if(values == 1){
-          $("#id_accessible_users").parent().show();
-        }
-        else
-          $("#id_accessible_users").parent().hide();
-        }
-
-      $("#id_privacy").change(function(){
-        private();
-      })
-      private();
-    
-    
-    </script>
-  </body>
+        {% for obj in object_list %} <!-- check if is Post object -->
+				 {% if obj.user %}
+				<div class="stream_post">
+					<div class="top_row">
+						<div class="post_info">
+							<div class="author_edit">
+								<p class="author">{{ obj.user }}</p>
+                  {% if obj.user == request.user %}
+								<div class="dropdown">
+									<input alt="edit" aria-expanded="false" aria-haspopup="true" class="edit_button" data-toggle="dropdown" id="dropdownMenu2" src="{% static  'images/edit.png'  %}" type="image" width="40">
+									<div aria-labelledby="dropdownMenu2" class="dropdown-menu">
+										<a class="dropdown-item" href="{{  obj.get_edit_absolute_url  }}">Edit</a> <a class="dropdown-item" href="{{  obj.get_delete_absolute_url  }}">Delete</a>
+									</div>
+                </div>
+                {% endif %}
+							</div>
+							<p class="post_date">{{ obj.timestamp }}</p>
+						</div>
+						<p class="privacy"><img alt="privacy" src="{%  static  'images/lock.png'  %}" width="30"> {{ obj.get_privacy_display}}</p>
+					</div>
+	
+					<div class="post_content">
+            	<!--  So entire post is clickable http://jsfiddle.net/hf75B/1/ -->
+                <a href="{{ obj.get_detail_absolute_url}}">
+              <span class="link-span"></span>
+              </a>
+						<div class="caption">
+							<!-- caption -->
+							<p>{{ obj.content | linebreaks }}</p>
+            </div>
+            {% if obj.image %}
+						<div class="image"><img alt="" src="{{  obj.image.url  }}"></div>
+						{% endif %}
+					</div><!-- caption -->
+        </div>
+        {% else %}
+				<div class="github_post">
+					<p>{{ obj }}</p>
+        </div>
+        {% endif %} 
+        {% endfor %}
+				<div class="github_post" id="empty_git" style="display:none">
+					<p>You do not have any github posts.</p>
+				</div>
+			</div>
+		</div>
+  </div>
+  {% endif %} 
+  {% endblock %}
+</body>
 </html>
