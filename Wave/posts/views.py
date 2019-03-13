@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 from .models import Post
-from .forms import PostForm
+from .forms import PostForm, ImageForm
 from users.models import User
 from datetime import datetime
 
@@ -12,6 +12,8 @@ from comments.forms import CommentForm
 
 from comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
+import base64
+from mimetypes import guess_type
 
 """
     Shows the details about a post.
@@ -74,6 +76,26 @@ def posts_detail(request, id):
     }
     return render(request, "posts_detail.html", context)
 
+#https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
+#Credit: Ykh(https://stackoverflow.com/users/6786283/ykh)
+def image_to_b64(image_file):
+    with open(image_file.path, "rb") as f:
+        encoded_string = base64.b64encode(f.read()).decode()
+        image_type = guess_type(image_file.path)[0]
+        return image_type, encoded_string
+        
+def create_base64_str(sender, instance=None, created=False, **kwargs):
+    if instance.image and created:
+        image_type, encoded_string = image_to_b64(instance.image)
+        instance.content = encoded_string
+        instance.data_uri = "data:" + image_type + ";base64," + encoded_string
+        instance.is_image = True
+        #make it unlisted here
+        instance.unlisted = True
+        instance.image.delete()
+        instance.save()
+
+
 """
     Allows the user to update a post.
 """
@@ -86,12 +108,33 @@ def posts_update(request, id=None):
     instance = get_object_or_404(Post, id=id)
     if instance.user != request.user:
         return HttpResponseRedirect(instance.get_detail_absolute_url())
-    form = PostForm(request.POST or None,
-                    request.FILES or None, instance=instance)
+
+    #Give an image form if it is an image post
+    if instance.is_image == False:
+        form = PostForm(request.POST or None,
+                        request.FILES or None, instance=instance)
+
+    else:
+        form = ImageForm(request.POST or None,
+                        request.FILES or None, instance=instance)
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
         instance.publish = datetime.now()
+
+        #instance.is_image == True and instance.image is if you want to change one image to another image
+        #instance.is_image == False and instance.image is if you are changing from a text post to an image post
+        #this way if image field is blank and you click share, it just doesn't change anything
+        if (instance.is_image == True and instance.image) or (instance.is_image == False and instance.image):
+            #https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
+            #Credit: Ykh(https://stackoverflow.com/users/6786283/ykh)
+            image_type, encoded_string = image_to_b64(instance.image)
+            instance.content = encoded_string
+            instance.data_uri = "data:" + image_type + ";base64," + encoded_string
+            instance.is_image = True
+            #make it unlisted here
+            instance.unlisted = True
+            instance.image.delete()
         instance.save()
         return HttpResponseRedirect(instance.get_detail_absolute_url())
     context = {
