@@ -73,13 +73,9 @@ def follow(request):
     #Query to see if the person they want to follow is already following requestor
     exists_in_table = FriendRequest.objects.filter(requestor=user2,recipient=user1)
 
-    #if the other person is not following the requestor, add to table so it notifies the recipient
     if (len(exists_in_table) == 0) & (follows(user2,user1) == False):
-        #print("It doesn't exist in table. Adding to table.")
         FriendRequest.objects.create(requestor= user1,recipient= user2)
     elif len(exists_in_table) != 0:
-        #print("It exists in table. Deleting")
-        #else delete the friend request since it was a reply to follow back
         exists_in_table.delete()
 
     data = {'followerID': followerID, 'followeeID': followeeID}
@@ -102,7 +98,6 @@ def unfollow(request):
      ##check if there is pending friend request from them
     exists_requests = FriendRequest.objects.filter(requestor=followerID,recipient=followeeID)
     if len(exists_requests) != 0:
-        #print("There is a pending request. Deleting")
         exists_requests.delete()
 
     data = {'followerID': followerID, 'followeeID': followeeID}
