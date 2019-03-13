@@ -30,6 +30,8 @@ def following(request):
     return HttpResponse(data, content_type="application/json")
 
 
+
+
 # Get a list of Users who follow the current user
 def followers(request):
 
