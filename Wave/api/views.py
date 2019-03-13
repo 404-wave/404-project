@@ -8,6 +8,8 @@ from rest_framework.views import APIView
 # Investigate permissons
 #from rest_framework.permissions import IsAdminUser
 
+import requests
+
 from users.models import User
 from posts.models import Post
 from comments.models import Comment
@@ -55,6 +57,11 @@ class PostAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
 
+
+        # As a server admin, I want to share or not share posts with users on other servers.
+        # As a server admin, I want to share or not share images with users on other servers.
+        # TODO: Add server settings check to see if we even want to share this info
+
         # if not request.user.is_authenticated:
         #     return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -85,6 +92,7 @@ class PostAPIView(generics.GenericAPIView):
 
     def put(self, request, *args, **kwargs):
         return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+
 
 class CommentAPIView(generics.GenericAPIView):
 
@@ -118,6 +126,7 @@ class CommentAPIView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+
 
 #class FriendAPIView(generics.GenericAPIView, mixins.CreateModelMixin):
 class FriendAPIView(generics.GenericAPIView):
@@ -198,4 +207,16 @@ class FriendAPIView(generics.GenericAPIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, *args, **kwargs):
+
+        data = request.data
+
+        author_id = data['author']
+        author_list = data['authors']
+
+        r = requests.get()
+
+        friend_list = list()
+
+        # Parse out the host
+
         return Response(status=status.HTTP_501_NOT_IMPLEMENTED)

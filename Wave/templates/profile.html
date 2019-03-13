@@ -17,15 +17,9 @@
           <div id="followBtnContainer">
             {% if user.id != request.user.id %}
               <div id="followBtnContainer">
-<<<<<<< HEAD
-                {% if following is False %}
-                <button class = "friend_btn" onclick="follow(&quot;{{ request.user.id }}&quot;, &quot;{{ user.id }}&quot;)">Follow</button>
-                {% else %}
-                <button class = "friend_btn"  onclick="unfollow(&quot;{{ request.user.id }}&quot;, &quot;{{ user.id }})&quot;">Unfollow</button>
-                {% endif %}
-=======
+
                 <button class = "friend_btn" id = {{button_text}} onclick="change_follow('{{ request.user.id }}', '{{ user.id }}', this)">{{button_text}}</button>
->>>>>>> origin
+
               </div>
             {% endif %}
         </div>
