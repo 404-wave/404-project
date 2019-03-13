@@ -18,7 +18,6 @@ from django.views.static import serve
 #     return serve(request, path, document_root, show_indexes)
 
 base64_pattern = r'(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$'
->>>>>>> origin
 
 urlpatterns = [
     path('', include('users.urls')),
