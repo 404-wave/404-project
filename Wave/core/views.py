@@ -222,6 +222,7 @@ def profile(request, pk = None):
 	if request.user.id is not pk:
 		following = follows(request.user.id, pk)
 
+
 	return render(request, 'profile.html', {'user': user, 'following': following})
 
 
@@ -261,3 +262,4 @@ def friends(request):
 	user = request.user
 
 	return render(request, 'friends.html', {'user': user})
+
