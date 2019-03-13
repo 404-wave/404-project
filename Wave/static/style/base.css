@@ -59,22 +59,21 @@ textarea{
 #createPost{
 	width: 80%;
 }
-stream_settings
-textarea
-#postContainer *{
-	/* align-self: center; */
-	/* justify-content: center; */
-}
+
 .wrapper {
 	background-image: linear-gradient(to right,#00615c, #004160);
-	/* height: -webkit-fill-available; */
+	height: -webkit-fill-available;
 	display: flex;
 	align-items: center;
 	flex-direction: column;
 }
+
+#home_wrapper{
+	height: unset;
+}
 .stream {
 	width: 90%;
-	/* background-color: white; */
+
 }
 .stream_settings form{
 	display: flex;
@@ -129,8 +128,17 @@ a {
 	display: flex;
 
 }
+.link-span{
+position:absolute; 
+  width:100%;
+  height:100%;
+  top:0;
+  left: 0;
+  z-index: 1;
+}
 .post_content {
 	display: flex;
+	position: relative;
 	margin: 20px 20px 0 20px;
 	flex-direction: row;
 	
@@ -159,8 +167,11 @@ a {
 .author{
 	font-size: 1.2em;
 	margin-bottom: 0px;
-	font-color: 
+}
 
+html, body {
+	margin: 0;
+	height: 100%;
 }
 .post_date {
 	font-size: .7em;
