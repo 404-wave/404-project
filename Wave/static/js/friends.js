@@ -120,14 +120,58 @@ function replaceUnfollowButton(data) {
 
 function displayNotifications(data){
   //TODO should make it look nicer
-  console.log("IM HEREEE");
   let div = document.getElementById("friend_reqs_container");
   let button = document.getElementById("friend_reqs_button");
   div.style.padding= '0';
   div.style.margin = '0';
-  button.innerText = `Friend Requests (${data}) !`;
+ 
+  button.innerHTML = `Friend Requests <span id='notif'>(${data})</span> `;
 }
 
-function showFriendRequests(){
+function filterRequests(){
+  let path = "friend_requests/";
+  $.ajax({
+    url:path,
+    success: function(data){
+        populateRequests(data);
+    },
+    error: function(xhr, status, error) {
+      console.log(error)
+    }
+  });
 
-} 
+}
+
+function populateRequests(data){
+  // Remove the users in the friends list
+  dropdown = document.getElementById("dropdown");
+  while (dropdown.firstChild) {
+    dropdown.removeChild(dropdown.firstChild);
+  }
+  //insert users
+  for (var x = 0; x < data.length; ++x) {
+    let id = data[x]["pk"];
+
+    let username = data[x]["fields"]["username"];
+    let div = `<div><a href=\"../profile/${id}\">${username}</a></div>`;
+    $("#dropdown").append(div)
+  }
+  dropdown.classList.toggle("show");
+}
+
+function closeDropDown(){
+  //Credit https://www.w3schools.com/howto/howto_js_dropdown.asp
+  //allows dropdown to disappear when user clicks anything but the menu
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdwn-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+}

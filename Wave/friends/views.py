@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.core import serializers
 from django.http import HttpResponseForbidden
 from django.shortcuts import render
+from django.db.models import Q
 import json
 
 from users.models import User
@@ -73,10 +74,10 @@ def follow(request):
     exists_in_table = FriendRequest.objects.filter(requestor=user2,recipient=user1)
 
     #if the other person is not following the requestor, add to table so it notifies the recipient
-    if len(exists_in_table) == 0:
+    if (len(exists_in_table) == 0) & (follows(user2,user1) == False):
         #print("It doesn't exist in table. Adding to table.")
         FriendRequest.objects.create(requestor= user1,recipient= user2)
-    else:
+    elif len(exists_in_table) != 0:
         #print("It exists in table. Deleting")
         #else delete the friend request since it was a reply to follow back
         exists_in_table.delete()
@@ -124,5 +125,11 @@ def friend_requests(request):
 
     friend_reqs = FriendRequest.objects.filter(recipient=request.user)
     #TODO make sure the users are active too
+    user_filter = Q()
+    for reqs in friend_reqs:
+        user_filter = user_filter | Q(username=reqs.requestor)
 
-    print(friend_reqs)
+    data = User.objects.filter(user_filter)
+    serialized_data = serializers.serialize('json',data,fields=('username'))
+    #print("DATAAAAA: " + serialized_data)
+    return HttpResponse(serialized_data, content_type='application/json')

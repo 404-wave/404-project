@@ -46,8 +46,11 @@
 <div class="wrapper">
     <!-- Friend Requests-->
     {% if friend_requests|length > 0 %}
-    <div id="friend_reqs_container">
-      <button id="friend_reqs_button" onclick= "filterFriends('friend_requests')">Friend Requests</button>
+    <div class ="drpdwn" id="friend_reqs_container">
+      <button class= "drpbtn" id="friend_reqs_button" onclick= "filterRequests()">Friend Requests</button>
+      <div class ="drpdwn-content"id="dropdown">
+
+      </div>
     </div>
     {% endif %}
     <!-- Friends List -->
@@ -68,7 +71,7 @@
   {% endif %} 
   <!--Load local JS-->
   <script>displayNotifications('{{ friend_requests|length }}');</script>
-
+  <script>closeDropDown();</script>
   {% endblock %}
 
     
