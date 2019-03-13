@@ -44,6 +44,15 @@
 {% block content %}
     {% if user.is_authenticated %}
 <div class="wrapper">
+    <!-- Friend Requests-->
+    {% if friend_requests|length > 0 %}
+    <div class ="drpdwn" id="friend_reqs_container">
+      <button class= "drpbtn" id="friend_reqs_button" onclick= "filterRequests()">Friend Requests</button>
+      <div class ="drpdwn-content"id="dropdown">
+
+      </div>
+    </div>
+    {% endif %}
     <!-- Friends List -->
     <div>
             <div id="friendBtnContainer">
@@ -60,6 +69,9 @@
           </div>
 </div>
   {% endif %} 
+  <!--Load local JS-->
+  <script>displayNotifications('{{ friend_requests|length }}');</script>
+  <script>closeDropDown();</script>
   {% endblock %}
 
     
