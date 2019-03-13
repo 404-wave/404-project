@@ -57,8 +57,47 @@ textarea{
 
 }
 #createPost{
-	width: 80%;
+width: 80%;
 }
+
+#friendBtnContainer{
+	display: flex;
+	margin-top: 7%;
+	margin-right: 2em;
+}
+#friendBtnContainer *{
+	margin-right: .5em;
+}
+.friend_btn.active{
+	background-color: white;
+	color: #00555f;
+	opacity: .8;
+}
+#friendContainer a{
+	color: black;
+	margin-top: 10px;
+}
+#friendContainer{
+	display: flex;
+	justify-content: flex-start;
+}
+.friend_name img{
+	width: 60px;
+
+}
+
+.friend_name{
+	background-color: white;
+	margin: 10%;
+	display: flex;
+	padding: 10px;
+	flex-direction: column;
+	align-items: center;
+	width: 150px;
+	height: 125px;
+	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
 
 .wrapper {
 	background-image: linear-gradient(to right,#00615c, #004160);
