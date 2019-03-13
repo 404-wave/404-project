@@ -7,6 +7,7 @@
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
  <script src="{% static 'js/friends.js' %}"></script>
  <script src="{% static 'js/validation.js' %}"></script>
+ <script>window.onload = setTabs;</script>
  {% endblock %}
  {% block content %}
   {% if user.is_authenticated %}
@@ -14,13 +15,17 @@
       <div class = 'person_info'>
         <p class = "greeting"><span class ="hello">Hello,<br> </span>my name is <span class ="name">{{ user }} </span></p>
           <div id="followBtnContainer">
-            {% if user.id is not request.user.id %}
+            {% if user.id != request.user.id %}
               <div id="followBtnContainer">
+<<<<<<< HEAD
                 {% if following is False %}
                 <button class = "friend_btn" onclick="follow(&quot;{{ request.user.id }}&quot;, &quot;{{ user.id }}&quot;)">Follow</button>
                 {% else %}
                 <button class = "friend_btn"  onclick="unfollow(&quot;{{ request.user.id }}&quot;, &quot;{{ user.id }})&quot;">Unfollow</button>
                 {% endif %}
+=======
+                <button class = "friend_btn" id = {{button_text}} onclick="change_follow('{{ request.user.id }}', '{{ user.id }}', this)">{{button_text}}</button>
+>>>>>>> origin
               </div>
             {% endif %}
         </div>
@@ -37,7 +42,7 @@
         <p>Email: {{ user.email }}</p>
         <p>Github: {{ user.github }}</p>
         <p class = 'bio'> {{ user.bio }}</p>
-        {% if user.id is request.user.id %}
+        {% if user.id == request.user.id %}
         <input type=button onclick="location.href='edit'" value = "Edit Profile">
         {% endif %}
       </div>
@@ -46,7 +51,7 @@
 </div>
 </div>
 
-<script>window.onload = setTabs;</script>w
+
   <!-- TO DO - redirect to homepage, should not reach this point-->
   {% endif %}
   {% endblock %}

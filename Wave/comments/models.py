@@ -4,15 +4,13 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 # Create your models here.
 
-# from posts.models import Post
-
 
 class CommentManager(models.Manager):
     def all(self):
         query_set = super(CommentManager,self).filter(parent=None)
         return query_set
 
-
+    
     def filter_by_instance(self, instance):
         content_type = ContentType.objects.get_for_model(instance.__class__)
         obj_id = instance.id
@@ -24,7 +22,6 @@ class Comment(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
-    # post = models.ForeignKey(Post, on_delete=models.CASCADE)
     parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
 
@@ -47,6 +44,10 @@ class Comment(models.Model):
     def children(self):
         return Comment.objects.filter(parent=self)
 
+<<<<<<< HEAD
+=======
+    # parent comment
+>>>>>>> origin
     @property
     def is_parent(self):
         if self.parent is not None:

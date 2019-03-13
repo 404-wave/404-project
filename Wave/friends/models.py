@@ -13,3 +13,15 @@ class Follow(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+class FriendRequest(models.Model):
+
+    requestor = models.ForeignKey(User, related_name="requestor",on_delete=models.CASCADE)
+    recipient = models.ForeignKey(User, related_name="recipient",on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('requestor','recipient'), )
+
+
+    def __str__(self):
+        return str(self.id)
