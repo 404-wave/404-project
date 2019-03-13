@@ -121,7 +121,11 @@ def posts_update(request, id=None):
         instance = form.save(commit=False)
         instance.user = request.user
         instance.publish = datetime.now()
-        if instance.is_image == True or instance.image:
+
+        #instance.is_image == True and instance.image is if you want to change one image to another image
+        #instance.is_image == False and instance.image is if you are changing from a text post to an image post
+        #this way if image field is blank and you click share, it just doesn't change anything
+        if (instance.is_image == True and instance.image) or (instance.is_image == False and instance.image):
             image_type, encoded_string = image_to_b64(instance.image)
             instance.content = encoded_string
             instance.data_uri = "data:" + image_type + ";base64," + encoded_string
