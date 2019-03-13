@@ -13,6 +13,8 @@ import base64
 from mimetypes import guess_type
 # Create your models here.
 
+#https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
+#Credit Ykh(https://stackoverflow.com/users/6786283/ykh)
 def image_to_b64(image_file):
     with open(image_file.path, "rb") as f:
         encoded_string = base64.b64encode(f.read()).decode()
@@ -203,6 +205,8 @@ class Post(models.Model):
 #     if not instance.pk:
 #         return False
 
+#https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
+#Credit Ykh(https://stackoverflow.com/users/6786283/ykh)
 @receiver(post_save, sender=Post)
 def create_base64_str(sender, instance=None, created=False, **kwargs):
     if instance.image and created:
