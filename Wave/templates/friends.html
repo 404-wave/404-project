@@ -44,6 +44,12 @@
 {% block content %}
     {% if user.is_authenticated %}
 <div class="wrapper">
+    <!-- Friend Requests-->
+    {% if friend_requests|length > 0 %}
+    <div id="friend_reqs_container">
+      <button id="friend_reqs_button" onclick= "filterFriends('friend_requests')">Friend Requests</button>
+    </div>
+    {% endif %}
     <!-- Friends List -->
     <div>
             <div id="friendBtnContainer">
@@ -60,6 +66,9 @@
           </div>
 </div>
   {% endif %} 
+  <!--Load local JS-->
+  <script>displayNotifications('{{ friend_requests|length }}');</script>
+
   {% endblock %}
 
     

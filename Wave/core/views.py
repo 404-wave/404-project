@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from posts.models import Post
 from posts.forms import PostForm
 from users.models import User
+from friends.models import FriendRequest
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 
@@ -264,5 +265,13 @@ def friends(request):
 		return HttpResponseForbidden()
 	user = request.user
 
-	return render(request, 'friends.html', {'user': user})
+	##Friend Requests##
+		#Query to see if any pending friend requests
+	friend_requests = FriendRequest.objects.filter(recipient=user)
+	context = {
+		'user':user,
+		'friend_requests': friend_requests,
+	}
+
+	return render(request, 'friends.html', context)
 
