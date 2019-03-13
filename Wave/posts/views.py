@@ -77,7 +77,7 @@ def posts_detail(request, id):
     return render(request, "posts_detail.html", context)
 
 #https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
-#Credit Ykh(https://stackoverflow.com/users/6786283/ykh)
+#Credit: Ykh(https://stackoverflow.com/users/6786283/ykh)
 def image_to_b64(image_file):
     with open(image_file.path, "rb") as f:
         encoded_string = base64.b64encode(f.read()).decode()
@@ -126,6 +126,8 @@ def posts_update(request, id=None):
         #instance.is_image == False and instance.image is if you are changing from a text post to an image post
         #this way if image field is blank and you click share, it just doesn't change anything
         if (instance.is_image == True and instance.image) or (instance.is_image == False and instance.image):
+            #https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
+            #Credit: Ykh(https://stackoverflow.com/users/6786283/ykh)
             image_type, encoded_string = image_to_b64(instance.image)
             instance.content = encoded_string
             instance.data_uri = "data:" + image_type + ";base64," + encoded_string
