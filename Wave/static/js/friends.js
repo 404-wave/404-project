@@ -34,7 +34,7 @@ function populateFriendsList(data) {
 }
 
 
-function follow(followerID, followeeID) {
+function follow(followerID, followeeID, e) {
 
   $.ajax({
     url: "follow/",
@@ -43,7 +43,7 @@ function follow(followerID, followeeID) {
       followeeID: followeeID
     },
     success: function (data) {
-      replaceFollowButton(data);
+      switchButton(data);
     },
     error: function(xhr, status, error) {
       console.log(error)
@@ -51,8 +51,7 @@ function follow(followerID, followeeID) {
   });
 }
 
-
-function unfollow(followerID, followeeID) {
+function unfollow(followerID, followeeID, e) {
 
   $.ajax({
     url: "unfollow/",
@@ -69,20 +68,38 @@ function unfollow(followerID, followeeID) {
   });
 }
 
+function change_follow(followerID, followeeID, e) {
+  var url_val = "follow/";
+  if (e.id != "Follow"){
+    url_val = "unfollow/";
+  }
+  $.ajax({
+    url: url_val,
+    data: {
+      followerID: followerID,
+      followeeID: followeeID
+    },
+    success: function (data) {
+      switchButton(data, e);
+      //eplaceUnfollowButton(data);
+    },
+    error: function(xhr, status, error) {
+      console.log(error)
+    }
+  });
+}
 
-function replaceFollowButton(data) {
 
+function switchButton(data, button) {
   let followerID = data["followerID"];
   let followeeID = data["followeeID"];
-
-  let div = `<button onClick="Unfollow(${followerID}, ${followeeID})">Unfollow</button>`;
-
-  followBtnContainer = document.getElementById("followBtnContainer");
-  while (followBtnContainer.firstChild) {
-    followBtnContainer.removeChild(followBtnContainer.firstChild);
+  var text_val = "Unfollow";
+  let div = document.getElementById(button.id);
+  if (button.id != "Follow") {
+      text_val = "Follow";
   }
-
-  $("#followBtnContainer").append(div);
+    div.innerText = text_val;
+    button.id = text_val;
 }
 
 
