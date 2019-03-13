@@ -219,10 +219,14 @@ def profile(request, pk = None):
 
 	# Check if we follow the user whose profile we are looking at
 	following = False
+	button_text = "Unfollow"
 	if request.user.id is not pk:
 		following = follows(request.user.id, pk)
+		if (following == False):
+			button_text = "Follow"
 
-	return render(request, 'profile.html', {'user': user, 'following': following})
+
+	return render(request, 'profile.html', {'user': user, 'following': following, 'button_text': button_text})
 
 
 
@@ -261,3 +265,4 @@ def friends(request):
 	user = request.user
 
 	return render(request, 'friends.html', {'user': user})
+

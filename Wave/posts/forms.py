@@ -1,3 +1,5 @@
+
+    
 from django import forms
 
 from .models import Post
@@ -20,10 +22,11 @@ class PostForm(forms.ModelForm):
             "publish"
         ]
 
+
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['user'].widget = forms.HiddenInput()
-        self.fields['publish'].widget = forms.HiddenInput()
+        super(PostForm, self).__init__(*args, **kwargs)
+        self.fields['privacy'].widget.attrs['class'] = "custom-select"
+        #self.set_form_class()
 
     
     """
@@ -37,6 +40,11 @@ class PostForm(forms.ModelForm):
         post.accessible_users.add(*accessible_users)
         post.accessible_users.add(post.user)
         return post
+
+                    #add class for css
+    def set_form_class(self):
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = "custom-select"
 
 class ImageForm(forms.ModelForm):
 
@@ -67,3 +75,11 @@ class ImageForm(forms.ModelForm):
         post.accessible_users.add(*accessible_users)
         post.accessible_users.add(post.user)
         return post
+
+
+            #add class for css
+    def set_form_class(self):
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = "custom-select"
+        
+
