@@ -48,6 +48,9 @@
 	display: flex;	
     flex-direction: column;
 }
+.github_post p{
+	padding: 10px;
+}
 textarea{
 	width: 500px;
 
@@ -55,6 +58,7 @@ textarea{
 #createPost{
 	width: 80%;
 }
+stream_settings
 textarea
 #postContainer *{
 	/* align-self: center; */
@@ -68,11 +72,24 @@ textarea
 	flex-direction: column;
 }
 .stream {
-	width: 85%;
+	width: 90%;
+	/* background-color: white; */
 }
+.stream_settings form{
+	display: flex;
+	padding: 10px 0 10px 10px;
+	background-color: #fdfdfd;
+	margin-bottom: 10px;
+
+}
+a {
+	padding: 5px;
+}
+
 .fieldWrapper_submit{
 	display: flex;
 	justify-content: flex-end;
+
 
 }
 .fieldWrapper_submit *{
@@ -81,9 +98,9 @@ textarea
 }
 
 
-.stream_post {
+.stream_post, .github_post {
 	background-color: white;
-	margin: 10px;
+	margin-bottom: 10px;
 	width: 100%;
 	font-family: Roboto, sans-serif;
 }
@@ -180,7 +197,12 @@ textarea.form-control{
 	display: flex;
 
   }
-  
+  	#stream.showing, #github.showing {
+	font-weight: 500;
+	text-decoration: underline;
+	opacity: unset;
+	background-color: #fdfdfd;
+	}
   #tabs li {
 	/* margin: 0 0em 0 0; */
 	flex-grow:1;
@@ -189,16 +211,16 @@ textarea.form-control{
   #tabs a {
   	text-align: center;
   	width: -webkit-fill-available;
-	font-family: 'Nunito', sans-serif;
-	position: relative;
-	background: #f9f7f7;
-	padding: .7em 3.5em;
-	float: left;
-	text-decoration: none;
-	color: #004463;
-	text-shadow: 0 1px 0 rgba(255,255,255,.8);
-	box-shadow: 0 1px 1px rgba(0,0,0,.4);
-	}
+  	font-family: 'Nunito', sans-serif;
+  	position: relative;
+  	background: #d6d2d2;
+  	opacity: .5;
+  	padding: .7em 3.5em;
+  	float: left;
+  	color: #004463;
+  	text-shadow: 0 1px 0 rgba(255,255,255,.8);
+  	box-shadow: 0 1px 1px rgba(0,0,0,.4);
+ }
   
   #tabs a:hover,
   #tabs a:focus{
@@ -218,13 +240,13 @@ textarea.form-control{
   }
   
   #content {
-	background: #fff;
+	background: #f9f7f7;
 	padding: 2em;
 	height:fit-content;
 	position: relative;
 	z-index: 2;
 	border-radius: 0 1px 1px 1px;
-	box-shadow: 0 -2px 3px -2px rgba(0, 0, 0, .5);
+	box-shadow: 0 0px 3px -2px rgba(0, 0, 0, .5);
 }
 .friend_btn {
     width: 100%;

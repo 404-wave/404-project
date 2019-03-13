@@ -30,8 +30,10 @@
 
 
    <!-- Javascript-->
-  <script src="{% static 'js/friends.js' %}"></script>
-  <script src="{% static 'js/validation.js' %}"></script>
+
+  <script src="{% static 'js/home.js' %}"></script>
+  <script>window.onload = setTabs;</script>
+  <script>window.onload = setEmptyMessage;</script>
   <script>
   function private(){
     var values = $("#id_privacy").val();
@@ -113,18 +115,24 @@ function edit(){
   <p> Your posts was created. Access it <a href="{{ unlisted_instance.get_detail_absolute_url }}"> Here</a></p>
 {% endif %}
 </div>
-<form method="GET" action="">
-  <input
-    type="text"
-    name="query"
-    placeholder="Search posts"
-    value="{{ request.GET.query }}"
-    />
-  <input type="Submit" value="Search" />
-  <a href="/home">Clear search</a>
-</form>
 
   <div class="stream">
+      <div class = "stream_settings">
+      <ul id="tabs">
+          <li><a href="#" id = "stream" class = "showing" name="tab1">Stream</a></li>
+          <li><a href="#" id = "github" name="tab2">Github</a></li>  
+      </ul>
+      <form method="GET" action="">
+        <input
+          type="text"
+          name="query"
+          placeholder="Search posts"
+          value="{{ request.GET.query }}"
+          />
+        <input type="Submit" value="Search" />
+        <a href="/home">Clear search</a>
+      </form>
+    </div>
     {% for obj in object_list %}
     <!-- check if is Post object -->
     {% if obj.user %}
@@ -171,18 +179,20 @@ function edit(){
         </div><!-- caption -->
           {% endif %}
     
-              </div><!-- caption -->
+      </div><!-- caption -->
       </div>
-          <!-- PUT COMMENT SECTION HERE. -->
     
   
 
     {% else %}
-    <div class="col-sm-6 col-md-4">
+    <div class="github_post">
       <p>{{ obj }}</p>
     </div>
 
     {% endif %} {% endfor %}
+    <div class="github_post" id = "empty_git" style="display:none"> 
+      <p>You do not have any github posts.</p>
+      </div>
   </div>
 </div>
 

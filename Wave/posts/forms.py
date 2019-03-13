@@ -13,7 +13,9 @@ class PostForm(forms.ModelForm):
             "image",
             "privacy",
             "accessible_users",
-            "unlisted"
+            "unlisted",
+            "user",
+            "publish"
         ]
 
 

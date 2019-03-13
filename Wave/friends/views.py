@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.core import serializers
 from django.http import HttpResponseForbidden
-
+from django.shortcuts import render
 import json
 
 from users.models import User
@@ -54,7 +54,7 @@ def friends(request):
     friends = following & followers
     print("FRIENDS",friends)
     data = serializers.serialize('json', friends, fields=('username'))
-    return HttpResponse(data, content_type="application/json")
+    return HttpResponse(data, content_type="application/json") 
 
 
 def follow(request):
