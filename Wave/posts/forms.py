@@ -46,7 +46,6 @@ class ImageForm(forms.ModelForm):
             "image",
             "privacy",
             "accessible_users",
-            "unlisted",
             "user",
             "publish"
         ]
