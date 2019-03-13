@@ -56,11 +56,6 @@ class ImageForm(forms.ModelForm):
         self.fields['publish'].widget = forms.HiddenInput()
 
     
-    # def image_to_b64(image_file):
-    #     with open(image_file.path, "rb") as f:
-    #         encoded_string = base64.b64encode(f.read()).decode()
-    #         image_type = guess_type(image_file.path)[0]
-    #         return image_type, encoded_string
     """
         Creates the objects for the accessible useres and then save to the form
     """
