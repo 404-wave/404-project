@@ -19,7 +19,11 @@ def register(request):
 
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save();
+            user = form.save();
+            host = request.scheme + "://" + request.META['HTTP_HOST'] + "/"
+            user.url = host + "home/profile/" + str(user.id)
+            user.host = host
+            user.save()
             return HttpResponseRedirect(reverse('login'))
         else :
             form = UserCreationForm(request.POST)
@@ -30,4 +34,3 @@ def register(request):
         form = UserCreationForm()
         context = {'form' : form}
         return render(request, 'registration/register.html', context)
-
