@@ -168,7 +168,6 @@ class FriendAPIView(generics.GenericAPIView):
 
             return Response({"query": "friends", "authors": friend_list})
 
-        # GET to see if two users are friends
         if 'author_id1' in self.kwargs.keys() and 'author_id2' in self.kwargs.keys():
 
             author_id1 = self.kwargs['author_id1']
@@ -212,16 +211,34 @@ class FriendAPIView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
 
+        # TODO: Authentication
+
+        # Retrieves JSON data
         data = request.data
+        try:
+            author = data['author']
+            authors = data['authors']
+        except:
+            # If the JSON was not what we wanted, send a 400
+            Response(status=status.HTTP_400_BAD_REQUEST)
 
-        print(data)
-        # author_id = data['author']
-        # author_list = data['authors']
+        author_id = author.split("/")[-1]
+        followers = User.objects.filter(follower__user2=author_id, is_active=True)
+        following = User.objects.filter(followee__user1=author_id, is_active=True)
+        friends = following & followers
 
-        # r = requests.get()
-        #
-        # friend_list = list()
+        friend_list = list()
+        for potential_friend in authors:
+            potential_friend_id = potential_friend.split("/")[-1]
+            for friend in friends:
+                if str(friend.id) == potential_friend_id:
+                    friend_list.append(potential_friend)
+                    break
 
-        # Parse out the host
+        response = {
+            "query":"friends",
+            "author": author,
+            "authors": friend_list
+        }
 
-        return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+        return Response(response)
