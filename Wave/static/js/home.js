@@ -36,9 +36,11 @@ function showElements(class_name){
 //set up tabs 
 //TODO - set up animation (still working on)
 function setTabs() {
-    var tabs = document.getElementById("tabs").children;
-    for (var i = 0; i < tabs.length; i++) {
-        tabs[i].addEventListener("click", showTab);
+    var tabs = document.getElementsByClassName("tabs")
+    for (li_num of tabs) {
+        for (let i = 0; i<li_num.children.length; i++){
+            li_num.children[i].addEventListener("click", showTab);
+        }
     }
     hideElements('github_post');
     hideElements('upload_image');
