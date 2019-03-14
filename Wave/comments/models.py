@@ -10,7 +10,7 @@ class CommentManager(models.Manager):
         query_set = super(CommentManager,self).filter(parent=None)
         return query_set
 
-    
+
     def filter_by_instance(self, instance):
         content_type = ContentType.objects.get_for_model(instance.__class__)
         obj_id = instance.id
@@ -24,6 +24,10 @@ class Comment(models.Model):
                              on_delete=models.CASCADE)
     parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+
+    # TODO: Maybe should change the content of this to be some type of enum, rather than a textfield.
+    contentType = models.TextField(max_length=13, default="text/plain") # Could also be "text/markdown"
+
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     content = models.TextField()
@@ -40,7 +44,7 @@ class Comment(models.Model):
     def children(self):
         return Comment.objects.filter(parent=self)
 
-    # parent comment
+
     @property
     def is_parent(self):
         if self.parent is not None:
