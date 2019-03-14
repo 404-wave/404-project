@@ -2,17 +2,13 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+
 from django.conf.urls import include, url
 from django.contrib.auth.decorators import login_required
 from django.views.static import serve
 
-from rest_framework import routers
-
-from api.views import UserViewSet
 
 
-router = routers.DefaultRouter()
-router.register(r'author', UserViewSet)
 
 #https://blog.majsky.cz/django-protected-media-files/
 #Credit: Michal Májský
@@ -29,9 +25,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include('posts.urls')),
     path('api-auth/', include('rest_framework.urls')),
-    path('service/', include(router.urls)),
+
+    path('service/', include('api.urls')),
+
     #url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], protected_serve, {'document_root': settings.MEDIA_ROOT}),
     #url(r'^data:image/jpeg;base64,(?P<base64string>{})'.format(base64_pattern), protected_serve, {'document_root': 'data:image/jpeg;base64,'}),
+
 ]
 
 if settings.DEBUG:
