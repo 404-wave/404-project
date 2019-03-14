@@ -7,6 +7,7 @@
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
  <script src="{% static 'js/friends.js' %}"></script>
  <script src="{% static 'js/validation.js' %}"></script>
+ <link rel="stylesheet" href="{% static 'style/profile.css' %}">
  <script>window.onload = setTabs;</script>
  {% endblock %}
  {% block content %}
@@ -40,7 +41,7 @@
         <input type=button onclick="location.href='edit'" value = "Edit Profile">
         {% endif %}
       </div>
-      <div id="tab2">...</div>
+      <div class="tab2">...</div>
   </div>
 </div>
 </div>

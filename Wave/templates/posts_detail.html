@@ -1,58 +1,62 @@
-<!DOCTYPE html>
-<head>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
-
-</head>
-<body>
-    <h1> User: {{ user }} </h1>
-    {% if instance.is_image %}
-    <img src="{{ instance.data_uri }}">
-    {% else %}
-    {{ instance.content }} <br/>
-    {% endif %}
-    <br/>
-    {{ instance.timestamp }} <br/>
-    {{ instance.id }} <br/>
-
-    
-    {% if instance.user == request.user %}
-        <p>
-            <a
-            href="{{ instance.get_edit_absolute_url }}"
-            class="btn btn-primary"
-            role="button"
-            >Edit</a
-            >
-        </p>
-        <!-- btn 2 -->
-        <p>
-            <a
-            href="{{ instance.get_delete_absolute_url }}"
-            class="btn btn-primary"
-            role="button"
-            >Delete</a
-            >
-        </p>
+{% extends "base.html" %} 
+{% load static %} 
+{% block script %} 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+</script> <!-- Bootstrap-->
+ <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
+</script>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Style-->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Javascript-->
+<script src="{% static  'js/home.js'  %}"></script> 
+<link rel="stylesheet" href="{% static 'style/home.css' %}">
+<!-- Cloudflare-->
+ 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> 
+{% endblock %} 
+{% block content %} 
+<div class="wrapper">
+<div id ="postContainer">
+<div class = "post_view">
+<div class="stream_post">
+    <div class="top_row">
+        <div class="post_info">
+            <div class="author_edit">
+                <p class="author">{{ user }}</p>
+                <p class="post_date">{{ instance.timestamp }}</p>
+            </div>
+        </div>
+            <p class="privacy"> {{ instance.privacy }}</p>
+    </div>
+    <div class="post_content">
+        <p>{{ instance.content | linebreaks }}</p>
+    </div>
+    <div class = "view_more">
+        {% if obj.user == request.user %}
+        <div class="dropdown">
+        <input alt="edit" aria-expanded="false" aria-haspopup="true" class="edit_button" data-toggle="dropdown" id="dropdownMenu2" src="{% static  'images/pencil.png'  %}" type="image" width="25px">
+            <div aria-labelledby="dropdownMenu2" class="dropdown-menu">
+                <a class="dropdown-item" href="{{  instance.get_edit_absolute_url  }}">Edit</a> 
+                <a class="dropdown-item" href="{{  instance.get_delete_absolute_url  }}">Delete</a>
+            </div>
+        </div>
         {% endif %}
-
-    <p>
-            <a
-                href="{{ instance.get_absolute_url }}"
-                class="btn btn-primary"
-                role="button"
-                >Back</a
-            >
-    </p>
-    
-
-    <div>
-        <p class="lead">Comments</p>
-        <form method="POST" action="."> {% csrf_token %}
-            {{comment_form}}
-            <input type = "submit" value="Post comment" class= "btn btn-default">
+    </div>
+</div>
+<div class = "comments">
+    <p class="lead">Comments</p>
+    <form method="POST" action=""> 
+        {% csrf_token %}
+        <div class="text_Wrapper ">
+                <label for="{{ form.content.id_for_label }}"></label> 
+                {{ comment_form.content }}
+                {{ comment_form.content_type}}
+                {{ comment_form.object_id }}
+            </div>
+            <div class="fieldWrapper_submit">
+            <input type = "submit" class="wave_btn" value="Post comment" class= "btn btn-default">
+       
+        </div>
         </form>
 
         {% for comment in comments %}
@@ -60,9 +64,14 @@
         <!-- <div class=""> -->
         <!-- </div> -->
             <p>{{ comment.content }}</p>
-            <p>by {{comment.user}} on {{comment.timestamp}} | {% if comment.children.count > 0 %}{{ comment.children.count }} Comment{% if comment.children.count > 1 %}s {% endif %}| {% endif %}<a class="comment-reply-btn" href="#">Reply</a></p>
-     
- 
+            <p>by {{comment.user}} on {{comment.timestamp}} | 
+                {% if comment.children.count > 0 %}
+                    {{ comment.children.count }} <a class="comment-reply-btn" href="#">Comment</a>
+                    {% if comment.children.count > 1 %}
+                    {% endif %}| 
+                {% endif %}
+                <a class="comment-reply-btn" href="#">Reply</a></p>
+
             <div class="comment-reply"  style='display: none'>
                 {% for child_comment in comment.children %}
                 <blockquote>
@@ -73,33 +82,32 @@
 
 
 
-                <form method="POST" action="."> {% csrf_token %}
+                <form method="POST" action=""> {% csrf_token %}
                     {{comment_form}}
                     <input type ="hidden" name="parent_id"  value="{{ comment.id }}">
-                    <input type = "submit" value="Reply" class= "btn btn-default">
+                    <input type = "submit" class="wave_btn" value="Reply" class= "btn btn-default">
                 </form>
             </div>    
         </blockquote>
         {% endfor %}
     </div>
 
+</div>
 
+</div>
 
-
-
-
+</div>
 <script>
         $(".comment-reply-btn").click(function(event){
             console.log("Working")
             event.preventDefault();
             $(this).parent().next(".comment-reply").fadeToggle();
         })
-
+window.onload = function(){
+     auto_text()
+     private();
+}
 </script>
         
 
-
-</body>
-
-
-</html>
+{% endblock %} 

@@ -1,34 +1,37 @@
-<html>
-  <head>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-  </head>
-  <body>
-    <h3>Create Post</h3>
+{% extends "base.html" %} 
+{% load static %} 
+{% block script %} 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+</script> <!-- Bootstrap-->
+ <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
+</script>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Style-->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Javascript-->
+<script src="{% static  'js/home.js'  %}"></script> 
+<link rel="stylesheet" href="{% static 'style/home.css' %}">
+<!-- Cloudflare-->
+ 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> 
+{% endblock %} 
+{% block content %} 
+<div class="wrapper">
+<div id ="postContainer">
+<div class = "post_view">
+<div class="stream__post">
 
     <form method="POST" action="" , enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.as_p }}
-      <input type="submit" value="Share" />
+      <input type="submit" class = "wave_btn" value="Share" />
     </form>
-
+  </div>
+</div>
+</div>
+</div>
     <script>
-      function private() {
-        var values = $("#id_privacy").val();
-        if (values == 1) {
-          $("#id_accessible_users")
-            .parent()
-            .show();
-        } else
-          $("#id_accessible_users")
-            .parent()
-            .hide();
-      }
-
-      $("#id_privacy").change(function() {
-        private();
-      });
-      private();
+      window.onload = function(){
+     auto_text();
+     private();}
     </script>
-  </body>
-</html>
+{% endblock %} 
