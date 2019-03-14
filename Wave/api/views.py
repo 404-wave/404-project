@@ -9,6 +9,10 @@ import requests
 from users.models import User
 from posts.models import Post
 from comments.models import Comment
+from friends.models import Follow, FriendRequest
+
+from friends.views import follows
+
 from .serializers import UserSerializer, PostSerializer, CommentSerializer
 from .paginators import PostPagination, CommentPagination
 
@@ -135,12 +139,9 @@ class CommentAPIView(generics.GenericAPIView):
         return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
-#class FriendAPIView(generics.GenericAPIView, mixins.CreateModelMixin):
 class FriendAPIView(generics.GenericAPIView):
 
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    pagination_class = CommentPagination
+    queryset = Follow.objects.all()
 
     def get(self, request, *args, **kwargs):
 
@@ -242,3 +243,55 @@ class FriendAPIView(generics.GenericAPIView):
         }
 
         return Response(response)
+
+
+class FriendRequestAPIView(generics.GenericAPIView):
+
+    queryset = FriendRequest.objects.all()
+
+    def post(self, request, *args, **kwargs):
+
+        # TODO: Authentication
+
+        # Retrieves JSON data
+        data = request.data
+        try:
+            author_id = data['author']['id'].split("/")[-1]
+            friend_id = data['friend']['id'].split("/")[-1]
+        except:
+            # If the JSON was not what we wanted, send a 400
+            Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            followers = User.objects.filter(follower__user2=author_id, is_active=True)
+            following = User.objects.filter(followee__user1=author_id, is_active=True)
+            friends = following & followers
+        except:
+            # TODO: What is the correct status code here?
+            Response(status=status.HTTP_200_OK)
+
+        already_following = False
+        for followee in following:
+            if str(friend_id) == str(followee.id):
+                already_following = True
+
+        # If user1 is already following user2, then a request must have previously been made
+        if not already_following:
+            try:
+                user1 = User.objects.get(pk=author_id)
+                user2 = User.objects.get(pk=friend_id)
+                Follow.objects.create(user1=user1, user2=user2)
+
+                # Query to see if the person they want to follow is already following requestor
+                exists_in_table = FriendRequest.objects.filter(requestor=user2,recipient=user1)
+
+                if (len(exists_in_table) == 0) & (follows(user2,user1) == False):
+                    FriendRequest.objects.create(requestor= user1,recipient= user2)
+                elif len(exists_in_table) != 0:
+                    exists_in_table.delete()
+
+            except:
+                # TODO: What is the correct status code here?
+                Response(status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_200_OK)
