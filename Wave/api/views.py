@@ -66,26 +66,35 @@ class PostAPIView(generics.GenericAPIView):
         #     return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         # Handle GETs for all public posts, or just a single post
+        data = ""
+        queryset = ""
         if 'author_id' in self.kwargs.keys():
             author_id = self.kwargs['author_id']
             # TODO: Hanlde the privacy concerns of the posts w.r.t authenticated user of API
             queryset = Post.objects.filter(user=author_id)
+            serializer = PostSerializer(queryset, many=True)
+            data = serializer.data
 
         elif 'post_id' in kwargs.keys():
             post_id = self.kwargs['post_id']
             # TODO: Hanlde the privacy concerns of the posts w.r.t authenticated user of API
             queryset = Post.objects.filter(id=post_id)
+            serializer = PostSerializer(queryset, many=True)
+            data = serializer.data
 
         else:
             queryset = Post.objects.filter(privacy=Post.PUBLIC)
+            serializer = PostSerializer(queryset, many=True)
+            data = serializer.data
+            #return Response(serializer.data)
 
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
-        serializer = PostSerializer(queryset, many=True)
-        return Response(serializer.data)
+        #serializer = PostSerializer(data, many=True)
+        return Response(data)
 
     def post(self, request, *args, **kwargs):
         return Response(status=status.HTTP_501_NOT_IMPLEMENTED)

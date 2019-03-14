@@ -12,7 +12,7 @@ urlpatterns = [
 
     # Posts
     path('author/<uuid:author_id>/posts', PostAPIView.as_view(), name="GETAuthorPosts"),
-    path('posts/<int:post_id>/', PostAPIView.as_view(), name="GETSinglePost"),
+    path('posts/<int:post_id>', PostAPIView.as_view(), name="GETSinglePost"),
     path('posts/', PostAPIView.as_view(), name="GETAllPosts"),
 
     #TODO: POST a post and PUT to a post

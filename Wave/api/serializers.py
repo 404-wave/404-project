@@ -6,9 +6,9 @@ from users.models import User
 class UserSerializer(serializers.ModelSerializer):
 
     friends = serializers.SerializerMethodField('_friends')
-    displayName = serializers.SerializerMethodField('get_username')
-    firstName = serializers.SerializerMethodField('get_first_name')
-    lastName = serializers.SerializerMethodField('get_last_name')
+    displayName = serializers.SerializerMethodField('_username')
+    firstName = serializers.SerializerMethodField('_first_name')
+    lastName = serializers.SerializerMethodField('_last_name')
 
     class Meta:
         model = User
@@ -22,34 +22,86 @@ class UserSerializer(serializers.ModelSerializer):
     # These need to be added to accomodate differences in naming convention
     # between our models and the example-article.json. The alternative is to
     # change the model attribute names and change the fields in the class Meta.
-    def get_username(self, obj):
+    def _username(self, obj):
         return obj.username
 
-    def get_first_name(self, obj):
+    def _first_name(self, obj):
         return obj.first_name
 
-    def get_last_name(self, obj):
+    def _last_name(self, obj):
         return obj.last_name
 
 
 class UserFriendSerializer(serializers.ModelSerializer):
 
-    displayName = serializers.SerializerMethodField('get_username')
+    displayName = serializers.SerializerMethodField('_username')
 
     class Meta:
         model = User
         fields = ('id', 'host', 'displayName', 'url')
 
-    def get_username(self, obj):
+    def _username(self, obj):
         return obj.username
 
 
 class PostSerializer(serializers.ModelSerializer):
 
+    # title - probably won't include
+    # soure - more relevant for part 2
+    # origin - more relevant for part 2
+    # description - probably won't include
+    # catgeories - probably won't include
+
+    contentType = serializers.SerializerMethodField('_content_type')
+    author = serializers.SerializerMethodField('_author')
+    comments = serializers.SerializerMethodField('_comments')
+    published = serializers.SerializerMethodField('_published')
+    visibility = serializers.SerializerMethodField('_visibility')
+    #visible_to = serializers.SerializerMethodField('_visible_to')
+
     class Meta:
         model = Post
-        fields = ('user', 'content', 'publish', 'privacy')
+        fields = ('id', 'user', 'contentType', 'published', 'author', 'comments', 'visibility', 'unlisted')
 
+    def _content_type(self, obj):
+        return obj.content_type
+
+    def _published(self, obj):
+        return obj.publish
+
+    def _visibility(self, obj):
+        return obj.privacy
+
+    # TODO: This may require additional serialization
+    def _visibile_to(self, obj):
+        return obj.publish
+
+    def _author(self, obj):
+        author = User.objects.get(username=obj.user)
+        serialized_author = PostAuthorSerializer(author, many=False)
+        return serialized_author.data
+
+    def _comments(self, obj):
+        post_id = obj.id
+        comments = Post.objects.filter(id=post_id)[0].comments
+        serialized_comments = CommentSerializer(comments, many=True)
+        return serialized_comments.data
+
+
+class PostAuthorSerializer(serializers.ModelSerializer):
+
+    displayName = serializers.SerializerMethodField('_username')
+    id = serializers.SerializerMethodField('_id')
+
+    class Meta:
+        model = User
+        fields = ('id', 'host', 'displayName', 'url', 'github')
+
+    def _username(self, obj):
+        return obj.username
+
+    def _id(self, obj):
+        return str(obj.host) + str(obj.id)
 
 class CommentSerializer(serializers.ModelSerializer):
 
@@ -76,18 +128,19 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class CommentAuthorSerializer(serializers.ModelSerializer):
 
-    displayName = serializers.SerializerMethodField('get_username')
-    id = serializers.SerializerMethodField('build_id')
+    displayName = serializers.SerializerMethodField('_username')
+    id = serializers.SerializerMethodField('_id')
 
     class Meta:
         model = User
-        fields = ('id', 'host', 'displayName')
+        fields = ('id', 'url', 'host', 'displayName', 'github')
 
-    def get_username(self, obj):
+    def _username(self, obj):
         return obj.username
 
-    def build_id(self, obj):
+    def _id(self, obj):
         return str(obj.host) + str(obj.id)
+
 
 # class FriendSerializer(serializers.ModelSerializer):
 #

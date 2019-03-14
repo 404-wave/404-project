@@ -9,16 +9,13 @@ class PostPagination(pagination.PageNumberPagination):
 
     def get_paginated_response(self, context):
 
-        request = context['request']
-        host = request.scheme + "://" + request.META['HTTP_HOST'] + "/"
-
         return Response({
             'query': 'posts',
             'count': self.page.paginator.count,
             'size': self.page.paginator.per_page,
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
-            'posts': context['data']
+            'posts': context
         })
 
 
