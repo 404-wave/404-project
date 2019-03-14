@@ -14,6 +14,8 @@
 .comments {
 	width: 90%;
 	align-self: center;
+	display: flex;
+	flex-direction: column;
 }
 
 .lead {
@@ -187,7 +189,11 @@ position:absolute;
 	position: relative;
 	margin: 20px 20px 0 20px;
 	flex-direction: row;
+	flex-shrink: 0;
 	
+}
+.post_content p {
+	flex-shrink: 1 0 auto;
 }
 #postContainer{
 	width: 75%;
@@ -255,6 +261,7 @@ textarea.form-control{
 .top_row{
 	display: flex;
 	justify-content: space-between;
+	flex-shrink: 0;
 }
 
 .settingss {
@@ -275,6 +282,7 @@ textarea.form-control{
 	position: relative;
 	display: flex;
 	flex-direction:column;
+	flex-shrink: 0;
 }
 
 .stream_post a{
@@ -312,6 +320,7 @@ textarea.form-control{
 	font-family: 'Nunito', sans-serif;
 	display: flex;
 	flex-direction: column;
+	height: fit-content;
 }
 
 
@@ -333,4 +342,5 @@ textarea.form-control{
 	color: white;
 	text-transform: uppercase;
 	margin-left: 20px;
+	font-size: .8em;
 }
