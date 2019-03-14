@@ -19,9 +19,6 @@ class UserSerializer(serializers.ModelSerializer):
         serialized_friends = UserFriendSerializer(friends, many=True)
         return serialized_friends.data
 
-    # These need to be added to accomodate differences in naming convention
-    # between our models and the example-article.json. The alternative is to
-    # change the model attribute names and change the fields in the class Meta.
     def _username(self, obj):
         return obj.username
 
@@ -57,11 +54,11 @@ class PostSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField('_comments')
     published = serializers.SerializerMethodField('_published')
     visibility = serializers.SerializerMethodField('_visibility')
-    #visible_to = serializers.SerializerMethodField('_visible_to')
+    visible_to = serializers.SerializerMethodField('_visible_to')
 
     class Meta:
         model = Post
-        fields = ('id', 'user', 'contentType', 'published', 'author', 'comments', 'visibility', 'unlisted')
+        fields = ('id', 'user', 'contentType', 'published', 'author', 'comments', 'visibility', 'visible_to', 'unlisted')
 
     def _content_type(self, obj):
         return obj.content_type
@@ -70,11 +67,16 @@ class PostSerializer(serializers.ModelSerializer):
         return obj.publish
 
     def _visibility(self, obj):
-        return obj.privacy
+        return Post.Privacy[obj.privacy][1]
 
-    # TODO: This may require additional serialization
-    def _visibile_to(self, obj):
-        return obj.publish
+    def _visible_to(self, obj):
+        if obj.privacy is Post.PUBLIC:
+            return list()
+
+        # TODO: Return a list of users who can view the post...
+        # How to use the accessible_users list?
+        user_list = list()
+        return user_list
 
     def _author(self, obj):
         author = User.objects.get(username=obj.user)
@@ -103,13 +105,13 @@ class PostAuthorSerializer(serializers.ModelSerializer):
     def _id(self, obj):
         return str(obj.host) + str(obj.id)
 
+
 class CommentSerializer(serializers.ModelSerializer):
 
     author = serializers.SerializerMethodField('_author')
     published = serializers.SerializerMethodField('_published')
     comment = serializers.SerializerMethodField('_comment')
 
-    # TODO: Change comment IDs to UUIDs
     class Meta:
         model = Comment
         fields = ('author', 'comment', 'contentType', 'published', 'id')

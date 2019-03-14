@@ -8,7 +8,6 @@ urlpatterns = [
 
     # Author Profiles
     path('author/<uuid:author_id>/', UserAPIView.as_view(), name="GETAuthorProfile"),
-    #path('author/', UserAPIView.as_view(), name="GETAllAuthors"),
 
     # Posts
     path('author/<uuid:author_id>/posts', PostAPIView.as_view(), name="GETAuthorPosts"),
