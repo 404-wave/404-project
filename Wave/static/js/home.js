@@ -1,31 +1,38 @@
 //will show tabs if selected
 function showTab(e){
-    if (e.target.class == "showing"){
+    var target_id = this.firstElementChild.id
+    var target_class = this.firstElementChild.className
+    if (target_class == "showing"){
         return;
     }
-    var show =  "stream_post";
-    var hide = "github_post";  
-    var class_show = document.getElementById('stream');
-    var class_hide = document.getElementById('github');
-
-    if (e.target.id == "github"){
-       show = "github_post";
-       hide = "stream_post";
-       class_show = document.getElementById('github');
-       class_hide = document.getElementById('stream');
+    var sibling = this.nextElementSibling
+    if (sibling == undefined){
+        sibling = this.previousElementSibling
     }
-    class_show.setAttribute("class", "showing");
-    class_hide.classList.remove("showing");
-    var hidden = document.getElementsByClassName(hide);
+    let show_this=target_id
+    let hide_this = sibling.firstElementChild.id
+
+    this.firstElementChild.setAttribute("class", "showing");
+    sibling.firstElementChild.classList.remove("showing");
+    hideElements(hide_this)
+    showElements(show_this)
+}
+
+function hideElements(class_name){
+    var hidden = document.getElementsByClassName(class_name);
     for (var i of hidden) {
         i.style.display ="none";
     }
-    var shown = document.getElementsByClassName(show);
+
+}
+function showElements(class_name){
+    var shown = document.getElementsByClassName(class_name);
     for (var i of shown) {
         i.style.display ="block";
     }
 
 }
+
 //set up tabs 
 //TODO - set up animation (still working on)
 function setTabs() {
@@ -33,11 +40,24 @@ function setTabs() {
     for (var i = 0; i < tabs.length; i++) {
         tabs[i].addEventListener("click", showTab);
     }
-    var githubs = document.getElementsByClassName('github_post');
-    for (var i of githubs) {
-        i.style.display ="none";
-    }
+    hideElements('github_post');
+    hideElements('upload_image');
+
+    //Creating a textarea with auto-resize
+    //https://stackoverflow.com/questions/454202/creating-a-textarea-with-auto-resize
+    //DreamTeK -https://stackoverflow.com/users/2120261/dreamtek
+    // Annswer - https://stackoverflow.com/posts/25621277/revisions
+    $('textarea').each(function () {
+        this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+      }).on('input', function () {
+        this.style.height = 50+ 'px';
+        this.style.height = (this.scrollHeight) + 'px';
+      });
+    
 }
+
+
+
 
 //message for empty
 function setEmptyMessage() {

@@ -25,10 +25,29 @@ class PostForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
-        self.fields['privacy'].widget.attrs['class'] = "custom-select"
-        #self.set_form_class()
 
+        self.set_placeholder('content', 'What\'s on your mind?')
+        self.set_form_class()
+        print(self.fields['user'])
+
+
+    #add placeholder text to fields
+    def set_placeholder(self, field, text):
+        self.fields[field].widget.attrs['placeholder'] = text
     
+    #add class for css
+    def set_form_class(self):
+            self.fields['privacy'].widget.attrs['class'] = "create_post upload_image"
+    
+
+            self.fields['content'].widget.attrs['class'] = "create_post"
+
+            self.fields['accessible_users'].widget.attrs['class'] = "create_post"
+
+            self.fields['unlisted'].widget.attrs['class'] = "create_post"
+
+
+
     """
         Creates the objects for the accessible useres and then save to the form
     """
@@ -41,10 +60,7 @@ class PostForm(forms.ModelForm):
         post.accessible_users.add(post.user)
         return post
 
-                    #add class for css
-    def set_form_class(self):
-        for field in self.fields:
-            self.fields[field].widget.attrs['class'] = "custom-select"
+
 
 class ImageForm(forms.ModelForm):
 
@@ -76,10 +92,5 @@ class ImageForm(forms.ModelForm):
         post.accessible_users.add(post.user)
         return post
 
-
-            #add class for css
-    def set_form_class(self):
-        for field in self.fields:
-            self.fields[field].widget.attrs['class'] = "custom-select"
         
 

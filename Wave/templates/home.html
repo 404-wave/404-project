@@ -15,7 +15,7 @@
 	</script> 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
 	</script> <!-- Bootstrap-->
-	 
+	 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
 	</script>
 	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Style-->
@@ -55,32 +55,46 @@
   {% if user.is_authenticated %}
 	<div class="wrapper" id="home_wrapper">
 		<div id="postContainer">
-			<div id="createPost">
-				<p class="greeting">What's on your mind, <span class="name">{{ user }}</span></p>
+        <div id="createPost_tabs">
+          <ul id="tabs">
+              <li>
+                <a class="showing" href="#" id="create_post" name="tab1">
+                  <img alt="Create a post" src="{%  static  'images/create_post.png'  %}" width="30">
+                    <span id="XXX">Create A Post</span></a>
+              </li>
+              <li>
+                <a href="#" id="upload_image" name="tab2"> <img alt="Create a post" src="{%  static  'images/upload_image.png'  %}" width="30"><span id="XXX">Upload an Image</span></a>
+              </li>
+            </ul>
+      
+          <div id="createPost">
 				<form action="" enctype="multipart/form-data" method="post" novalidate="">
 					{% csrf_token %}
 					<div class="settings">
-						<div class="fieldWrapper">
-              {{ form.content.errors }} <label for="{{ form.content.id_for_label }}">Content</label> 
+						<div class="text_Wrapper create_post">
+              {{ form.content.errors }} <label for="{{ form.content.id_for_label }}"></label> 
               {{ form.content }}
-						</div>
+            </div>
+            <div class="fieldWrapper_photo upload_image">
+                {{ form.image.errors }} <label for="{{ form.image.id_for_label }}"></label> {{ form.image }}
+            </div>
 						<div class="settingss">
 							<div class="fieldWrapper_row">
-								<div class="fieldWrapper_photo">
-									{{ form.image.errors }} <label for="{{ form.image.id_for_label }}">Image</label> {{ form.image }}
-								</div>
 								<div class="fieldWrapper_privacy">
-									{{ form.privacy.errors }} <label for="{{ form.privacy.id_for_label }}">Privacy</label> {{ form.privacy}} {{ form.accessible_users.errors }} <label for="{{ form.accessible_users.id_for_label }}">Content</label> {{ form.accessible_users }}
-								</div>
+                  {{ form.privacy.errors }} <label for="{{ form.privacy.id_for_label }}"></label> {{ form.privacy}} 
+                  {{ form.accessible_users.errors }} <label for="{{ form.accessible_users.id_for_label }}"></label> {{ form.accessible_users }}
+		
 							</div>
 							<div class="fieldWrapper_submit">
-								{{ form.unlisted.errors }} <label for="{{ form.unlisted.id_for_label }}">Unlisted</label> {{ form.unlisted }} <input class="btn btn-primary" type="submit" value="Share">
+                {{ form.unlisted.errors }} <label for="{{ form.unlisted.id_for_label }}">Unlisted</label> {{ form.unlisted }} 
+                <input class="wave_btn" type="submit" value="Share">
 							</div>
 						</div>
 					</div>
 				</form>{% if unlisted_instance %}
 				<p>Your posts was created. Access it <a href="{{  unlisted_instance.get_detail_absolute_url  }}">Here</a></p>{% endif %}
-			</div>
+      </div>
+    </div>
 			<div class="stream">
 				<div class="stream_settings">
 					<ul id="tabs">
