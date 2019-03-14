@@ -23,11 +23,15 @@ class PostForm(forms.ModelForm):
         ]
 
 
+
+
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
-
+        self.fields['user'].widget = forms.HiddenInput()
+        self.fields['publish'].widget = forms.HiddenInput()
         self.set_placeholder('content', 'What\'s on your mind?')
         self.set_form_class()
+
 
 
     #add placeholder text to fields

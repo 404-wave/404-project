@@ -57,7 +57,20 @@ function auto_text(){
         this.style.height = 50+ 'px';
         this.style.height = (this.scrollHeight) + 'px';
       });
+    $("#id_privacy").change(function(){
+        private();
+       })}
+      
+
+function private(){
+    var values = $("#id_privacy").val();
+  if(values == 1){
+    $("#id_accessible_users").show();
+  }
+  else
+    $("#id_accessible_users").hide();
 }
+  
 
 
 

@@ -24,24 +24,9 @@
 	   setTabs();
      setEmptyMessage();
      auto_text()
-	 }
-	 function private(){
-	   var values = $("#id_privacy").val();
-	 if(values == 1){
-	   $("#id_accessible_users").parent().show();
-	 }
-	 else
-	   $("#id_accessible_users").parent().hide();
+     private();
 	 }
 
-	$("#id_privacy").change(function(){
-	 private();
-	})
-	private();
-
-	function edit(){
-
-	}
 
 	</script> 
   {% endblock %} 

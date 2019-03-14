@@ -8,7 +8,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 {% endblock %} 
 {% block content %} 
-<div class="wrapper" id="home_wrapper">
+<div class="wrapper">
 <div id ="postContainer">
 <div class = "post_view">
 <div class="stream_post">
@@ -38,7 +38,7 @@
 </div>
 <div class = "comments">
     <p class="lead">Comments</p>
-    <form method="POST" action="."> 
+    <form method="POST" action=""> 
         {% csrf_token %}
         <div class="text_Wrapper ">
                 <label for="{{ form.content.id_for_label }}"></label> 
@@ -98,6 +98,7 @@
         })
 window.onload = function(){
      auto_text()
+     private();
 }
 </script>
         
