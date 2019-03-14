@@ -37,13 +37,7 @@ class PostForm(forms.ModelForm):
     
     #add class for css
     def set_form_class(self):
-            self.fields['privacy'].widget.attrs['class'] = "create_post upload_image"
-    
-
             self.fields['content'].widget.attrs['class'] = "create_post"
-
-            self.fields['accessible_users'].widget.attrs['class'] = "create_post"
-
             self.fields['unlisted'].widget.attrs['class'] = "create_post"
 
 

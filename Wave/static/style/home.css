@@ -1,6 +1,4 @@
-a {
-	padding: 5px;
-}
+
 .author{
 	font-size: 1.2em;
 	color:#424344;
@@ -66,9 +64,7 @@ a {
 }
 .edit_button{
 	height: 100%;
-	width: 33px;
-	margin-left: 10px;
-	vertical-align: middle;
+	margin-right: 5px;
 }
 
 .edit_button:hover, .edit_button:focus{
@@ -265,6 +261,13 @@ textarea.form-control{
 	margin-top: 10px;
 	width: 100%;
 	position: relative;
+	display: flex;
+	flex-direction:column;
+}
+
+.stream_post a{
+	margin-right: 1em;
+	color: #004160;
 }
 
 .stream_post:before, .github_post:before {
@@ -295,6 +298,10 @@ textarea.form-control{
 	padding: 10px 0 10px 10px;
 	background-color: #fdfdfd;
 	margin-bottom: 10px;
+}
+.view_more  {
+	display: flex;
+	justify-content: flex-end;
 }
 
 .wave_btn {

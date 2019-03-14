@@ -120,19 +120,19 @@
 						<p class="privacy"> {{ obj.get_privacy_display}}</p>
 					</div>
 					<div class="post_content">
-            	<!--  So entire post is clickable http://jsfiddle.net/hf75B/1/ -->
-                <a href="{{ obj.get_detail_absolute_url}}">
-              <span class="link-span"></span>
-              </a>
-						<div class="caption">
-							<!-- caption -->
 							<p>{{ obj.content | linebreaks }}</p>
-
+          </div>
+          <div class = "view_more">
+          {% if obj.user == request.user %}
+          <div class="dropdown">
+            <input alt="edit" aria-expanded="false" aria-haspopup="true" class="edit_button" data-toggle="dropdown" id="dropdownMenu2" src="{% static  'images/pencil.png'  %}" type="image" width="25px">
+            <div aria-labelledby="dropdownMenu2" class="dropdown-menu">
+              <a class="dropdown-item" href="{{  obj.get_edit_absolute_url  }}">Edit</a> <a class="dropdown-item" href="{{  obj.get_delete_absolute_url  }}">Delete</a>
             </div>
-            {% if obj.image %}
-						<div class="image"><img alt="" src="{{  obj.image.url  }}"></div>
-						{% endif %}
-					</div><!-- caption -->
+          </div>
+          {% endif %}
+          <a href="{{ obj.get_detail_absolute_url}}">VIEW MORE</a>
+        </div>
         </div>
         {% else %}
 				<div class="github_post">
