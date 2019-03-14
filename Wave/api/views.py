@@ -90,6 +90,8 @@ class PostAPIView(generics.GenericAPIView):
         return Response(data)
 
     def post(self, request, *args, **kwargs):
+
+        # TODO: We need to incorporate UUIDs for posts first
         return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
 
     def put(self, request, *args, **kwargs):
@@ -128,6 +130,8 @@ class CommentAPIView(generics.GenericAPIView):
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
+
+        # TODO: We need to incorporate UUIDs for comments first
         return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
 
 

@@ -161,10 +161,6 @@ class Post(models.Model):
     # users to understand how to handle the actual content of the post.
     content_type = models.CharField(max_length=18 ,choices=ContentType, default="text/plain")
 
-
-
-
-
     def __str__(self):
         return str(self.user.username)
 
