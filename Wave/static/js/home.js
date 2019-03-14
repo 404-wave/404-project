@@ -44,20 +44,20 @@ function setTabs() {
     }
     hideElements('github_post');
     hideElements('upload_image');
+}
 
     //Creating a textarea with auto-resize
     //https://stackoverflow.com/questions/454202/creating-a-textarea-with-auto-resize
     //DreamTeK -https://stackoverflow.com/users/2120261/dreamtek
     // Annswer - https://stackoverflow.com/posts/25621277/revisions
+function auto_text(){
     $('textarea').each(function () {
         this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
       }).on('input', function () {
         this.style.height = 50+ 'px';
         this.style.height = (this.scrollHeight) + 'px';
       });
-    
 }
-
 
 
 

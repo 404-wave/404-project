@@ -28,7 +28,6 @@ class PostForm(forms.ModelForm):
 
         self.set_placeholder('content', 'What\'s on your mind?')
         self.set_form_class()
-        print(self.fields['user'])
 
 
     #add placeholder text to fields

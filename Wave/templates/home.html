@@ -2,14 +2,9 @@
 <!-- https://stackoverflow.com/questions/54730747/how-do-i-use-a-template-from-one-app-in-another-app/54731001#54731001 -->
 <!-- templates/home.html -->
 <!-- Note: we can change this to be more robust by redirecting to a different homepage if the user is not authenticated -->
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-</head>
-
-<body>
-	{% extends "base.html" %} {% load static %} {% block script %} <!-- jQuery -->
+  {% extends "base.html" %} 
+  {% load static %} 
+  {% block script %} <!-- jQuery -->
 	 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
 	</script> <!-- Bootstrap-->
@@ -27,7 +22,8 @@
 
 	 window.onload = function(){
 	   setTabs();
-	   setEmptyMessage();
+     setEmptyMessage();
+     auto_text()
 	 }
 	 function private(){
 	   var values = $("#id_privacy").val();
@@ -148,5 +144,3 @@
   </div>
   {% endif %} 
   {% endblock %}
-</body>
-</html>

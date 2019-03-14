@@ -11,6 +11,17 @@
 .body * {
 	font-family: Roboto, sans-serif;
 }
+.comments {
+	width: 90%;
+	align-self: center;
+}
+
+.lead {
+	font-size: 1em;
+	text-transform: uppercase;
+	color: #abacad
+
+}
 #createPost_tabs{
 	width: 86%;
 	align-items: center;
@@ -112,6 +123,7 @@ position:absolute;
 .fieldWrapper_submit{
 	display: flex;
 	align-items: center;
+	padding-top: 1em;
 }
 
 
@@ -292,6 +304,16 @@ textarea.form-control{
 	background-color: white;
 	font-family: 'Nunito', sans-serif;
 }
+
+.post_view {
+	width: 86%;
+	margin-top: 40px;
+	background-color: white;
+	font-family: 'Nunito', sans-serif;
+	display: flex;
+	flex-direction: column;
+}
+
 
 .stream_settings form{
 	display: flex;
