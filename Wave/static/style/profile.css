@@ -218,7 +218,7 @@ textarea{
 .drpdwn-content{
 	display:none;
 	position:absolute;
-	background-color: #f2f2f2;
+	background-color: #ffffff;
 	min-width: 30em;
 	box-shadow: 0px px;
 	z-index:1;
