@@ -9,6 +9,10 @@ Generally, everything is licensed under Apache 2 by [Z-Red](https://github.com/Z
 Contributors: </br>
 `
 Araien Zach Redfern
+Austin PennyFeather
+Kerry Li
+Allison Boukall
+Shu-Jun Pierre Lin
 
 
 Sources</br>
