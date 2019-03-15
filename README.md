@@ -7,13 +7,13 @@ CMPUT 404 Distributed Social Network
 Generally, everything is licensed under Apache 2 by [Z-Red](https://github.com/Z-Red).
 
 Contributors: </br>
-`
+```
 Araien Zach Redfern <br>
 Austin PennyFeather <br>
 Kerry Li <br>
 Allison Boukall <br>
 Shu-Jun Pierre Lin <br>
-
+```
 
 Sources</br>
 ========================</br>
