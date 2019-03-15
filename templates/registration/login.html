@@ -1,0 +1,48 @@
+<!-- TODO: Need to tell user that they can login after admin approval -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+    <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'style/style.css' %}">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <title>Login</title>
+</head>
+<body>
+<div class = "wrapper">
+  <div class = "login_box">
+    <div class="logo_wrapper">
+      <img src="{% static 'images/slothblack.png' %}" class="logo" alt="Logo">
+    </div>
+    <p class = "title">Login</p>
+    <div class = "login_area">
+      <p class = "register">Want to <a href="{% url 'register' %}">create an account</a> instead?</p>
+      <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+      <p>Username: {{ form.username }}</p>
+      <p>Password: {{ form.password }}</p>
+      <input class ="btn" type="submit" value="login" />
+      <input type="hidden" name="next" value="{{ next }}">
+        <div class = "errors">
+          {% if form.errors %}
+          <p>Your username and password did not match.</p>
+          {% endif %}
+        
+          {% if next %}
+          <p>You do not have access to view this page.</p>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>
