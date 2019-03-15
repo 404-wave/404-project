@@ -69,7 +69,7 @@ class PostAPIView(generics.GenericAPIView):
         data = ""
         queryset = ""
         path = request.path
-        print(request.path)
+
         if 'author_id' in self.kwargs.keys():
             author_id = self.kwargs['author_id']
             try:
@@ -88,7 +88,6 @@ class PostAPIView(generics.GenericAPIView):
             #     return Response(status=status.HTTP_404_NOT_FOUND)
 
         elif path == "/service/author/posts":
-            print("CYAYAYAY")
             queryset = Post.objects.filter_user_visible_posts(user=request.user)
 
         else:
