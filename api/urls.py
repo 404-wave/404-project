@@ -10,8 +10,9 @@ urlpatterns = [
     path('author/<uuid:author_id>/', UserAPIView.as_view()),
 
     # Posts
+    path('author/posts', PostAPIView.as_view()),
     path('author/<uuid:author_id>/posts', PostAPIView.as_view()),
-    path('posts/<int:post_id>', PostAPIView.as_view()),
+    path('posts/<int:post_id>/', PostAPIView.as_view()),
     path('posts/', PostAPIView.as_view()),
     #TODO: POST a post and PUT to a post
 
