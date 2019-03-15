@@ -8,11 +8,11 @@ Generally, everything is licensed under Apache 2 by [Z-Red](https://github.com/Z
 
 Contributors: </br>
 `
-Araien Zach Redfern
-Austin PennyFeather
-Kerry Li
-Allison Boukall
-Shu-Jun Pierre Lin
+Araien Zach Redfern <br>
+Austin PennyFeather <br>
+Kerry Li <br>
+Allison Boukall <br>
+Shu-Jun Pierre Lin <br>
 
 
 Sources</br>
