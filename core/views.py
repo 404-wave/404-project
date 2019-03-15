@@ -245,8 +245,7 @@ def edit_profile(request):
 		# back to profile page
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect('http://127.0.0.1:8000/home/profile/') #TODO need to fix this so not hardcoded
-		
+			return HttpResponseRedirect(reverse('my_profile')) 	
 		#TODO else statement when form isn't valid
 
 	#if not POST, then must be GET'ing the form itself. so pass context
