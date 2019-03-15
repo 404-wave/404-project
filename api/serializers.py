@@ -58,7 +58,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'user', 'contentType', 'published', 'author', 'comments', 'visibility', 'visible_to', 'unlisted')
+        fields = ('id', 'user', 'contentType', 'published', 'content', 'author', 'comments', 'visibility', 'visible_to', 'unlisted')
 
     def _content_type(self, obj):
         return obj.content_type
