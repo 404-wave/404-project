@@ -69,7 +69,7 @@ class PostAPIView(generics.GenericAPIView):
         data = ""
         queryset = ""
         path = request.path
-
+        print(request.path)
         if 'author_id' in self.kwargs.keys():
             author_id = self.kwargs['author_id']
             try:
@@ -78,13 +78,17 @@ class PostAPIView(generics.GenericAPIView):
                 return Response(status=status.HTTP_404_NOT_FOUND)
             queryset = Post.objects.filter_user_visible_posts(user=request.user).filter(user=author_id)
 
+            # TODO: Improve the below query -- doesn't cover entire domain. E.g., private and unlisted.
+            queryset = queryset | Post.objects.filter(user=author_id, privacy=Post.PUBLIC)
+
         elif 'post_id' in kwargs.keys():
             post_id = self.kwargs['post_id']
             queryset = Post.objects.filter_user_visible_posts(user=request.user).filter(id=post_id)
-            if not queryset:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+            # if not queryset:
+            #     return Response(status=status.HTTP_404_NOT_FOUND)
 
-        elif path == "service/author/posts":
+        elif path == "/service/author/posts":
+            print("CYAYAYAY")
             queryset = Post.objects.filter_user_visible_posts(user=request.user)
 
         else:
