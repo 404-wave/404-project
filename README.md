@@ -47,3 +47,47 @@ AUTHOR: thepeer - https://stackoverflow.com/users/79527/thepeer</br>
 # Run the server locally 
 7. python3 manage.py runserver
 ```
+
+## API
+
+Below there is a list of which endpoints are currently working. Additonally, there is a section of TODOs if something has not yet been implemented.
+
+Note: Pagination works for any endpoint endpoint related to posts or comments.
+
+### Posts
+
+GET service/author/posts: returns all posts visible to the currently authenticated user.
+
+GET service/posts: returns all publicly available posts.
+
+GET service/author/{AUTHOR_ID}/posts: returns all posts from AUTHOR_ID that are visible to the currently authenticated user.
+
+GET service/posts/{POST_ID}: returns a single post if it is visible to the currently authenticated user.
+
+##### TODO...
+
+POST service/posts/{POST_ID}: insert a new post.
+
+PUT service/posts/{POST_ID}: update an existing post.
+
+### Comments
+
+GET service/posts/{POST_ID}/comments: returns all comments in a post if the post is visible to the currently authenticated user.
+
+##### TODO...
+
+POST service/posts/{POST_ID}/comments: add a new comment to an existing post.
+
+### Friendship
+
+GET service/author/{AUTHOR_ID}/friends: returns all friends of AUTHOR_ID.
+
+GET service/author/{AUTHOR_ID1>/friends/{AUTHOR_ID2}: returns a response specifying if AUTHOR_ID1 is a friend of AUTHOR_ID2.
+
+POST service/author/{AUTHOR_ID}/friends: accepts a list of authors and returns a list of authors that are friends of AUTHOR_ID.
+
+POST service/friendrequest: accepts two authors and creates a friend request if they are not already friends.
+
+### Profiles
+
+GET service/author/{AUTHOR_ID}: returns the profile associated with AUTHOR_ID.
