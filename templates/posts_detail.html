@@ -18,7 +18,7 @@
 <div class="wrapper">
 <div id ="postContainer">
 <div class = "post_view">
-<div class="stream_post">
+<div>
     <div class="top_row">
         <div class="post_info">
             <div class="author_edit">
@@ -29,7 +29,9 @@
             <p class="privacy"> {{ instance.privacy }}</p>
     </div>
     {% if instance.is_image %}
-    <img src="{{ instance.data_uri }}">
+    <a href="{{ instance.data_uri }}">
+        <img src="{{ instance.data_uri }}">
+    </a>
     {% else %}
     <br/>
     <div class="post_content">
