@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Follow
+from friends.models import Follow
 from users.models import User
 from django.db.models import Q
 from django.db import connection
@@ -14,9 +14,8 @@ class FollowTestCase(TestCase):
     person5 = None
     person6 = None
     person7 = None
-
-
-    
+        
+  
     def setUp(self):
         #create user objects
         self.person1 = User.objects.create(username="person1",password="test1")
@@ -49,7 +48,10 @@ class FollowTestCase(TestCase):
         Follow.objects.create(user1=self.person7,user2=self.person4)
         Follow.objects.create(user1=self.person1,user2=self.person4)
 
-        
+    def test_modelCreation(self):
+        follow_obj = Follow.objects.filter(user1=self.person1,user2=self.person2).get()
+        self.assertTrue(isinstance(follow_obj,Follow))
+
 
     def test_followeesCorrect(self):
         #tests if the follower has the correct followee's
