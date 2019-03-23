@@ -19,11 +19,11 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-
+        
 
 class Node(models.Model):
 
-    url = models.CharField(max_length = 500) # TODO: Find reasonable length
+    host = models.CharField(max_length = 500) # TODO: Find reasonable length
     sharing = models.BooleanField(default=True)
 
     def __str__(self):
@@ -33,14 +33,10 @@ class Node(models.Model):
 class NodeSetting(models.Model):
 
     id = models.IntegerField(default=1, primary_key=True)
-    node_limit = models.IntegerField(default=10,
-        help_text='The maximum number of servers that should be connected at one time.')
-    require_auth = models.BooleanField(default=True,
-        help_text='Specify if incoming server connections require authentication.')
-    share_posts = models.BooleanField(default=True,
-        help_text='Specify if posts should be shared with other servers.')
-    share_imgs = models.BooleanField(default=True,
-        help_text='Specify if images should be shared with other servers.')
+    #node_limit = models.IntegerField(default=10,  help_text='The maximum number of servers that should be connected at one time.')
+    require_auth = models.BooleanField(default=True, help_text='Specify if incoming server connections require authentication.')
+    share_posts = models.BooleanField(default=True, help_text='Specify if posts should be shared with other servers.')
+    share_imgs = models.BooleanField(default=True, help_text='Specify if images should be shared with other servers.')
 
     # Override database save method to force a max of one entry in the table
     def save(self, *args, **kwargs):
