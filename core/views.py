@@ -55,7 +55,7 @@ def home(request):
 			print("GET", streamlist)
 		else:
 			streamlist = Post.objects.filter_user_visible_posts(user=request.user)
-		
+
 		"""
 			Allows you to search for the titles of post
 		"""
@@ -131,7 +131,7 @@ def home(request):
 			print("GET", streamlist)
 		else:
 			streamlist = Post.objects.filter_user_visible_posts(user=request.user)
-		
+
 		"""
 			Allows you to search for the titles of post
 		"""
@@ -233,20 +233,20 @@ def profile(request, pk = None):
 
 @login_required(login_url='/login')
 def edit_profile(request):
-	
+
 	if not request.user.is_authenticated:
 		return HttpResponseForbidden()
 
 	#if they submitted new changes create change form
 	if request.method == "POST":
 		form = changeForm(request.POST,instance=request.user)
-	   
+
 		#check for validity of entered data. save to db if valid and redirect
 		# back to profile page
 		if form.is_valid():
 			form.save()
 			return HttpResponseRedirect('http://127.0.0.1:8000/home/profile/') #TODO need to fix this so not hardcoded
-		
+
 		#TODO else statement when form isn't valid
 
 	#if not POST, then must be GET'ing the form itself. so pass context
@@ -255,7 +255,7 @@ def edit_profile(request):
 														'last_name':request.user.last_name,
 														'email':request.user.email,
 														'github':request.user.github})
-		
+
 		context = {'form':form}
 		return render(request,'profileEdit.html',context)
 
@@ -274,4 +274,3 @@ def friends(request):
 	}
 
 	return render(request, 'friends.html', context)
-

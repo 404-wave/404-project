@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+import uuid
+
 # Create your models here.
 
 
@@ -20,15 +22,11 @@ class CommentManager(models.Manager):
 
 class Comment(models.Model):
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-
-    # TODO: Maybe should change the content of this to be some type of enum, rather than a textfield.
-    contentType = models.TextField(max_length=13, default="text/plain") # Could also be "text/markdown"
-
-    object_id = models.PositiveIntegerField()
+    object_id = models.CharField(max_length=32)
     content_object = GenericForeignKey('content_type', 'object_id')
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
