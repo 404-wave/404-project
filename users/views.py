@@ -19,7 +19,7 @@ def register(request):
 
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save();
+            user = form.save()
             host = request.scheme + "://" + request.META['HTTP_HOST'] + "/"
             user.url = host + "home/profile/" + str(user.id)
             user.host = host
