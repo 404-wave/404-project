@@ -24,11 +24,11 @@ from mimetypes import guess_type
 def posts_detail(request, id):
     instance = get_object_or_404(Post, id=id)
 
-    # Checks if the posts is from the user who posted it 
+    # Checks if the posts is from the user who posted it
     # And if it can be seen by the acessible users
     # If not redirects the user back to the home page
     user_posts = Post.objects.filter_user_visible_posts(request.user, remove_unlisted=False)
-    try: 
+    try:
         user_posts.get(id=instance.id)
     except Post.DoesNotExist:
         return HttpResponseRedirect('/home')
@@ -41,6 +41,7 @@ def posts_detail(request, id):
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
     if comment_form.is_valid():
+        print("was valid")
         comment_type = comment_form.cleaned_data.get("content_type")
         content_type = ContentType.objects.get(model=comment_type)
         obj_id = comment_form.cleaned_data.get("object_id")
@@ -83,7 +84,7 @@ def image_to_b64(image_file):
         encoded_string = base64.b64encode(f.read()).decode()
         image_type = guess_type(image_file.path)[0]
         return image_type, encoded_string
-        
+
 def create_base64_str(sender, instance=None, created=False, **kwargs):
     if instance.image and created:
         image_type, encoded_string = image_to_b64(instance.image)
@@ -102,7 +103,7 @@ def create_base64_str(sender, instance=None, created=False, **kwargs):
 @login_required(login_url='/login')
 def posts_update(request, id=None):
 
-    
+
     # Checks if the user who created the post can update the post
     # If not redirect the user
     instance = get_object_or_404(Post, id=id)
