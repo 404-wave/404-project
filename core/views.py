@@ -245,7 +245,9 @@ def edit_profile(request):
 		# back to profile page
 		if form.is_valid():
 			form.save()
+
 			return HttpResponseRedirect(reverse('my_profile')) 	
+    
 		#TODO else statement when form isn't valid
 
 	#if not POST, then must be GET'ing the form itself. so pass context
