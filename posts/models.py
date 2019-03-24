@@ -11,6 +11,8 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, m2m_changed
 import base64
 from mimetypes import guess_type
+import uuid
+
 # Create your models here.
 
 #https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
@@ -95,6 +97,49 @@ class PostManager(models.Manager):
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
         return all_posts.order_by('-timestamp')
+
+    def filter_user_visible_posts_by_user_id(self, user_id, server_only, *args, **kwargs):
+        only_me_posts = super(PostManager, self).filter(privacy=5, user=user_id)
+        public_posts = super(PostManager, self).filter(privacy=0)
+
+        #private_posts = user.accessible_posts.all()
+        # Probably there is a better way to do this. I can't use the line above
+        # since it requires a user instance and if the requestor is on another
+        # server then they won't have an instance here.
+        private_posts = Post.objects.none()
+        for post in Post.objects.filter(privacy=1):
+            for user in post.accessible_users.all():
+                if user.id == user_id:
+                    private_posts |= Post.objects.filter(id=post.id)
+
+        followers = User.objects.filter(follower__user2=user_id, is_active=True)
+        following = User.objects.filter(followee__user1=user_id, is_active=True)
+        friends = following & followers
+        friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
+
+
+        friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
+        friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
+        friends_of_friends = friends_followers & friends_following
+        friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
+
+        # Need to pass a boolean because the API might call this function and
+        # the request could've came from a different server
+        server_only_posts = Post.objects.none()
+        if server_only is True:
+            server_only_posts =  super(PostManager, self).filter(privacy=4, user=user_id)
+
+
+        all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
+
+        """
+            If unlisted is passed as True, the function will remove unlisted posts from the list.
+            If it is passed as False, then it will not remove the unlisted posts.
+        """
+        #if kwargs.get('remove_unlisted', True):
+        all_posts = all_posts.filter(unlisted=False)
+        return all_posts.order_by('-timestamp')
+
 
     # TODO: Not sure if this works yet.
 

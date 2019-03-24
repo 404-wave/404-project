@@ -19,7 +19,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-        
+
 
 class Node(models.Model):
 
@@ -33,6 +33,7 @@ class Node(models.Model):
 class NodeSetting(models.Model):
 
     id = models.IntegerField(default=1, primary_key=True)
+    host = models.CharField(max_length=500)
     #node_limit = models.IntegerField(default=10,  help_text='The maximum number of servers that should be connected at one time.')
     require_auth = models.BooleanField(default=True, help_text='Specify if incoming server connections require authentication.')
     share_posts = models.BooleanField(default=True, help_text='Specify if posts should be shared with other servers.')
