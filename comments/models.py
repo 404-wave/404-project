@@ -25,8 +25,9 @@ class CommentManager(models.Manager):
         #build_request = "https://cmput404-wave.herokuapp.com/service/posts/" + str(32) + "/comments"
         #build_request = "https://desolate-refuge-32192.herokuapp.com/posts/ae29e231-86a0-431b-88f1-ecbc1adfc569/comments"
         #build_request = "https://myblog-cool.herokuapp.com/service/posts"
-        #build_request = "https://cmput404-i5.herokuapp.com/posts"
-        build_request = "https://cmput404w19-project.herokuapp.com/posts"
+        build_request = "https://cmput404-i5.herokuapp.com/posts/fd52adfa-ba32-460b-8e8c-780ce5be6e57/comments"
+        #build_request = "https://cmput404w19-project.herokuapp.com/posts"
+        #https://cmput404-i5.herokuapp.com//posts/fd52adfa-ba32-460b-8e8c-780ce5be6e57/comments
         r=requests.get(build_request)
         print(r)
         response = r.json()
