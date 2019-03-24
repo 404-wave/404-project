@@ -23,7 +23,6 @@ from mimetypes import guess_type
 @login_required(login_url='/login')
 def posts_detail(request, id):
     instance = get_object_or_404(Post, id=id)
-
     # Checks if the posts is from the user who posted it
     # And if it can be seen by the acessible users
     # If not redirects the user back to the home page

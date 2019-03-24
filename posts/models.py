@@ -189,6 +189,10 @@ class Post(models.Model):
     @property
     def comments(self):
         instance = self
+        #build_request = 
+        #print("the instance is " + str(instance))
+        #print("instance id is: " + str(instance.id))
+        #test = Comment.objects.get_comments(instance)
         query_set = Comment.objects.filter_by_instance(instance)
         return query_set
 

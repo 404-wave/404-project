@@ -139,6 +139,8 @@ def home(request):
 		if query:
 			streamlist = streamlist.filter(content__icontains=query)
 
+		print(type(streamlist))
+
 		print("Stream list len: ", len(streamlist))
 		print("Stream list: ", streamlist)
 
