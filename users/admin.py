@@ -11,14 +11,14 @@ class UserAdmin(admin.ModelAdmin):
 
 class NodeAdmin(admin.ModelAdmin):
 
-    search_fields = ['url']
-    list_display = ['id', 'url', 'sharing']
+    search_fields = ['host']
+    list_display = ['id', 'host', 'sharing']
     list_filter = ('sharing',)
 
 
 class NodeSettingAdmin(admin.ModelAdmin):
 
-    list_display = ['id', 'node_limit', 'require_auth']
+    list_display = ['id', 'require_auth']
 
 
 admin.site.register(User, UserAdmin)

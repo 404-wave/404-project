@@ -142,8 +142,8 @@ class Post(models.Model):
         (PNG, "image/png;base64"),
     )
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     status = models.CharField(max_length=6, choices=Status, default=POST)
     content = models.TextField(blank=True)
     image = models.FileField(upload_to=upload_location, null=True, blank=True)
