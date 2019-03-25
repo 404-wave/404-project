@@ -27,7 +27,14 @@ def following(request):
         return HttpResponseForbidden()
 
     # E.g., look at Follow table results where I am the follower
-    following = User.objects.filter(followee__user1=request.user.id, is_active=True)
+    # following = User.objects.filter(followee__user1=request.user.id, is_active=True)
+    user_query = Q()
+    following_obj = Follow.objects.filter(Q(user1=request.user.id))
+    for followee in following_obj:
+        user_query = user_query | Q(id=followee.user2)
+    
+    following = User.objects.filter(user_query)
+    
     data = serializers.serialize('json', following, fields=('username'))
     return HttpResponse(data, content_type="application/json")
 
@@ -38,7 +45,12 @@ def followers(request):
         return HttpResponseForbidden()
 
     # Look at Follow table results where I am the followee
-    followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
+    # followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
+    follower_obj = Follow.objects.filter(Q(user2=request.user.id))
+    user_Q = Q()
+    for follower in follower_obj:
+        user_Q = user_Q | Q(id=follower.user1)
+    followers = User.objects.filter(user_Q)
     print("FOLLOWERS: ", followers)
     data = serializers.serialize('json', followers, fields=('username'))
     return HttpResponse(data, content_type="application/json")
@@ -49,9 +61,20 @@ def friends(request):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
 
-    followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
-    following = User.objects.filter(followee__user1=request.user.id, is_active=True)
-    friends = following & followers
+    # followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
+    # following = User.objects.filter(followee__user1=request.user.id, is_active=True)
+    # friends = following & followers
+
+    uid = request.user.id
+    user_Q = Q()
+    follow_obj = Follow.objects.filter(Q(user2=uid)&Q(user1=uid))
+    for follow in follow_obj:
+        if follow.user1==uid:
+            user_Q = user_Q | Q(id=follow.user2)
+        elif follow.user2==uid:
+            user_Q = user_Q | Q(id=follow.user1)
+
+    friends = User.objects.filter(user_Q)
     print("FRIENDS",friends)
     data = serializers.serialize('json', friends, fields=('username'))
     return HttpResponse(data, content_type="application/json") 

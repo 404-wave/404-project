@@ -148,3 +148,57 @@ function closeDropDown(){
   }
 }
 
+function addFromOtherNode(userid,username){
+  console.log("WE HERE")
+  const path = "http://127.0.0.1:3000/service/friendrequest/";
+  const request_user_url = "http://127.0.0.1:8000/"+ userid;
+  const req_profile_url = "http://127.0.0.1:8000/home/profile/"+ userid;
+  const recip_user_url = "http://127.0.0.1:3000/1f8a90a5cc2e4fa0b3aaaaadb5d06f7a";
+ 
+  let payload = {
+    "query":"friendrequest",
+    "author": {
+        "id":  request_user_url,
+        "host": "http://127.0.0.1:8000/",
+        "displayName": username,
+        "url":req_profile_url,
+        },  
+    "friend": {
+        "id": recip_user_url,
+        "host": "http://127.0.0.1:3000/",
+        "displayName": "test-user",
+        "url": "http://127.0.0.1:3000/home/profile/1f8a90a5cc2e4fa0b3aaaaadb5d06f7a",
+        }
+  };
+  // $.ajax({
+  //   type:"POST",
+  //   url: path,
+  //   crossDomain: true,
+  //   data: JSON.stringify(payload),
+  //   dataType:"json",
+  //   contentType:"application/json",
+  //   success: function (data) {
+  //     console.log(data);
+  //   },
+  //   error: function(xhr, status, error) {
+  //     console.log(error)
+  //   }
+  // });
+  // console.log(JSON.stringify(payload,null,2));
+  let metaData = {
+    'method':'POST',
+    'mode':'no-cors',
+    'body': JSON.stringify(payload),
+    'headers':{
+      'Content-Type':'application/json',
+      'Accept':'application/json',
+    }
+  }
+  // console.log(JSON.parse(metaData.data));
+  console.log('\n\n\n')
+  console.log(metaData.headers);
+  fetch(path ,metaData)
+  .then(body=>body.json)
+  .catch(error => alert("Error: ",error));
+
+}

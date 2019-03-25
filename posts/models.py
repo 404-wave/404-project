@@ -5,10 +5,12 @@ from django.db import models
 from django.conf import settings
 from django.urls import reverse
 from comments.models import Comment
+from friends.models import Follow
 from django.contrib.contenttypes.models import ContentType
 from users.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save, m2m_changed
+from django.db.models import Q
 import base64
 from mimetypes import guess_type
 import uuid
@@ -41,16 +43,27 @@ class PostManager(models.Manager):
         return query_set
 
     def filter_by_friends(self, *args, **kwargs):
-        followers = User.objects.filter(follower__user2=user.id, is_active=True)
-        following = User.objects.filter(followee__user1=user.id, is_active=True)
-        friends = following & followers
+        # followers = User.objects.filter(follower__user2=user.id, is_active=True)
+        # following = User.objects.filter(followee__user1=user.id, is_active=True)
+        # friends = following & followers
+        uid = user.id
+        user_Q = Q()
+        follow_obj = Follow.objects.filter(Q(user2=uid)&Q(user1=uid))
+        for follow in follow_obj:
+            if follow.user1==uid & follow.user2.is_active:
+                user_Q = user_Q | Q(id=follow.user2)
+            elif follow.user2==uid & follow.user1.is_active:
+                user_Q = user_Q | Q(id=follow.user1)
+            
+        friends = User.objects.filter(user_Q)
         query_set = super(PostManager, self).filter(privacy=2, user__in=friends).order_by("-timestamp")
         return query_set
 
     def filter_by_foaf(self, *args, **kwargs):
-        friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
-        friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
-        friends_of_friends = friends_followers &  friends_following
+        # friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
+        # friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
+        # friends_of_friends = friends_followers &  friends_following
+        
         query_set = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends).order_by("-timestamp")
         return query_set
 
@@ -71,16 +84,41 @@ class PostManager(models.Manager):
 
         private_posts = user.accessible_posts.all()
 
-        followers = User.objects.filter(follower__user2=user.id, is_active=True)
-        following = User.objects.filter(followee__user1=user.id, is_active=True)
-        friends = following & followers
+        # followers = User.objects.filter(follower__user2=user.id, is_active=True)
+        # following = User.objects.filter(followee__user1=user.id, is_active=True)
+        # friends = following & followers
+        uid = user.id
+        user_Q = Q()
+        follow_obj = Follow.objects.filter(Q(user2=uid)&Q(user1=uid))
+        for follow in follow_obj:
+            if follow.user1==uid & follow.user2.is_active:
+                user_Q = user_Q | Q(id=follow.user2)
+            elif follow.user2==uid & follow.user1.is_active:
+                user_Q = user_Q | Q(id=follow.user1)
+            
+        friends = User.objects.filter(user_Q)
+
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
 
 
 
-        friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
-        friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
-        friends_of_friends = friends_followers &  friends_following
+        # friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
+        # friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
+        # friends_of_friends = friends_followers &  friends_following
+        
+        #TODO Not efficient, need to find a more efficient way of filtering this
+        fr_Q = Q()
+        for fr in friends:
+            fr_followers_object = Follow.objects.filter(user2=fr.id)
+            fr_following_object = Follow.objects.filter(user1=fr.id)
+            for fr_followers in fr_followers_object:
+                fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
+            for fr_followings in fr_following_object:
+                fr_Q = fr_Q | Q(id=fr+followings.user2,is_active=True)
+        
+        friends_of_friends = User.objects.filter(fr_Q)
+
+
         friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
 
         server_only_posts =  super(PostManager, self).filter(privacy=4, user = user)
@@ -112,15 +150,39 @@ class PostManager(models.Manager):
                 if user.id == user_id:
                     private_posts |= Post.objects.filter(id=post.id)
 
-        followers = User.objects.filter(follower__user2=user_id, is_active=True)
-        following = User.objects.filter(followee__user1=user_id, is_active=True)
-        friends = following & followers
+        # followers = User.objects.filter(follower__user2=user_id, is_active=True)
+        # following = User.objects.filter(followee__user1=user_id, is_active=True)
+        # friends = following & followers
+
+        uid = user_id
+        user_Q = Q()
+        follow_obj = Follow.objects.filter(Q(user2=uid)&Q(user1=uid))
+        for follow in follow_obj:
+            if follow.user1==uid & follow.user2.is_active:
+                user_Q = user_Q | Q(id=follow.user2)
+            elif follow.user2==uid & follow.user1.is_active:
+                user_Q = user_Q | Q(id=follow.user1)
+            
+        friends = User.objects.filter(user_Q)
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
 
 
-        friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
-        friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
-        friends_of_friends = friends_followers & friends_following
+        # friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
+        # friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
+        # friends_of_friends = friends_followers & friends_following
+
+        #TODO Not efficient, need to find a more efficient way of filtering this
+        fr_Q = Q()
+        for fr in friends:
+            fr_followers_object = Follow.objects.filter(user2=fr.id)
+            fr_following_object = Follow.objects.filter(user1=fr.id)
+            for fr_followers in fr_followers_object:
+                fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
+            for fr_followings in fr_following_object:
+                fr_Q = fr_Q | Q(id=fr+followings.user2,is_active=True)
+        
+        friends_of_friends = User.objects.filter(fr_Q)
+
         friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
 
         # Need to pass a boolean because the API might call this function and
