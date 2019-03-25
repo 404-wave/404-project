@@ -28,7 +28,6 @@ from .paginators import PostPagination, CommentPagination
 # As a server admin, node to node connections can be authenticated with HTTP Basic Auth
 # As a server admin, I can disable the node to node interfaces for connections that are not authenticated!
 
-# CANT POST POTS TO OTHER SERVERS???
 # CAN POST COMMENTS TO OTHER SERVERS coool
 # TODO: FOAF
 # TODO:
@@ -265,10 +264,11 @@ class CommentAPIView(generics.GenericAPIView):
         # Retrieves JSON data
         data = request.data
         try:
-            post_id = data['post'] # TODO: This is a url, that's stupid, need to parse
+            post_id = data['post'].split("/")[-1]
             content = data['comment']['comment']
-            content_type = data['comment']['contentType']
-            timestamp = data['comment']['published']
+            #content_type = data['comment']['contentType']
+            content_type = "text/plain"
+            #timestamp = data['comment']['published']
             author_id = data['comment']['author']['id'].split("/")[-1]
         except:
             # If the JSON was not what we wanted, send a 400
