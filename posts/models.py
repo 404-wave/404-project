@@ -13,6 +13,7 @@ from django.db.models.signals import post_save, m2m_changed
 import base64
 from mimetypes import guess_type
 import uuid
+import json
 import requests
 
 
@@ -89,7 +90,13 @@ class PostManager(models.Manager):
 
             print(url)
             print(response.status_code)
-            posts_from_servers.extend(response.json())
+            if (response.status_code > 199 and response.status_code <300):
+                print (response)
+                posts_from_servers.extend(response.json())
+        
+         
+            #print(response.json())
+            #posts_from_servers.extend(response.json())
         ####################################################################
 
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)

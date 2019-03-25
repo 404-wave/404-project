@@ -130,6 +130,7 @@ def home(request):
 			streamlist = Post.objects.filter(privacy=privacy)
 			print("GET", streamlist)
 		else:
+			print (request.user)
 			streamlist = Post.objects.filter_user_visible_posts(user=request.user)
 
 		"""
@@ -199,7 +200,7 @@ def home(request):
 		}
 	if instance and instance.unlisted is True:
 		context["unlisted_instance"] = instance
-
+	print ("USER",streamlist[0])
 	return render(request, "home.html", context)
 
 @login_required(login_url='/login')

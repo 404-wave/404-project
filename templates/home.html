@@ -4,6 +4,7 @@
 <!-- Note: we can change this to be more robust by redirecting to a different homepage if the user is not authenticated -->
   {% extends "base.html" %} 
   {% load static %} 
+
   {% block script %} <!-- jQuery -->
 	 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
@@ -91,7 +92,10 @@
 					<div class="top_row">
 						<div class="post_info">
 							<div class="author_edit">
+                  {% load post_filters %}
+                  {{ obj|get_author_name }}
                 <p class="author">{{ obj.user }}</p>
+               {{ obj.author.displayName }}
                 <p class="post_date">{{ obj.timestamp }}</p>
 							</div>
 						</div>
