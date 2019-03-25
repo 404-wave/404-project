@@ -73,19 +73,24 @@ def friends(request):
     # following = User.objects.filter(followee__user1=request.user.id, is_active=True)
     # friends = following & followers
 
+    #TODO make more efficient
     uid = request.user.id
     user_Q = Q()
-    follow_obj = Follow.objects.filter(Q(user2=uid)&Q(user1=uid))
+    follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
     if len(follow_obj) != 0:
         for follow in follow_obj:
             if follow.user1==uid:
-                user_Q = user_Q | Q(id=follow.user2)
+                recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                if len(recip_object) != 0:
+                    user_Q = user_Q | Q(id=follow.user2)
             elif follow.user2==uid:
-                user_Q = user_Q | Q(id=follow.user1)
+                recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                if len(recip_object) != 0:
+                    user_Q = user_Q | Q(id=follow.user1)
         friends = User.objects.filter(user_Q)
     else:
         friends = User.objects.none()
-        
+
     data = serializers.serialize('json', friends, fields=('username'))
     return HttpResponse(data, content_type="application/json") 
 
