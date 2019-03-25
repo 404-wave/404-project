@@ -77,9 +77,10 @@ class PostManager(models.Manager):
             #     'Authorization': 'Basic {0}'.format(node.token)
             #     }
             # response = requests.get(node.host, headers=headers)
-            response = requests.get(node.host)
+            url = node.host + "/service/author/posts?user=" + str(user.id)
+            response = requests.get(url)
             print(response.content)
-            posts_from_servers.extend(response.json())
+            #posts_from_servers.extend(response.json())
         ####################################################################
 
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
@@ -103,7 +104,7 @@ class PostManager(models.Manager):
 
 
         all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
-        
+
         """
             If unlisted is passed as True, the function will remove unlisted posts from the list.
             If it is passed as False, then it will not remove the unlisted posts.
@@ -117,12 +118,14 @@ class PostManager(models.Manager):
 
     def filter_user_visible_posts_by_user_id(self, user_id, server_only, *args, **kwargs):
 
+        # NOTE: Don't add this here right now.
+
         # This is for getting post from another node
         ####################################################################
-        posts_from_servers = []
-        for node in Node.objects.all():
-            response = requests.get(node.host)
-            posts_from_servers.extend(response.json())
+        #posts_from_servers = []
+        #for node in Node.objects.all():
+            #response = requests.get(node.host + "?user=" + str(user_id))
+            #posts_from_servers.extend(response.json())
         ####################################################################
 
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user_id)
@@ -156,7 +159,7 @@ class PostManager(models.Manager):
             server_only_posts =  super(PostManager, self).filter(privacy=4, user=user_id)
 
 
-        all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts 
+        all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
         all_posts = list(all_posts).extend(posts_from_servers)
 
         """
