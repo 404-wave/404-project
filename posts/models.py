@@ -114,7 +114,7 @@ class PostManager(models.Manager):
             for fr_followers in fr_followers_object:
                 fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
             for fr_followings in fr_following_object:
-                fr_Q = fr_Q | Q(id=fr+followings.user2,is_active=True)
+                fr_Q = fr_Q | Q(id=fr_followings.user2,is_active=True)
         
         friends_of_friends = User.objects.filter(fr_Q)
 
