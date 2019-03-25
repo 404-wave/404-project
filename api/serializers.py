@@ -43,22 +43,37 @@ class UserFriendSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
 
-    # title - probably won't include
-    # soure - more relevant for part 2
-    # origin - more relevant for part 2
-    # description - probably won't include
-    # catgeories - probably won't include
-
     contentType = serializers.SerializerMethodField('_content_type')
     author = serializers.SerializerMethodField('_author')
     comments = serializers.SerializerMethodField('_comments')
     published = serializers.SerializerMethodField('_published')
     visibility = serializers.SerializerMethodField('_visibility')
     visible_to = serializers.SerializerMethodField('_visible_to')
+    categories = serializers.SerializerMethodField('_categories')
+    description = serializers.SerializerMethodField('_description')
+    source = serializers.SerializerMethodField('_source')
+    origin = serializers.SerializerMethodField('_origin')
+
 
     class Meta:
         model = Post
-        fields = ('id', 'user', 'contentType', 'published', 'content', 'author', 'comments', 'visibility', 'visible_to', 'unlisted')
+        fields = ('id', 'user', 'contentType', 'categories', 'description',
+                    'published', 'content', 'author', 'comments', 'visibility',
+                     'visible_to', 'unlisted', 'source', 'origin')
+
+    # TODO
+    def _source(self, obj):
+        return ""
+
+    # TODO:
+    def _origin(self, obj):
+        return ""
+
+    def _categories(self, obj):
+        return list()
+
+    def _description(self, obj):
+        return ""
 
     def _content_type(self, obj):
         return obj.content_type
@@ -70,12 +85,10 @@ class PostSerializer(serializers.ModelSerializer):
         return Post.Privacy[obj.privacy][1]
 
     def _visible_to(self, obj):
-        if obj.privacy is Post.PUBLIC:
-            return list()
-
-        # TODO: Return a list of users who can view the post...
-        # How to use the accessible_users list?
         user_list = list()
+        if obj.privacy is Post.PRIVATE:
+            for user in obj.accessible_users.all():
+                user_list.append(str(user.id))
         return user_list
 
     def _author(self, obj):
@@ -114,7 +127,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('author', 'comment', 'contentType', 'published', 'id')
+        fields = ('author', 'comment', 'published', 'id')
 
     def _author(self, obj):
         author = User.objects.get(username=obj.user)

@@ -43,7 +43,6 @@ def posts_detail(request, id):
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
     if comment_form.is_valid():
-        print("was valid")
         comment_type = comment_form.cleaned_data.get("content_type")
         content_type = ContentType.objects.get(model=comment_type)
         obj_id = comment_form.cleaned_data.get("object_id")
