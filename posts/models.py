@@ -87,7 +87,7 @@ class PostManager(models.Manager):
         # followers = User.objects.filter(follower__user2=user.id, is_active=True)
         # following = User.objects.filter(followee__user1=user.id, is_active=True)
         # friends = following & followers
-        uid = request.user.id
+        uid = user.id
         user_Q = Q()
         follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
         if len(follow_obj) != 0:
@@ -160,7 +160,7 @@ class PostManager(models.Manager):
         # following = User.objects.filter(followee__user1=user_id, is_active=True)
         # friends = following & followers
 
-        uid = request.user.id
+        uid = user_id
         user_Q = Q()
         follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
         if len(follow_obj) != 0:
