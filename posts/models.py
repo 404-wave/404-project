@@ -160,7 +160,7 @@ class PostManager(models.Manager):
 
 
         all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
-        all_posts = list(all_posts).extend(posts_from_servers)
+        #all_posts = list(all_posts).extend(posts_from_servers)
 
         """
             If unlisted is passed as True, the function will remove unlisted posts from the list.
