@@ -69,6 +69,19 @@ class PostManager(models.Manager):
         Posts are uniquely filtered for a users
     """
     def filter_user_visible_posts(self, user, *args, **kwargs):
+        # This is for getting post from another node
+        ####################################################################
+        posts_from_servers = []
+        for node in Node.objects.all():
+            # headers = {
+            #     'Authorization': 'Basic {0}'.format(node.token)
+            #     }
+            # response = requests.get(node.host, headers=headers)
+            response = requests.get(node.host)
+            print(response.content)
+            posts_from_servers.extend(response.json())
+        ####################################################################
+
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
         public_posts = super(PostManager, self).filter(privacy=0)
 
@@ -90,16 +103,17 @@ class PostManager(models.Manager):
 
 
         all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
-
-
-
+        
         """
             If unlisted is passed as True, the function will remove unlisted posts from the list.
             If it is passed as False, then it will not remove the unlisted posts.
         """
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
-        return all_posts.order_by('-timestamp')
+        all_posts = list(all_posts.order_by('-timestamp'))
+        all_posts.extend(posts_from_servers)
+
+        return all_posts
 
     def filter_user_visible_posts_by_user_id(self, user_id, server_only, *args, **kwargs):
 
