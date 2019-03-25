@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from posts.models import Post
 from comments.models import Comment
-from users.models import User
+from users.models import User, Node
+
+import requests
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -130,7 +132,34 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('author', 'comment', 'published', 'id')
 
     def _author(self, obj):
-        author = User.objects.get(username=obj.user)
+
+        try:
+            author = User.objects.get(id=obj.user)
+        except:
+            found = False
+            for node in Node.objects.all():
+                url = node.host + "/service/author/" + str(obj.user)
+                r = requests.get(url)
+                if (r.status_code == 200):
+                    try:
+                        json = r.json()
+                        username = json['displayName']
+                        github = json['github']
+                        host = json['host']
+                        url = json['url']
+                        id = json['id']
+                        author = User(host=host, id=id, github=github, url=url, username=username)
+                        found = True
+                    except:
+                        # TODO: What to do when the host of the author sends bad data?
+                        return dict()
+                else:
+                    continue
+            if not found:
+                # TODO: What to do when the author no longer exists? OR, when them
+                # author does exist, but the server is not sharing with us anymore.
+                return dict()
+
         serialized_author = CommentAuthorSerializer(author, many=False)
         return serialized_author.data
 
@@ -155,19 +184,3 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
 
     def _id(self, obj):
         return str(obj.host) + str(obj.id)
-
-
-# class FriendSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = Friend
-#         fields = ()
-#         http_method_names = ['post']
-#
-#
-# class FriendToFriendSerializer(serializers.ModelSerializer):
-#
-#     class MEta:
-#         model = Friend
-#         fields = ()
-#         http_method_names ['get']

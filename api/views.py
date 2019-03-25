@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 
 from rest_framework import pagination, generics, views, status, mixins
@@ -240,8 +240,19 @@ class CommentAPIView(generics.GenericAPIView):
         serializer = CommentSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    # TODO: POSTing comments
     def post(self, request, *args, **kwargs):
+
+        response_failed = {
+           "query": "addComment",
+           "success": False,
+           "message": "Comment not allowed"
+        }
+
+        response_ok = {
+            "query": "addComment",
+            "success": True,
+            "message": "Comment Added"
+        }
 
         if not authorized(request):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -264,11 +275,10 @@ class CommentAPIView(generics.GenericAPIView):
         # Retrieves JSON data
         data = request.data
         try:
-            post_id = data['post'].split("/")[-1]
+            #post_id = data['post'].split("/")[-1]
+            post_id = kwargs['post_id']
             content = data['comment']['comment']
-            #content_type = data['comment']['contentType']
             content_type = "text/plain"
-            #timestamp = data['comment']['published']
             author_id = data['comment']['author']['id'].split("/")[-1]
         except:
             # If the JSON was not what we wanted, send a 400
@@ -277,26 +287,30 @@ class CommentAPIView(generics.GenericAPIView):
         # Check that the requesting user has visibility of that post
         post = Post.objects.filter_user_visible_posts_by_user_id(user_id=requestor_id, server_only=server_only).filter(id=post_id)
         if post is None:
-            response = {
-	           "query": "addComment",
-               "success": False,
-               "message": "Comment not allowed"
-            }
-            return Response(response, status=status.HTTP_403_FORBIDDEN)
+
+            return Response(response_failed, status=status.HTTP_403_FORBIDDEN)
 
         # TODO: Create the actual post
+        failed = False
         try:
-            pass
-        except:
-            pass
+            # ERROR: ["'<built-in function id>' is not a valid UUID."]
+            post=post[0]
+            instance = get_object_or_404(Post, id=post.id)
+            comment = Comment(parent=None, user=author_id, content=content, object_id=post.id, content_type=post.get_content_type)
+            comment.save()
+        except Exception as e:
+            print(e)
+            failed = True
 
-        response = {
-            "query": "addComment",
-            "success": True,
-            "message": "Comment Added"
-        }
-        return Response(response, status=status.HTTP_200_OK)
-
+        return Response(response_ok, status=status.HTTP_200_OK)
+# {
+# 	"comment":{
+# 	    "author":{
+#                    "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471"
+# 	   },
+# 	   "comment":"Sick Olde English"
+# 	}
+# }
 
 class FriendAPIView(generics.GenericAPIView):
 
