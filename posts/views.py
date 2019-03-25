@@ -68,6 +68,7 @@ def posts_detail(request, id):
             print("comment worked.")
 
     comments = instance.comments
+
     context = {
         "user": instance.user,
         "instance": instance,
