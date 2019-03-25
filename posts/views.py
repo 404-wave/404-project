@@ -32,6 +32,7 @@ def posts_detail(request, id):
     try:
         user_posts.get(id=instance.id)
     except Post.DoesNotExist:
+        print("IT GONE")
         return HttpResponseRedirect('/home')
 
     initial_data = {
@@ -78,23 +79,35 @@ def posts_detail(request, id):
     for node in Node.objects.all():
         build_request = node.host + "/service/posts/" + str(post_id) + "/comments?user=" + str(current_user.id)
         r=requests.get(build_request)
+        #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
+        #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
         if r.status_code == 200:
             break
         
     response = r.json()
-    print(response)
+    #Parse date into more readbale format
+    #https://stackoverflow.com/questions/18795713/parse-and-format-the-date-from-the-github-api-in-python
+    #Credit: IQAndreas (https://stackoverflow.com/users/617937/iqandreas)
+    for item in response:
+        #https://stackoverflow.com/questions/48274898/python3-parsing-datetime-in-format-2018-01-14t235527-337z
+        #Credit: Sean Francis N. Ballais (https://stackoverflow.com/users/1116098/sean-francis-n-ballais)
+        date = datetime.strptime(item['published'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        item['published'] = date.strftime('%A %b %d, %Y at %H:%M GMT')
+    #for item in response:
+        #print(item['comment'])
+    #print(response[0]['author'])
     #build_request = "https://obscure-lake-45818.herokuapp.com/service/posts/d9753910-a6a1-4b78-b53f-71b721027e59/comments?user=20bdb9a6-33d5-4a14-9368-33019d4c2afa"
     #r=requests.get(build_request)
     #print(r)
     #response = r.json()
     #print(response[0])
 
-    comments = instance.comments
+    #comments = instance.comments
 
     context = {
         "user": instance.user,
         "instance": instance,
-        "comments": comments,
+        "comments": response,
         "comment_form": comment_form
     }
     return render(request, "posts_detail.html", context)

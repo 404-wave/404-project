@@ -70,8 +70,8 @@
         <blockquote>
         <!-- <div class=""> -->
         <!-- </div> -->
-            <p>{{ comment.content }}</p>
-            <p>by {{comment.user}} on {{comment.timestamp}} | 
+            <p>{{ comment.comment }}</p>
+            <p>by {{comment.author.displayName}} on {{comment.published}} | 
                 {% if comment.children.count > 0 %}
                     {{ comment.children.count }} <a class="comment-reply-btn" href="#">Comment</a>
                     {% if comment.children.count > 1 %}
