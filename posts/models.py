@@ -86,7 +86,9 @@ class PostManager(models.Manager):
         for node in Node.objects.all():
             url = node.host + "/service/author/posts?user=" + str(user.id)
             response = requests.get(url)
-            print(response.json())
+
+            print(url)
+            print(response.status_code)
             posts_from_servers.extend(response.json())
         ####################################################################
 
