@@ -15,6 +15,8 @@ from django.contrib.contenttypes.models import ContentType
 import base64
 from mimetypes import guess_type
 
+import requests
+
 """
     Shows the details about a post.
     Allows use to post comments under the post.
@@ -23,6 +25,7 @@ from mimetypes import guess_type
 @login_required(login_url='/login')
 def posts_detail(request, id):
     instance = get_object_or_404(Post, id=id)
+    print("INSTANCE IS : " + str(instance.id))
     # Checks if the posts is from the user who posted it
     # And if it can be seen by the acessible users
     # If not redirects the user back to the home page
@@ -66,6 +69,18 @@ def posts_detail(request, id):
         return HttpResponseRedirect(new_comment.content_object.get_detail_absolute_url())
         if created:
             print("comment worked.")
+
+    #Build and send GET request for comments
+    #https://stackoverflow.com/questions/12615154/how-to-get-the-currently-logged-in-users-user-id-in-django
+    #Credit: K Z (https://stackoverflow.com/users/853611/k-z)
+    current_user = request.user
+    user_id = current_user.id
+    post_id = instance.id
+    build_request = "https://obscure-lake-45818.herokuapp.com/service/posts/d9753910-a6a1-4b78-b53f-71b721027e59/comments?user=20bdb9a6-33d5-4a14-9368-33019d4c2afa"
+    r=requests.get(build_request)
+    #print(r)
+    response = r.json()
+    print(type(response[0]))
 
     comments = instance.comments
     context = {
