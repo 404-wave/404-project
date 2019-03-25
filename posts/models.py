@@ -69,18 +69,25 @@ class PostManager(models.Manager):
         Posts are uniquely filtered for a users
     """
     def filter_user_visible_posts(self, user, *args, **kwargs):
-        # This is for getting post from another node
+
+
+
+        # TODO: This is for getting post from another node
         ####################################################################
+
+        """
+            When you make requests to our partner group for posts and comments
+            you need to include an additional query parameter for the _requesting user’s_ UUID.
+            Ex: service/author/posts?user={UUID}
+
+        """
+
         posts_from_servers = []
         for node in Node.objects.all():
-            # headers = {
-            #     'Authorization': 'Basic {0}'.format(node.token)
-            #     }
-            # response = requests.get(node.host, headers=headers)
             url = node.host + "/service/author/posts?user=" + str(user.id)
             response = requests.get(url)
-            print(response.content)
-            #posts_from_servers.extend(response.json())
+            print(response.json())
+            posts_from_servers.extend(response.json())
         ####################################################################
 
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
