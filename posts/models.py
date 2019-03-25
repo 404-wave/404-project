@@ -7,11 +7,14 @@ from django.urls import reverse
 from comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from users.models import User
+from users.models import Node
 from django.dispatch import receiver
 from django.db.models.signals import post_save, m2m_changed
 import base64
 from mimetypes import guess_type
 import uuid
+import requests
+
 
 # Create your models here.
 
@@ -99,6 +102,15 @@ class PostManager(models.Manager):
         return all_posts.order_by('-timestamp')
 
     def filter_user_visible_posts_by_user_id(self, user_id, server_only, *args, **kwargs):
+
+        # This is for getting post from another node
+        ####################################################################
+        posts_from_servers = []
+        for node in Node.objects.all():
+            response = requests.get(node.host)
+            posts_from_servers.extend(response.json())
+        ####################################################################
+
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user_id)
         public_posts = super(PostManager, self).filter(privacy=0)
 
@@ -130,7 +142,8 @@ class PostManager(models.Manager):
             server_only_posts =  super(PostManager, self).filter(privacy=4, user=user_id)
 
 
-        all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
+        all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts 
+        all_posts = list(all_posts).extend(posts_from_servers)
 
         """
             If unlisted is passed as True, the function will remove unlisted posts from the list.
