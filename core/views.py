@@ -230,10 +230,9 @@ def profile(request, value=None, pk=None):
 	if not request.user.is_authenticated:
 		return HttpResponseForbidden()
 	user = User()
-
 	# If no value, then we know we are looking at 'my_profile'
 	if value is None:
-		pk = request.user.id
+		pk = pk if pk is not None else request.user.id
 		user = User.objects.get(pk=pk)
 	else:
 		user = get_user(value)
