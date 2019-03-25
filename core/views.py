@@ -208,6 +208,10 @@ def profile(request, pk = None):
 	if not request.user.is_authenticated:
 		return HttpResponseForbidden()
 
+
+	print (pk)
+	print ("ERE")
+	
 	# If no pk is provided, just default to the current user's page
 	if pk is None:
 		pk = request.user.id
@@ -217,7 +221,7 @@ def profile(request, pk = None):
 	except ObjectDoesNotExist:
 		# TODO: Return a custom 404 page
 		return HttpResponseNotFound("That user does not exist")
-
+	print (user)
 	# Check if we follow the user whose profile we are looking at
 	following = False
 	button_text = "Unfollow"
@@ -229,6 +233,50 @@ def profile(request, pk = None):
 
 	return render(request, 'profile.html', {'user': user, 'following': following, 'button_text': button_text})
 
+
+def get_user(parameters):
+	user = User()
+	service, profile_id = parameters.split('+')
+
+	build_request = 'https://' + service+ '/service/author/'+profile_id
+	try:
+		r=requests.get(build_request)
+		response = r.json()
+	except:
+		return null
+
+	user.bio = response['bio']
+	user.username = response['displayName']
+	user.first_name = response['firstName']
+	user.last_name = response['lastName']
+	user.email = response['email']
+	user.id = response['id']
+	user.host = service
+	user.friends = response['friends']
+	return user
+
+
+
+login_required(login_url='/login')
+def profile(request, value=None):
+
+	if not request.user.is_authenticated:
+		return HttpResponseForbidden()
+	user = User()
+
+	# If no value, then we know we are looking at 'my_profile'
+	if value is None:
+		pk = request.user.id
+		user = User.objects.get(pk=pk)
+	else:
+		user = get_user(value)
+
+	button_text = "Unfollow"
+	if request.user.id is not user.id:
+		following = follows(request.user.id, user.id)
+		if (following == False):
+			button_text = "Follow"
+	return render(request, 'profile.html', {'user': user, 'following': following, 'button_text': button_text})
 
 
 @login_required(login_url='/login')
