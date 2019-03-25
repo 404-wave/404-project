@@ -22,18 +22,42 @@ import requests
     Allows use to post comments under the post.
 
 """
+
+
 @login_required(login_url='/login')
 def posts_detail(request, id):
-    instance = get_object_or_404(Post, id=id)
+
     # Checks if the posts is from the user who posted it
     # And if it can be seen by the acessible users
     # If not redirects the user back to the home page
-    user_posts = Post.objects.filter_user_visible_posts(request.user, remove_unlisted=False)
-    try:
-        user_posts.get(id=instance.id)
-    except Post.DoesNotExist:
-        print("IT GONE")
+    user_posts = Post.objects.filter_user_visible_posts(
+        request.user, remove_unlisted=False)
+    ids = []
+    for post in user_posts:
+        if isinstance(post, dict):
+            ids.append(post.get('id'))
+        elif isinstance(post, Post):
+            ids.append(post.id)
+    if id not in ids:
         return HttpResponseRedirect('/home')
+    instance = None
+    try:
+        # instance = Post.objects.get(id=id)
+        instance = Post.objects.get(id=id)
+    except Post.DoesNotExist:
+        # TODO: This should work if we have an endpoint to get a specific post
+        #       eg: /service/author/posts/id?
+
+        # ##############################################################################
+        # for node in Node.objects.all():
+        #     url = node.host + '/service/author/posts/{0}'.format(id)
+        #     response = requests.get(url)
+        #     if response.status_code == 200:
+        #         instance = response.json()
+        #         break
+        # #################################################################################
+        if instance is None:
+            return HttpResponseRedirect('/home')
 
     initial_data = {
         "content_type": instance.get_content_type,
@@ -58,11 +82,11 @@ def posts_detail(request, id):
                 parent_obj = parent_querySet.first()
 
         new_comment, created = Comment.objects.get_or_create(
-            user = request.user,
-            content_type = content_type,
-            object_id = obj_id,
-            content = content_data,
-            parent = parent_obj
+            user=request.user,
+            content_type=content_type,
+            object_id=obj_id,
+            content=content_data,
+            parent=parent_obj
 
         )
         return HttpResponseRedirect(new_comment.content_object.get_detail_absolute_url())
@@ -112,13 +136,16 @@ def posts_detail(request, id):
     }
     return render(request, "posts_detail.html", context)
 
-#https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
-#Credit: Ykh(https://stackoverflow.com/users/6786283/ykh)
+# https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
+# Credit: Ykh(https://stackoverflow.com/users/6786283/ykh)
+
+
 def image_to_b64(image_file):
     with open(image_file.path, "rb") as f:
         encoded_string = base64.b64encode(f.read()).decode()
         image_type = guess_type(image_file.path)[0]
         return image_type, encoded_string
+
 
 def create_base64_str(sender, instance=None, created=False, **kwargs):
     if instance.image and created:
@@ -126,7 +153,7 @@ def create_base64_str(sender, instance=None, created=False, **kwargs):
         instance.content = encoded_string
         instance.data_uri = "data:" + image_type + ";base64," + encoded_string
         instance.is_image = True
-        #make it unlisted here
+        # make it unlisted here
         instance.unlisted = True
         instance.image.delete()
         instance.save()
@@ -135,9 +162,10 @@ def create_base64_str(sender, instance=None, created=False, **kwargs):
 """
     Allows the user to update a post.
 """
+
+
 @login_required(login_url='/login')
 def posts_update(request, id=None):
-
 
     # Checks if the user who created the post can update the post
     # If not redirect the user
@@ -145,30 +173,30 @@ def posts_update(request, id=None):
     if instance.user != request.user:
         return HttpResponseRedirect(instance.get_detail_absolute_url())
 
-    #Give an image form if it is an image post
+    # Give an image form if it is an image post
     if instance.is_image == False:
         form = PostForm(request.POST or None,
                         request.FILES or None, instance=instance)
 
     else:
         form = ImageForm(request.POST or None,
-                        request.FILES or None, instance=instance)
+                         request.FILES or None, instance=instance)
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
         instance.publish = datetime.now()
 
-        #instance.is_image == True and instance.image is if you want to change one image to another image
-        #instance.is_image == False and instance.image is if you are changing from a text post to an image post
-        #this way if image field is blank and you click share, it just doesn't change anything
+        # instance.is_image == True and instance.image is if you want to change one image to another image
+        # instance.is_image == False and instance.image is if you are changing from a text post to an image post
+        # this way if image field is blank and you click share, it just doesn't change anything
         if (instance.is_image == True and instance.image) or (instance.is_image == False and instance.image):
-            #https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
-            #Credit: Ykh(https://stackoverflow.com/users/6786283/ykh)
+            # https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
+            # Credit: Ykh(https://stackoverflow.com/users/6786283/ykh)
             image_type, encoded_string = image_to_b64(instance.image)
             instance.content = encoded_string
             instance.data_uri = "data:" + image_type + ";base64," + encoded_string
             instance.is_image = True
-            #make it unlisted here
+            # make it unlisted here
             instance.unlisted = True
             instance.image.delete()
         instance.save()
@@ -184,6 +212,7 @@ def posts_update(request, id=None):
 """
     Allows the user to delete a post
 """
+
 
 @login_required(login_url='/login')
 def posts_delete(request, id=None):
