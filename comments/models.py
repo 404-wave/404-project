@@ -32,6 +32,7 @@ class CommentManager(models.Manager):
         #build_request = "https://obscure-lake-45818.herokuapp.com/posts/ca4b9d6a-3b0d-48d0-a4ec-8bdf4e4fd823/comments"
         #build_request = "https://obscure-lake-45818.herokuapp.com/service/posts"
         #build_request = "https://cmput404w19-project.herokuapp.com/posts"
+        #Loop through all nodes and make API call, if one is not 404, then use that one
         build_request = "https://obscure-lake-45818.herokuapp.com/service/posts/d9753910-a6a1-4b78-b53f-71b721027e59/comments?user=20bdb9a6-33d5-4a14-9368-33019d4c2afa"
         
         r=requests.get(build_request)
