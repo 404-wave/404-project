@@ -206,6 +206,7 @@ def home(request):
 
 def get_user(parameters):
 	user = User()
+	print ("IN PROFILE", parameters)
 	service, profile_id = parameters.split('+')
 	build_request = 'https://' + service+ '/service/author/'+profile_id
 	try:

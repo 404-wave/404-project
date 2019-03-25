@@ -93,9 +93,7 @@
 						<div class="post_info">
 							<div class="author_edit">
                   {% load post_filters %}
-                  {{ obj|get_author_name }}
-                <p class="author">{{ obj.user }}</p>
-               {{ obj.author.displayName }}
+                <a class="author" href="{% url 'profile' value=obj|get_author_id %}">{{ obj|get_author_name }}</a>
                 <p class="post_date">{{ obj.timestamp }}</p>
 							</div>
 						</div>
