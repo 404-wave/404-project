@@ -152,6 +152,7 @@ position:absolute;
 		height: 50px;
 		resize: none;
 		outline: none;
+		width: 90%;
 }
 	
 .link-span{
@@ -183,7 +184,7 @@ position:absolute;
 }
 
 .post_date {
-	font-size: .7em;
+	font-size: .85em;
 	margin-top: .2em;
 	margin-bottom:.1em;
 	text-transform: uppercase;
@@ -193,10 +194,9 @@ position:absolute;
 .post_content {
 	display: flex;
 	position: relative;
-	margin: 20px 20px 0 20px;
+	margin: 0px 20px 0 60px;
 	flex-direction: row;
 	flex-shrink: 0;
-	
 }
 .post_content p {
 	flex-shrink: 1 0 auto;
@@ -293,6 +293,7 @@ textarea.form-control{
 	display: flex;
 	flex-direction:column;
 	flex-shrink: 0;
+	font-size: .9em;
 }
 
 .stream_post a{

@@ -56,11 +56,28 @@ function auto_text(){
       }).on('input', function () {
         this.style.height = 50+ 'px';
         this.style.height = (this.scrollHeight) + 'px';
-      });
+        isActive(this);
+      })
+      .on('focus', function () {
+        $('.settingss').show()
+    })
+      .on('blur', function () {
+          isActive(this);})
+      
+          ;
     $("#id_privacy").change(function(){
         private();
        })}
       
+function isActive(e){
+    var text = e.value;
+    if (text == ""){
+        $('.settingss').hide()
+    }
+    else {
+        $('.settingss').show()
+    }
+}
 
 function private(){
     var values = $("#id_privacy").val();
