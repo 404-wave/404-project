@@ -102,7 +102,6 @@ class PostManager(models.Manager):
 
             print(url)
             print(response.status_code)
-            posts_from_servers.extend(response.json())
         ####################################################################
 
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
@@ -130,9 +129,9 @@ class PostManager(models.Manager):
                         user_Q = user_Q | Q(id=follow.user1)
             if len(user_Q) != 0:
                 friends = User.objects.filter(user_Q)
-            else:
+            else:             
                 friends = User.objects.none()
-        else:
+        else:           
             friends = User.objects.none()
 
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
