@@ -200,14 +200,18 @@ def home(request):
 		}
 	if instance and instance.unlisted is True:
 		context["unlisted_instance"] = instance
-	print ("USER",streamlist[0])
 	return render(request, "home.html", context)
 
 
 def get_user(parameters):
 	user = User()
-	print ("IN PROFILE", parameters)
-	service, profile_id = parameters.split('+')
+
+	id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)'	
+	re_result = re.search(id_regex, parameters)
+	service = re_result.group(1)
+	profile_id = re_result.group(2)
+	print ("IN PROFILE", service)
+	print ("IN PROFILE", profile_id)
 	build_request = 'https://' + service+ '/service/author/'+profile_id
 	try:
 		r=requests.get(build_request)

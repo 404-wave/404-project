@@ -17,12 +17,18 @@ def get_author_name(value1):
 def get_author_id(value1):
     if (isinstance(value1, dict)): 
         host = re.sub('^https?:\/\/', '', value1['author']['id'])
-        print ("HSKDLHS", host)
-        host = re.sub('\/', '+', host)  
+        host = re.sub('\/', '', host)  
         return (host) 
     else:
         id = User.objects.filter(username=value1.user)[0].id
         return id
+
+@register.filter(name='get_privacy')
+def get_privacy(value1):
+    if (isinstance(value1, dict)): 
+        return (value1['visibility'])
+    else:
+        return value1.get_privacy_display()
 
 
 

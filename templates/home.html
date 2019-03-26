@@ -30,7 +30,7 @@
   {% endblock %} 
   {% block content %} 
   {% if user.is_authenticated %}
-	<div class="wrapper" >
+	<div class="wrapper home_wrapper" >
 		<div id="postContainer">
         <div id="createPost_tabs">
           <ul class="tabs">
@@ -97,7 +97,7 @@
                 <p class="post_date">{{ obj.timestamp }}</p>
 							</div>
 						</div>
-						<p class="privacy"> {{ obj.get_privacy_display}}</p>
+						<p class="privacy"> {{ obj|get_privacy}}</p>
 					</div>
 					<div class="post_content">
 							<p>{{ obj.content | linebreaks }}</p>
