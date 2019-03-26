@@ -316,12 +316,30 @@ class FriendAPIView(generics.GenericAPIView):
             friends = ""
             try:
                 
-                followers = User.objects.filter(follower__user2=author_id, is_active=True)
+                #followers = User.objects.filter(follower__user2=author_id, is_active=True)
                 # following = User.objects.filter(followee__user1=author_id, is_active=True)
                 # friends = following & followers
 
-                #Above code would mean that if the user followed them, they would be considered friends,
-                #so they would never get a friend request
+                uid = request.user.id
+                user_Q = Q()
+                follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+
+                if len(follow_obj) != 0:
+                    for follow in follow_obj:
+                        if follow.user1==uid:
+                            recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                            if len(recip_object) != 0:
+                                user_Q = user_Q | Q(id=follow.user2)
+                        elif follow.user2==uid:
+                            recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                            if len(recip_object) != 0:
+                                user_Q = user_Q | Q(id=follow.user1)
+                    if len(user_Q) != 0:
+                        friends = User.objects.filter(user_Q)
+                    else:
+                        friends = User.objects.none()
+                else:
+                    friends = User.objects.none()
                 
                 
             except:
@@ -338,13 +356,18 @@ class FriendAPIView(generics.GenericAPIView):
             author_id1 = self.kwargs['author_id1']
             author_id2 = self.kwargs['author_id2']
 
-            friend_list = ""
-            try:
-                followers = User.objects.filter(follower__user2=author_id1, is_active=True)
-                following = User.objects.filter(followee__user1=author_id1, is_active=True)
-                friend_list = following & followers
-            except:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+            # friend_list = ""
+            # try:
+                # followers = User.objects.filter(follower__user2=author_id1, is_active=True)
+                # following = User.objects.filter(followee__user1=author_id1, is_active=True)
+                # friend_list = following & followers
+            follow_object = Follow.objects.filter(user1=)
+
+
+
+
+            # except:
+            #     return Response(status=status.HTTP_404_NOT_FOUND)
 
             friends = False
             for friend in friend_list:
@@ -417,6 +440,10 @@ class FriendRequestAPIView(generics.GenericAPIView):
     
 
     def post(self, request, *args, **kwargs):
+
+        host = request.scheme + "://" + request.META['HTTP_HOST']
+        print("HOST")
+        print(host)
 
         if not authorized(request):
             return Response(status=status.HTTP_401_UNAUTHORIZED)

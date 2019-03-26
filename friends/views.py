@@ -166,7 +166,8 @@ def friend_requests(request):
     for reqs in friend_reqs:
         user_filter = user_filter | Q(id=reqs.requestor)
 
-    data = User.objects.filter(user_filter)
+    self_data = User.objects.filter(user_filter)
+    
     serialized_data = serializers.serialize('json',data,fields=('username'))
     #print("DATAAAAA: " + serialized_data)
     return HttpResponse(serialized_data, content_type='application/json')
