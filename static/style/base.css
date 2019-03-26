@@ -41,12 +41,17 @@ html, body {
 	color: #00405E;
 	font-weight: bold;
 	padding-left: 14px;
+	padding-top: 5px;
+	margin-bottom: 0px;
 }
 .navbar{
 	background-color: white;
 	text-transform: uppercase;
 	font-family: 'Nunito', sans-serif;
 	font-size: 1.1em;
+}
+.wavebrand{
+	padding-left: 45px;
 }
 .wrapper {
 	background-color:#efefef;

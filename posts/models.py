@@ -15,6 +15,7 @@ from django.db.models import Q
 import base64
 from mimetypes import guess_type
 import uuid
+import json
 import requests
 
 
@@ -110,6 +111,10 @@ class PostManager(models.Manager):
                         print ("ADDING HOST")
                         item['author']['host'] = node.host
                 posts_from_servers.extend(responselist)
+        
+         
+            #print(response.json())
+            #posts_from_servers.extend(response.json())
         ####################################################################
 
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
