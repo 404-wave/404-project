@@ -159,14 +159,16 @@ def follows(user1ID, user2ID):
 def friend_requests(request):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
-
+    print ("REQUEST FRIEND")
     friend_reqs = FriendRequest.objects.filter(recipient=request.user.id)
     #TODO make sure the users are active too
+    print (friend_reqs)
     user_filter = Q()
     for reqs in friend_reqs:
+        print (reqs.requestor)
         user_filter = user_filter | Q(id=reqs.requestor)
 
     data = User.objects.filter(user_filter)
     serialized_data = serializers.serialize('json',data,fields=('username'))
-    #print("DATAAAAA: " + serialized_data)
+    print("DATAAAAA: " + serialized_data)
     return HttpResponse(serialized_data, content_type='application/json')
