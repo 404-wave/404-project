@@ -36,10 +36,7 @@ def authorized(request):
 
     host = request.scheme + "://" + request.META['HTTP_HOST']
 
-    # Check if the request came from a server
-    # NOTE: Per Alex Wong, if a request comes from a node we are connected to,
-    # then we operate on the assumption that the individual who made the request
-    # on that node was, in fact, authenticated.
+    # TODO: Authentication
     nodes = Node.objects.all()
     for node in nodes:
         if host == node.host:

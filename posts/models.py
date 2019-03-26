@@ -114,6 +114,7 @@ class PostManager(models.Manager):
 
         followers = User.objects.filter(follower__user2=user_id, is_active=True)
         following = User.objects.filter(followee__user1=user_id, is_active=True)
+
         friends = following & followers
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
 

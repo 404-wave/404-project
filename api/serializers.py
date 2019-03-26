@@ -1,9 +1,11 @@
 from rest_framework import serializers
-from posts.models import Post
+
 from comments.models import Comment
 from users.models import User, Node
+from posts.models import Post
 
 import requests
+
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -14,7 +16,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'host', 'displayName', 'url', 'friends', 'github', 'firstName', 'lastName', 'email', 'bio')
+        fields = ('id', 'host', 'displayName', 'url', 'friends', 'github',
+                    'firstName', 'lastName', 'email', 'bio')
 
     def _friends(self, obj):
         friends = self.context.get('friends')
@@ -45,7 +48,8 @@ class UserFriendSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
 
-    contentType = serializers.SerializerMethodField('_content_type')
+    source = serializers.SerializerMethodField('_source')
+    origin = serializers.SerializerMethodField('_origin')
     author = serializers.SerializerMethodField('_author')
     comments = serializers.SerializerMethodField('_comments')
     published = serializers.SerializerMethodField('_published')
@@ -53,9 +57,7 @@ class PostSerializer(serializers.ModelSerializer):
     visible_to = serializers.SerializerMethodField('_visible_to')
     categories = serializers.SerializerMethodField('_categories')
     description = serializers.SerializerMethodField('_description')
-    source = serializers.SerializerMethodField('_source')
-    origin = serializers.SerializerMethodField('_origin')
-
+    contentType = serializers.SerializerMethodField('_content_type')
 
     class Meta:
         model = Post

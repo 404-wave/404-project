@@ -1,15 +1,14 @@
-
-    
 from django import forms
+
+from mimetypes import guess_type
+import base64
+import os
 
 from .models import Post
 
-import base64
-import os
-from mimetypes import guess_type
-
 
 class PostForm(forms.ModelForm):
+
     class Meta:
         model = Post
         fields = [
@@ -22,9 +21,6 @@ class PostForm(forms.ModelForm):
             "publish"
         ]
 
-
-
-
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
         self.fields['user'].widget = forms.HiddenInput()
@@ -32,18 +28,14 @@ class PostForm(forms.ModelForm):
         self.set_placeholder('content', 'What\'s on your mind?')
         self.set_form_class()
 
-
-
     #add placeholder text to fields
     def set_placeholder(self, field, text):
         self.fields[field].widget.attrs['placeholder'] = text
-    
+
     #add class for css
     def set_form_class(self):
             self.fields['content'].widget.attrs['class'] = "create_post"
             self.fields['unlisted'].widget.attrs['class'] = "create_post"
-
-
 
     """
         Creates the objects for the accessible useres and then save to the form
@@ -56,7 +48,6 @@ class PostForm(forms.ModelForm):
         post.accessible_users.add(*accessible_users)
         post.accessible_users.add(post.user)
         return post
-
 
 
 class ImageForm(forms.ModelForm):
@@ -76,7 +67,6 @@ class ImageForm(forms.ModelForm):
         self.fields['user'].widget = forms.HiddenInput()
         self.fields['publish'].widget = forms.HiddenInput()
 
-    
     """
         Creates the objects for the accessible useres and then save to the form
     """
@@ -88,6 +78,3 @@ class ImageForm(forms.ModelForm):
         post.accessible_users.add(*accessible_users)
         post.accessible_users.add(post.user)
         return post
-
-        
-
