@@ -87,6 +87,8 @@ class PostManager(models.Manager):
         # followers = User.objects.filter(follower__user2=user.id, is_active=True)
         # following = User.objects.filter(followee__user1=user.id, is_active=True)
         # friends = following & followers
+
+        #TODO Inefficient. Need to make it better 
         uid = user.id
         user_Q = Q()
         follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
@@ -100,7 +102,10 @@ class PostManager(models.Manager):
                     recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
                     if len(recip_object) != 0:
                         user_Q = user_Q | Q(id=follow.user1)
-            friends = User.objects.filter(user_Q)
+            if len(user_Q) != 0:
+                friends = User.objects.filter(user_Q)
+            else:
+                friends = User.objects.none()
         else:
             friends = User.objects.none()
 
@@ -114,16 +119,21 @@ class PostManager(models.Manager):
         
         #TODO Not efficient, need to find a more efficient way of filtering this
         fr_Q = Q()
-        for fr in friends:
-            fr_followers_object = Follow.objects.filter(user2=fr.id)
-            fr_following_object = Follow.objects.filter(user1=fr.id)
-            for fr_followers in fr_followers_object:
-                fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
-            for fr_followings in fr_following_object:
-                fr_Q = fr_Q | Q(id=fr_followings.user2,is_active=True)
-        
-        friends_of_friends = User.objects.filter(fr_Q)
-
+        if len(friends) != 0:
+            for fr in friends:
+                fr_followers_object = Follow.objects.filter(user2=fr.id)
+                fr_following_object = Follow.objects.filter(user1=fr.id)
+                for fr_followers in fr_followers_object:
+                    fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
+                for fr_followings in fr_following_object:
+                    fr_Q = fr_Q | Q(id=fr_followings.user2,is_active=True)
+            
+            if len(fr_Q) != 0:
+                friends_of_friends = User.objects.filter(fr_Q)
+            else:
+                friends_of_friends = User.objects.none()
+        else:
+            friends_of_friends = User.objects.none()
 
         friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
 
@@ -173,7 +183,10 @@ class PostManager(models.Manager):
                     recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
                     if len(recip_object) != 0:
                         user_Q = user_Q | Q(id=follow.user1)
-            friends = User.objects.filter(user_Q)
+            if len(user_Q) != 0:
+                friends = User.objects.filter(user_Q)
+            else:
+                friends = User.objects.none()
         else:
             friends = User.objects.none()
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
@@ -185,16 +198,21 @@ class PostManager(models.Manager):
 
         #TODO Not efficient, need to find a more efficient way of filtering this
         fr_Q = Q()
-        for fr in friends:
-            fr_followers_object = Follow.objects.filter(user2=fr.id)
-            fr_following_object = Follow.objects.filter(user1=fr.id)
-            for fr_followers in fr_followers_object:
-                fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
-            for fr_followings in fr_following_object:
-                fr_Q = fr_Q | Q(id=fr+followings.user2,is_active=True)
+        if len(friends) != 0:
+            for fr in friends:
+                fr_followers_object = Follow.objects.filter(user2=fr.id)
+                fr_following_object = Follow.objects.filter(user1=fr.id)
+                for fr_followers in fr_followers_object:
+                    fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
+                for fr_followings in fr_following_object:
+                    fr_Q = fr_Q | Q(id=fr_followings.user2,is_active=True)
+            if len(fr_Q) != 0:
+                friends_of_friends = User.objects.filter(fr_Q)
+            else:
+                friends_of_friends = User.objects.none()
+        else:
+            friends_of_friends = User.objects.none()
         
-        friends_of_friends = User.objects.filter(fr_Q)
-
         friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
 
         # Need to pass a boolean because the API might call this function and
