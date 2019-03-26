@@ -83,13 +83,13 @@ class PostManager(models.Manager):
         """
 
         posts_from_servers = []
-        for node in Node.objects.all():
-            url = node.host + "/service/author/posts?user=" + str(user.id)
-            response = requests.get(url)
+        #for node in Node.objects.all():
+            #url = node.host + "/service/author/posts?user=" + str(user.id)
+            #response = requests.get(url)
 
-            print(url)
-            print(response.status_code)
-            posts_from_servers.extend(response.json())
+            #print(url)
+            #print(response.status_code)
+            #posts_from_servers.extend(response.json())
         ####################################################################
 
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
@@ -244,10 +244,12 @@ class Post(models.Model):
     # Used to determine the content type of the post. Necessary for the API
     # users to understand how to handle the actual content of the post.
     content_type = models.CharField(max_length=18 ,choices=ContentType, default="text/plain")
-
+    title = models.TextField(default="emptyTitle")
     def __str__(self):
         return str(self.user.username)
 
+    def get_title(self):
+        return str(self.user.username)+" - "+str(self.timestamp)
     """
         Redirects to the specific urls.
     """
