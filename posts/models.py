@@ -8,12 +8,15 @@ from comments.models import Comment
 from friends.models import Follow
 from django.contrib.contenttypes.models import ContentType
 from users.models import User
+from users.models import Node
 from django.dispatch import receiver
 from django.db.models.signals import post_save, m2m_changed
 from django.db.models import Q
 import base64
 from mimetypes import guess_type
 import uuid
+import requests
+
 
 # Create your models here.
 
@@ -79,6 +82,36 @@ class PostManager(models.Manager):
         Posts are uniquely filtered for a users
     """
     def filter_user_visible_posts(self, user, *args, **kwargs):
+
+
+
+        # TODO: This is for getting post from another node
+        ####################################################################
+
+        """
+            When you make requests to our partner group for posts and comments
+            you need to include an additional query parameter for the _requesting user’s_ UUID.
+            Ex: service/author/posts?user={UUID}
+
+        """
+
+        posts_from_servers = []
+        for node in Node.objects.all():
+            url = node.host + "/service/author/posts?user=" + str(user.id)
+            response = requests.get(url)
+
+            print(url)
+            print(response.status_code)
+            if (response.status_code > 199 and response.status_code <300):
+                responselist = response.json()
+                #if servers are bad and don't include the author server we do
+                for item in responselist:
+                    if (item['author']['host'] == ''):
+                        print ("ADDING HOST")
+                        item['author']['host'] = node.host
+                posts_from_servers.extend(responselist)
+        ####################################################################
+
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
         public_posts = super(PostManager, self).filter(privacy=0)
 
@@ -87,7 +120,9 @@ class PostManager(models.Manager):
         # followers = User.objects.filter(follower__user2=user.id, is_active=True)
         # following = User.objects.filter(followee__user1=user.id, is_active=True)
         # friends = following & followers
-        uid = request.user.id
+
+        #TODO Inefficient. Need to make it better 
+        uid = user.id
         user_Q = Q()
         follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
         if len(follow_obj) != 0:
@@ -100,8 +135,11 @@ class PostManager(models.Manager):
                     recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
                     if len(recip_object) != 0:
                         user_Q = user_Q | Q(id=follow.user1)
-            friends = User.objects.filter(user_Q)
-        else:
+            if len(user_Q) != 0:
+                friends = User.objects.filter(user_Q)
+            else:             
+                friends = User.objects.none()
+        else:           
             friends = User.objects.none()
 
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
@@ -114,16 +152,21 @@ class PostManager(models.Manager):
         
         #TODO Not efficient, need to find a more efficient way of filtering this
         fr_Q = Q()
-        for fr in friends:
-            fr_followers_object = Follow.objects.filter(user2=fr.id)
-            fr_following_object = Follow.objects.filter(user1=fr.id)
-            for fr_followers in fr_followers_object:
-                fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
-            for fr_followings in fr_following_object:
-                fr_Q = fr_Q | Q(id=fr_followings.user2,is_active=True)
-        
-        friends_of_friends = User.objects.filter(fr_Q)
-
+        if len(friends) != 0:
+            for fr in friends:
+                fr_followers_object = Follow.objects.filter(user2=fr.id)
+                fr_following_object = Follow.objects.filter(user1=fr.id)
+                for fr_followers in fr_followers_object:
+                    fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
+                for fr_followings in fr_following_object:
+                    fr_Q = fr_Q | Q(id=fr_followings.user2,is_active=True)
+            
+            if len(fr_Q) != 0:
+                friends_of_friends = User.objects.filter(fr_Q)
+            else:
+                friends_of_friends = User.objects.none()
+        else:
+            friends_of_friends = User.objects.none()
 
         friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
 
@@ -132,17 +175,29 @@ class PostManager(models.Manager):
 
         all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
 
-
-
         """
             If unlisted is passed as True, the function will remove unlisted posts from the list.
             If it is passed as False, then it will not remove the unlisted posts.
         """
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
-        return all_posts.order_by('-timestamp')
+        all_posts = list(all_posts.order_by('-timestamp'))
+        all_posts.extend(posts_from_servers)
+
+        return all_posts
 
     def filter_user_visible_posts_by_user_id(self, user_id, server_only, *args, **kwargs):
+
+        # NOTE: Don't add this here right now.
+
+        # This is for getting post from another node
+        ####################################################################
+        # posts_from_servers = []
+        # for node in Node.objects.all():
+        #     response = requests.get(node.host + "?user=" + str(user_id))
+        #     posts_from_servers.extend(response.json())
+        ####################################################################
+
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user_id)
         public_posts = super(PostManager, self).filter(privacy=0)
 
@@ -160,7 +215,7 @@ class PostManager(models.Manager):
         # following = User.objects.filter(followee__user1=user_id, is_active=True)
         # friends = following & followers
 
-        uid = request.user.id
+        uid = user_id
         user_Q = Q()
         follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
         if len(follow_obj) != 0:
@@ -173,7 +228,10 @@ class PostManager(models.Manager):
                     recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
                     if len(recip_object) != 0:
                         user_Q = user_Q | Q(id=follow.user1)
-            friends = User.objects.filter(user_Q)
+            if len(user_Q) != 0:
+                friends = User.objects.filter(user_Q)
+            else:
+                friends = User.objects.none()
         else:
             friends = User.objects.none()
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
@@ -185,16 +243,21 @@ class PostManager(models.Manager):
 
         #TODO Not efficient, need to find a more efficient way of filtering this
         fr_Q = Q()
-        for fr in friends:
-            fr_followers_object = Follow.objects.filter(user2=fr.id)
-            fr_following_object = Follow.objects.filter(user1=fr.id)
-            for fr_followers in fr_followers_object:
-                fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
-            for fr_followings in fr_following_object:
-                fr_Q = fr_Q | Q(id=fr+followings.user2,is_active=True)
+        if len(friends) != 0:
+            for fr in friends:
+                fr_followers_object = Follow.objects.filter(user2=fr.id)
+                fr_following_object = Follow.objects.filter(user1=fr.id)
+                for fr_followers in fr_followers_object:
+                    fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
+                for fr_followings in fr_following_object:
+                    fr_Q = fr_Q | Q(id=fr_followings.user2,is_active=True)
+            if len(fr_Q) != 0:
+                friends_of_friends = User.objects.filter(fr_Q)
+            else:
+                friends_of_friends = User.objects.none()
+        else:
+            friends_of_friends = User.objects.none()
         
-        friends_of_friends = User.objects.filter(fr_Q)
-
         friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
 
         # Need to pass a boolean because the API might call this function and
@@ -205,6 +268,7 @@ class PostManager(models.Manager):
 
 
         all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
+        #all_posts = list(all_posts).extend(posts_from_servers)
 
         """
             If unlisted is passed as True, the function will remove unlisted posts from the list.

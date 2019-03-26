@@ -77,6 +77,7 @@ def friends(request):
     uid = request.user.id
     user_Q = Q()
     follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+
     if len(follow_obj) != 0:
         for follow in follow_obj:
             if follow.user1==uid:
@@ -87,7 +88,10 @@ def friends(request):
                 recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
                 if len(recip_object) != 0:
                     user_Q = user_Q | Q(id=follow.user1)
-        friends = User.objects.filter(user_Q)
+        if len(user_Q) != 0:
+            friends = User.objects.filter(user_Q)
+        else:
+            friends = User.objects.none()
     else:
         friends = User.objects.none()
 

@@ -9,6 +9,7 @@ from rest_framework.parsers import JSONParser
 import socket
 import requests
 import uuid
+import json
 
 from users.models import User, Node, NodeSetting
 from posts.models import Post
@@ -314,9 +315,15 @@ class FriendAPIView(generics.GenericAPIView):
 
             friends = ""
             try:
+                
                 followers = User.objects.filter(follower__user2=author_id, is_active=True)
-                following = User.objects.filter(followee__user1=author_id, is_active=True)
-                friends = following & followers
+                # following = User.objects.filter(followee__user1=author_id, is_active=True)
+                # friends = following & followers
+
+                #Above code would mean that if the user followed them, they would be considered friends,
+                #so they would never get a friend request
+                
+                
             except:
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -407,7 +414,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
     queryset = FriendRequest.objects.all()
     serializer_class = UserFriendSerializer
-    parser_classes = (JSONParser,)
+    
 
     def post(self, request, *args, **kwargs):
 
@@ -415,7 +422,9 @@ class FriendRequestAPIView(generics.GenericAPIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         # Retrieves JSON data
-        data = request.data
+        data = json.loads(request.body)
+
+        
         try:
             author_id = data['author']['id'].split("/")[-1]
             friend_id = data['friend']['id'].split("/")[-1]
@@ -423,24 +432,34 @@ class FriendRequestAPIView(generics.GenericAPIView):
             # If the JSON was not what we wanted, send a 400
             Response(status=status.HTTP_400_BAD_REQUEST)
 
+        following = User.objects.none()
         try:
-            followers = User.objects.filter(follower__user2=author_id, is_active=True)
-            following = User.objects.filter(followee__user1=author_id, is_active=True)
-            friends = following & followers
+            # followers = User.objects.filter(follower__user2=author_id, is_active=True)
+            # following = User.objects.filter(followee__user1=author_id, is_active=True)
+            # friends = following & followers
+
+             following_user_Q = Q()
+             following_obj = Follow.objects.filter(user1=author_id,is_active=True)
+             print("we in here")
+             print(len(following_obj))
+             for fr in following_obj:
+                 following_user_Q = following_user_Q | Q(id= fr.user2)
+             following = User.objects.filter(following_user_Q)
+
         except:
-            # TODO: What is the correct status code here?
-            Response(status=status.HTTP_200_OK)
-
+            print("No follow objects. Continuing ")
+            
         already_following = False
-        for followee in following:
-            if str(friend_id) == str(followee.id):
-                already_following = True
-
+        if (len(following) != 0):
+            for followee in following:
+                if str(friend_id) == str(followee.id):
+                    already_following = True
+    
         # If user1 is already following user2, then a request must have previously been made
         if not already_following:
             try:
-                user1 = User.objects.get(pk=author_id)
-                user2 = User.objects.get(pk=friend_id)
+                user1 = author_id
+                user2 = friend_id
                 Follow.objects.create(user1=user1, user2=user2)
 
                 # Query to see if the person they want to follow is already following requestor
@@ -452,7 +471,6 @@ class FriendRequestAPIView(generics.GenericAPIView):
                     exists_in_table.delete()
 
             except:
-                # TODO: What is the correct status code here?
-                Response(status=status.HTTP_200_OK)
+                Response(status=status.HTTP_409_CONFLICT)
 
         return Response(status=status.HTTP_200_OK)
