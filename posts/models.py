@@ -13,6 +13,7 @@ from django.db.models.signals import post_save, m2m_changed
 import base64
 from mimetypes import guess_type
 import uuid
+import json
 import requests
 
 
@@ -96,7 +97,18 @@ class PostManager(models.Manager):
 
             print(url)
             print(response.status_code)
-            posts_from_servers.extend(response.json())
+            if (response.status_code > 199 and response.status_code <300):
+                responselist = response.json()
+                #if servers are bad and don't include the author server we do
+                for item in responselist:
+                    if (item['author']['host'] == ''):
+                        print ("ADDING HOST")
+                        item['author']['host'] = node.host
+                posts_from_servers.extend(responselist)
+        
+         
+            #print(response.json())
+            #posts_from_servers.extend(response.json())
         ####################################################################
 
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
