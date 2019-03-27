@@ -175,8 +175,9 @@ function closeDropDown(){
   }
 }
 
-function addFromOtherNode(data){
+function addFromOtherNode(content){
   console.log("WE HERE")
+  let data = JSON.parse(content);
   const followerID = data['follower'].id;
   const followeeID = data['followee'].id;
   const serverUrl = data.server;
