@@ -85,7 +85,11 @@ class PostManager(models.Manager):
 
         posts_from_servers = []
         for node in Node.objects.all():
+
+            # headers = {
+            # }
             url = node.host + "/service/author/posts?user=" + str(user.id)
+
             response = requests.get(url)
 
             print(url)
@@ -193,9 +197,8 @@ class PostManager(models.Manager):
     # TODO: Not sure if this works yet.
 
     def filter_server_posts(self, user, *args, **kwargs):
-        all_posts = self.filter_user_visible_posts(user)
-        all_posts = all_posts.exclude(privacy=4)
-        return all_posts.order_by('-timestamp')
+        all_posts = self.filter_user_visible_posts(user, server_only=False)
+        return all_posts
 
 
 

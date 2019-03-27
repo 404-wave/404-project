@@ -7,6 +7,7 @@ from posts.models import Post
 import requests
 
 
+
 class UserSerializer(serializers.ModelSerializer):
 
     friends = serializers.SerializerMethodField('_friends')
@@ -16,8 +17,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
+
         fields = ('id', 'host', 'displayName', 'url', 'friends', 'github',
                     'firstName', 'lastName', 'email', 'bio')
+
 
     def _friends(self, obj):
         friends = self.context.get('friends')
@@ -57,13 +60,17 @@ class PostSerializer(serializers.ModelSerializer):
     visible_to = serializers.SerializerMethodField('_visible_to')
     categories = serializers.SerializerMethodField('_categories')
     description = serializers.SerializerMethodField('_description')
+
+    source = serializers.SerializerMethodField('_source')
+    origin = serializers.SerializerMethodField('_origin')
+
     contentType = serializers.SerializerMethodField('_content_type')
 
     class Meta:
         model = Post
         fields = ('id', 'user', 'contentType', 'categories', 'description',
-                    'published', 'content', 'author', 'comments', 'visibility',
-                     'visible_to', 'unlisted', 'source', 'origin')
+                  'published', 'content', 'author', 'comments', 'visibility',
+                  'visible_to', 'unlisted', 'source', 'origin')
 
     # TODO
     def _source(self, obj):
