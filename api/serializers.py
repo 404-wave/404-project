@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from comments.models import Comment
-from users.models import User, Node
+from users.models import User, Node, NodeSetting
 from posts.models import Post
 
 import requests
@@ -67,11 +67,38 @@ class PostSerializer(serializers.ModelSerializer):
 
     # TODO
     def _source(self, obj):
-        return ""
+        try:
+            node_settings = NodeSetting.objects.all()[0]
+            url_to_post = node_settings.host + "/posts/" + str(obj.id) + "/"
+            return url_to_post
+        except:
+            return ""
 
     # TODO:
     def _origin(self, obj):
-        return ""
+        posts = Post.objects.filter(id=obj.id)
+        if posts is None:
+            found = False
+            for node in Node.objects.all():
+                # TODO: This probably needs to be changed to handle
+                # more servers other than just our 1 partner.
+                headers = {'X-UUID': self.context.get('requestor')}
+                url_to_node = node.host + '/posts/' + str(obj.id) + '/'
+                r = requests.get(node.host, headers=headers, auth=HTTPBasicAuth(node.username, node.password))
+                try:
+                    r = response.json()
+                    if r.status_code == 200:
+                        origin = r['posts'][0]['source']
+                        return origin
+                except:
+                    pass
+
+            if not found:
+                return ''
+
+        else:
+            return self._source(obj)
+
 
     def _categories(self, obj):
         return list()
@@ -96,6 +123,7 @@ class PostSerializer(serializers.ModelSerializer):
         return user_list
 
     def _author(self, obj):
+        # TODO: What if the author is from a different server??? FOAF!
         author = User.objects.get(username=obj.user)
         serialized_author = PostAuthorSerializer(author, many=False)
         return serialized_author.data

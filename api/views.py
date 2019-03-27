@@ -154,7 +154,7 @@ class PostAPIView(generics.GenericAPIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         page = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(page, many=True)
+        serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
         return self.get_paginated_response(serializer.data)
 
 
