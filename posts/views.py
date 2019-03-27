@@ -80,11 +80,13 @@ def posts_detail(request, id):
                 parent_obj = parent_querySet.first()
 
         new_comment, created = Comment.objects.get_or_create(
-            user=request.user,
-            content_type=content_type,
-            object_id=obj_id,
-            content=content_data,
-            parent=parent_obj
+
+            user = request.user.id,
+            content_type = content_type,
+            object_id = obj_id,
+            content = content_data,
+            parent = parent_obj
+
 
         )
         return HttpResponseRedirect(new_comment.content_object.get_detail_absolute_url())
@@ -92,6 +94,14 @@ def posts_detail(request, id):
             print("comment worked.")
 
     comments = instance.comments
+
+
+    # TODO: instance.user really should be the username of the person who made
+    # the comment. But this could be someone from a different server, so we need
+    # to firstly check to see if there is a user on our server with user_id, or
+    # scan the node table to see if the user exists somewhere else, then get
+    # their username.
+
 
     context = {
         "user": instance.user,

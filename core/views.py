@@ -1,30 +1,23 @@
-
-from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
-
-from posts.models import Post
-from posts.forms import PostForm
-from users.models import User
-from friends.models import FriendRequest
-from datetime import datetime
-from django.contrib.auth.decorators import login_required
-
-from django.shortcuts import render
 from django.http import HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-
-from .forms import ProfileChangeForm as changeForm
-
+from django.shortcuts import render
 from django.urls import reverse
 
-from friends.views import follows
-
+from datetime import datetime
 import requests
-import re
-import pytz
-
 import base64
+import pytz
+import re
 
+from .forms import ProfileChangeForm as changeForm
+from friends.models import FriendRequest
+from friends.views import follows
+from posts.forms import PostForm
+from posts.models import Post
+from users.models import User
 
 
 # TODO: use the REST API once it is established
@@ -266,8 +259,8 @@ def edit_profile(request):
 		if form.is_valid():
 			form.save()
 
-			return HttpResponseRedirect(reverse('my_profile')) 	
-    
+			return HttpResponseRedirect(reverse('my_profile'))
+
 		#TODO else statement when form isn't valid
 
 	#if not POST, then must be GET'ing the form itself. so pass context
