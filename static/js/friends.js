@@ -204,6 +204,7 @@ function addFromOtherNode(data){
     }
   };
 
+  console.log(JSON.stringify(paylod));
   let metaData = {
     'method':'POST',
     'mode':'no-cors',
