@@ -7,7 +7,6 @@ from posts.models import Post
 import requests
 
 
-
 class UserSerializer(serializers.ModelSerializer):
 
     friends = serializers.SerializerMethodField('_friends')
@@ -76,7 +75,7 @@ class PostSerializer(serializers.ModelSerializer):
     def _source(self, obj):
         try:
             node_settings = NodeSetting.objects.all()[0]
-            url_to_post = node_settings.host + "/posts/" + str(obj.id) + "/"
+            url_to_post = node_settings.host + "/service/posts/" + str(obj.id) + "/"
             return url_to_post
         except:
             return ""
