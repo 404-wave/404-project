@@ -50,12 +50,12 @@ function changeFollowFromOtherNode(followerr,followeee, instance){
   $.ajax({
     url:url_val,
     data:{
-      followerID: follower.id,
-      followeeID: followee.id,
-      followerUser: follower.username,
-      followeeUser: followee.username,
-      'server': followee.host,
-      'host':follower.host,
+      followerID: follower["id"],
+      followeeID: followee["id"],
+      followerUser: follower["username"],
+      followeeUser: followee["username"],
+      'server': followee["host"],
+      'host':follower["host"],
     },
     success: function(data){
       addFromOtherNode(data);
@@ -74,12 +74,12 @@ function change_follow(follower, followee, e) {
   $.ajax({
     url: url_val,
     data: {
-      followerID: follower.id,
-      followeeID: followee.id,
-      'followerUser': follower.username,
-      'followeeUser': followee.username,
-      'server': followee.host,
-      'host': follower.host,
+      followerID: follower["id"],
+      followeeID: followee["id"],
+      followerUser: follower["username"],
+      followeeUser: followee["username"],
+      'server': followee["host"],
+      'host':follower["host"],
     },
     success: function (data) {
       switchButton(data, e);
