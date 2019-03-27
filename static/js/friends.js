@@ -169,7 +169,7 @@ function addFromOtherNode(userid,username){
         "id": recip_user_url,
         "host": "http://127.0.0.1:3000/",
         "displayName": "test-user",
-        "url": "http://127.0.0.1:3000/home/profile/1f8a90a5cc2e4fa0b3aaaaadb5d06f7a",
+        "url": "http://127.0.0.1:3000/home/profile/63429406-e4bc-425d-8ad3-7526a11ecd08",
         }
   };
   // $.ajax({

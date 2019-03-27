@@ -110,7 +110,8 @@ def follow(request):
 
     followerID = request.GET['followerID']
     followeeID = request.GET['followeeID']
-
+    print("FOLLOWEE :")
+    print(followeeID)
     # TODO: Find a good way to error handle these two DB calls
     user1 = User.objects.get(pk=followerID)
     user2 = User.objects.get(pk=followeeID)
