@@ -114,13 +114,10 @@ def follow(request):
     followeeUser = request.GET['followeeUser']
     server = request.GET['server']
     host = request.GET['host']
-    print("FOLLOWEE :")
-    print(followeeID)
-    if server == host:
-        # TODO: Find a good way to error handle these two DB calls
-        user1 = User.objects.get(pk=followerID)
-        user2 = User.objects.get(pk=followeeID)
-        
+    
+    user1 = followerID
+    user2 = followeeID
+
     Follow.objects.create(user1=followerID, user2=followeeID)
      ####add into FriendRequest table####
     #Query to see if the person they want to follow is already following requestor

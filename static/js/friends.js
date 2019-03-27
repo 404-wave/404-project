@@ -183,8 +183,6 @@ function addFromOtherNode(data){
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser'];
 
-  print("HOST URL:");
-  print(hostUrl);
   const path = hostUrl + "/service/friendrequest/";
   const request_user_url = hostUrl+"/"+ followerID;
   const req_profile_url = hostUrl + "/home/profile/"+ followerID;
