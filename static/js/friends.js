@@ -172,21 +172,27 @@ function addFromOtherNode(data){
   const followeeID = data['followeeID'];
   let serverUrl = data['server'];
   let hostUrl = data['host'];
-  if (serverUrl[serverUrl.length -1] != '/'){
+  if (serverUrl[serverUrl.length -1] != '/' || serverUrl[serverUrl.length -1] == " "){
+    if(serverUrl[serverUrl.length -1] == " "){
+      serverUrl.slice(0,-1);
+    }
     serverUrl = serverUrl+'/';
   }
-  if(hostUrl[hostUrl.length-1] != '/'){
+  if(hostUrl[hostUrl.length-1] != '/' || hostUrl[hostUrl.length -1] == " "){
+    if(hostUrl[hostUrl.length -1] == " "){
+      hostUrl.slice(0,-1);
+    }
     hostUrl = hostUrl +'/';
   }
   
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser'];
 
-  const path = hostUrl + "service/friendrequest/";
-  const request_user_url = hostUrl+ followerID;
-  const req_profile_url = hostUrl + "home/profile/"+ followerID;
+  const path = hostUrl+"service/friendrequest/";
+  const request_user_url = hostUrl+followerID;
+  const req_profile_url = hostUrl+"home/profile/"+followerID;
   const recip_user_url = serverUrl+followeeID;
-  const recip_profile_url = serverUrl+"home/profile/"+ followeeID;
+  const recip_profile_url = serverUrl+"home/profile/"+followeeID;
   let payload = {
     "query":"friendrequest",
     "author": {
