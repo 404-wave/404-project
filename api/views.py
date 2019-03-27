@@ -22,7 +22,7 @@ import socket
 import uuid
 
 
-# Check if we have enabled sharing posts with other servers
+# Checks if we have enabled sharing posts with other servers
 def sharing_posts_enabled(request):
 
     # TODO: We need to find a way to get the host this came from
@@ -113,7 +113,8 @@ class PostAPIView(generics.GenericAPIView):
         requestor_id = get_requestor_id(request)
 
         path_all_public_posts = ['/service/posts/', '/api/posts/', '/posts/']
-        path_all_user_visible_posts =['/service/author/posts/', '/api/author/posts/', '/author/posts/']
+        path_all_user_visible_posts =['/service/author/posts/',
+            '/api/author/posts/', '/author/posts/']
 
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -129,7 +130,8 @@ class PostAPIView(generics.GenericAPIView):
             author_id = self.kwargs['author_id']
             try: author = User.objects.get(id=author_id)
             except: return Response(status=status.HTTP_404_NOT_FOUND)
-            queryset = self.get_posts_from_single_author(author.id, requestor_id, server_only).filter(unlisted=False)
+            queryset = self.get_posts_from_single_author(
+                author.id, requestor_id, server_only).filter(unlisted=False)
 
         # Get a single post if it is visible to the requesting user
         elif 'post_id' in kwargs.keys():
@@ -335,6 +337,8 @@ class FriendAPIView(generics.GenericAPIView):
                     break
 
             # Whether there is friendship or not, we need some author data
+            # TODO: What if one of the author's is on a different server? Then
+            # we would need to make a GET request for some data to other nodes.
             author1 = User
             author2 = User
             try:
@@ -439,7 +443,6 @@ class FriendRequestAPIView(generics.GenericAPIView):
                     exists_in_table.delete()
 
             except:
-                # TODO: What is the correct status code here?
                 Response(status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_200_OK)
