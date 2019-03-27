@@ -50,8 +50,10 @@ function changeFollowFromOtherNode(followerr,followeee, instance){
   $.ajax({
     url:url_val,
     data:{
-      follower: follower,
-      followee: followee,
+      followerID: follower.id,
+      followeeID: followee.id,
+      followerUser: follower.username,
+      followeeUser: followee.username,
       'server': followee.host,
       'host':follower.host,
     },
@@ -72,8 +74,10 @@ function change_follow(follower, followee, e) {
   $.ajax({
     url: url_val,
     data: {
-      follower: follower,
-      followee: followee,
+      followerID: follower.id,
+      followeeID: followee.id,
+      'followerUser': follower.username,
+      'followeeUser': followee.username,
       'server': followee.host,
       'host': follower.host,
     },

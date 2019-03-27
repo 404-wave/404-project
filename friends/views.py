@@ -107,12 +107,13 @@ def follow(request):
 
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
-    follower =request.GET['follower']
-    followee = request.GET['followee']
-    followerID = follower.id
-    followeeID = followee.id
-    server = request.server
-    host = request.host
+
+    followerID = request.GET['followerID']
+    followeeID = request.GET['followeeID']
+    followerUser = request.GET['followerUser']
+    followeeUser = request.GET['followeeUser']
+    server = request.GET['server']
+    host = request.GET['host']
     print("FOLLOWEE :")
     print(followeeID)
     if server == host:
@@ -132,8 +133,8 @@ def follow(request):
 
     data = {'followerID': followerID,
              'followee': followeeID,
-             'followerUser': follower.username,
-             'followeeUser':followee.username,
+             'followerUser': followerUser,
+             'followeeUser':followeeUser,
             'server': server,
             'host': host
             }
