@@ -1,6 +1,4 @@
-{% extends "base.html" %} 
-{% load static %} 
-{% block script %}
+{% extends "base.html" %} {% load static %} {% block script %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <!-- Bootstrap-->
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -27,7 +25,7 @@
           <div class="post_info">
             <div class="author_edit">
               {% load post_filters %}
-              <p class="author">{{ instance |get_author_name }}</p>
+              <p class="author">{{ instance | get_author_name }}</p>
               <p class="post_date">{{ instance.timestamp }}</p>
             </div>
           </div>
@@ -95,30 +93,15 @@
 
         {% for comment in comments %}
         <blockquote>
-          <p>{{ comment.content }}</p>
-
-          <!-- TODO: comment.author.displayName -->
-
-          <p>by {{ comment | get_comment_author }} on {{ comment.published }}</p>
+          <p>{{ comment | get_comment_content }}</p>
+          <p>
+            by {{ comment | get_comment_author }} on {{ comment.published }}
+          </p>
         </blockquote>
         {% endfor %}
       </div>
     </div>
   </div>
 </div>
-<script>
-  //   $(".comment-reply-btn").click(function(event) {
-  //     console.log("Working");
-  //     event.preventDefault();
-  //     $(this)
-  //       .parent()
-  //       .next(".comment-reply")
-  //       .fadeToggle();
-  //   });
-  //   window.onload = function() {
-  //     auto_text();
-  //     private();
-  //   };
-</script>
 
 {% endblock %}
