@@ -44,7 +44,10 @@
  	width: 100%;
  	display: flex;
  	flex-direction: column;
- 	align-items: center;
+	align-items: center;
+	padding-top: 40px;
+	padding-bottom: 30px;
+
 }
 #createPost_tab{
 	margin-top: 30px;
@@ -97,10 +100,9 @@
 .github_post p{
 	padding: 10px;
 }
-#home_wrapper{
-	height: unset;
+.home_wrapper{
+	height: auto;
 }
-
 .link-span{
 position:absolute; 
   width:100%;
@@ -150,6 +152,7 @@ position:absolute;
 		height: 50px;
 		resize: none;
 		outline: none;
+		width: 90%;
 }
 	
 .link-span{
@@ -174,15 +177,14 @@ position:absolute;
 	align-items: baseline;
 	background-color: #ffca3c;
 	margin-bottom: 0;
+	margin-top: 10px;
 }
-
 .post_content img {
-	width: 150px;
-	
+	width: 150px;	
 }
 
 .post_date {
-	font-size: .7em;
+	font-size: .85em;
 	margin-top: .2em;
 	margin-bottom:.1em;
 	text-transform: uppercase;
@@ -192,10 +194,9 @@ position:absolute;
 .post_content {
 	display: flex;
 	position: relative;
-	margin: 20px 20px 0 20px;
+	margin: 0px 20px 0 60px;
 	flex-direction: row;
 	flex-shrink: 0;
-	
 }
 .post_content p {
 	flex-shrink: 1 0 auto;
@@ -292,21 +293,21 @@ textarea.form-control{
 	display: flex;
 	flex-direction:column;
 	flex-shrink: 0;
+	font-size: .9em;
 }
 
 .stream_post a{
 	margin-right: 1em;
 	color: #004160;
 }
-
 .stream_post:before, .github_post:before {
   content : "";
-  position: absolute;
   top: -10px;
   height  : 100%;
-  width   : 95%;  
   border-top:1px solid #ffca3c;
   margin-left: 2.5%;
+  margin-right: 2.5%;
+  padding: 10px;
 }
 #stream.showing, #github.showing {
 	font-weight: 500;
@@ -314,14 +315,13 @@ textarea.form-control{
 	opacity: unset;
 	background-color: #fdfdfd;
 	}
- 
-.stream {
-	width: 86%;
-	margin-top: 40px;
-	background-color: white;
-	font-family: 'Nunito', sans-serif;
-}
-
+	.stream {
+		width: 86%;
+		margin-top: 40px;
+		background-color: white;
+		font-family: 'Nunito', sans-serif;
+		margin-bottom: 100px;
+	}
 .post_view {
 	width: 86%;
 	margin-top: 40px;

@@ -121,11 +121,11 @@ function populateRequests(data){
     dropdown.removeChild(dropdown.firstChild);
   }
   //insert users
-  for (var x = 0; x < data.length; ++x) {
-    let id = data[x]["pk"];
-
-    let username = data[x]["fields"]["username"];
-    let div = `<div><a href=\"../profile/${id}\">${username}</a></div>`;
+  for (var x = 0; x < data['posts'].length; ++x) {
+    let id = data['posts'][x]['id'];
+    let host = data['posts'][x]['host'];
+    let username = data['posts'][x]['username'];
+    let div = `<div><a href=\"../profile/${host}${id}\">${username}</a></div>`;
     $("#dropdown").append(div)
   }
   dropdown.classList.toggle("show");

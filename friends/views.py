@@ -1,10 +1,14 @@
 from django.http import HttpResponse
 from django.core import serializers
 from django.http import HttpResponseForbidden
+from django.conf import settings
 from django.shortcuts import render
 from django.db.models import Q
 import json
-
+import os
+import re
+import requests
+import core.views
 from users.models import User
 from friends.models import Follow, FriendRequest
 from friends.models import Follow
@@ -15,8 +19,12 @@ def find(request):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
 
+
+
     server_users = User.objects.exclude(pk=request.user.id).filter(is_active=True)
+
     data = serializers.serialize('json', server_users, fields=('username'))
+
     return HttpResponse(data, content_type="application/json")
 
 
@@ -52,6 +60,7 @@ def followers(request):
     # Look at Follow table results where I am the followee
     # followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
     follower_obj = Follow.objects.filter(Q(user2=request.user.id))
+    
     if len(follower_obj) != 0:
         user_Q = Q()
         for follower in follower_obj:
@@ -161,14 +170,49 @@ def friend_requests(request):
         return HttpResponseForbidden()
     print ("REQUEST FRIEND")
     friend_reqs = FriendRequest.objects.filter(recipient=request.user.id)
-    #TODO make sure the users are active too
+    #gives list of friends id
     print (friend_reqs)
+    host = request.get_host()
     user_filter = Q()
+    l = list()
+    data2 = {
+    "posts": []}
     for reqs in friend_reqs:
-        print (reqs.requestor)
-        user_filter = user_filter | Q(id=reqs.requestor)
+        print(reqs.requestor)
+        user_filter = user_filter | Q(username=reqs.requestor)
+        user = User.objects.filter(id = reqs.requestor)
+        if not user:
+            user = get_user(reqs.requestor_server, reqs.requestor)
+        else:
+            user = user[0]
+        host = strip_host(user.host)
+        data2["posts"].append({'id':str(user.id), 'username':user.username, 'host': host})
 
-    data = User.objects.filter(user_filter)
-    serialized_data = serializers.serialize('json',data,fields=('username'))
-    print("DATAAAAA: " + serialized_data)
-    return HttpResponse(serialized_data, content_type='application/json')
+    print("DATAAAAA: ", data2)
+
+    data3 = User.objects.filter(user_filter)
+    serialized_data = serializers.serialize('json',data3,fields=('username'))
+    return HttpResponse(json.dumps(data2), content_type='application/json')
+
+
+def strip_host(host):
+    re_result = re.search("(^https?:\/\/)(.*)", host)
+    if (re_result):
+        host = re_result.group(2)
+    return host
+
+
+def get_user(server, id):
+    user = User()
+    build_request = server+'/service/author/'+str(id)
+    print (build_request)
+    try:
+        r=requests.get(build_request)
+        response = r.json()
+    except:
+        print("That user does not exist")
+    user.username = response['displayName']
+    user.id = response['id']
+    user.host = server
+    return user
+

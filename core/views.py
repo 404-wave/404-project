@@ -130,6 +130,7 @@ def home(request):
 			streamlist = Post.objects.filter(privacy=privacy)
 			print("GET", streamlist)
 		else:
+			print (request.user)
 			streamlist = Post.objects.filter_user_visible_posts(user=request.user)
 
 		"""
@@ -199,36 +200,55 @@ def home(request):
 		}
 	if instance and instance.unlisted is True:
 		context["unlisted_instance"] = instance
-
 	return render(request, "home.html", context)
 
-@login_required(login_url='/login')
-def profile(request, pk = None):
+
+def get_user(parameters):
+	user = User()
+
+	id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)'	
+	re_result = re.search(id_regex, parameters)
+	service = re_result.group(1)
+	profile_id = re_result.group(2)
+	print ("IN PROFILE", service)
+	print ("IN PROFILE", profile_id)
+	build_request = 'https://' + service+ '/service/author/'+profile_id
+	try:
+		r=requests.get(build_request)
+		response = r.json()
+	except:
+		return HttpResponseNotFound("That user does not exist")
+	user.bio = response['bio']
+	user.username = response['displayName']
+	user.first_name = response['firstName']
+	user.last_name = response['lastName']
+	user.email = response['email']
+	user.id = response['id']
+	user.host = service
+	user.friends = response['friends']
+	return user
+
+
+
+login_required(login_url='/login')
+def profile(request, value=None, pk=None):
 
 	if not request.user.is_authenticated:
 		return HttpResponseForbidden()
-
-	# If no pk is provided, just default to the current user's page
-	if pk is None:
-		pk = request.user.id
-
-	try:
+	user = User()
+	# If no value, then we know we are looking at 'my_profile'
+	if value is None:
+		pk = pk if pk is not None else request.user.id
 		user = User.objects.get(pk=pk)
-	except ObjectDoesNotExist:
-		# TODO: Return a custom 404 page
-		return HttpResponseNotFound("That user does not exist")
+	else:
+		user = get_user(value)
 
-	# Check if we follow the user whose profile we are looking at
-	following = False
 	button_text = "Unfollow"
-	if request.user.id is not pk:
-		following = follows(request.user.id, pk)
+	if request.user.id is not user.id:
+		following = follows(request.user.id, user.id)
 		if (following == False):
 			button_text = "Follow"
-
-
-	return render(request, 'profile.html', {'user': user, 'following': following, 'button_text': button_text})
-
+	return render(request, 'profile.html', {'user': user, 'following': following, 'button_text': button_text}) 
 
 
 @login_required(login_url='/login')
