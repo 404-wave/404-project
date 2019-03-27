@@ -66,7 +66,9 @@ function changeFollowFromOtherNode(followerr,followeee, instance){
   });
 
 }
-function change_follow(follower, followee, e) {
+function change_follow(followerr, followeee, e) {
+  let follower = JSON.parse(followerr);
+  let followee = JSON.parse(followeee);
   let url_val = 'follow/';
   if (e.id != "Follow"){
     url_val = "unfollow/";
