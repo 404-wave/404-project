@@ -169,6 +169,7 @@ def friend_requests(request):
     friend_reqs = FriendRequest.objects.filter(recipient=request.user.id)
     host = request.get_host()
     data2 = {"posts": []}
+    user_filter = Q()
     for reqs in friend_reqs:
         print(reqs.requestor)
         user_filter = user_filter | Q(username=reqs.requestor)
