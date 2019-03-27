@@ -23,11 +23,27 @@ import uuid
 
 
 # Checks if we have enabled sharing posts with other servers
+
+# When you add a remote host as a user, you need to make sure to add the HOST
+# field. That way we know what the hostname is of the remote host. We need this
+# because some groups might not even send the remote host header, and so we
+# wouldn't know who they are.
+def get_hostname(request):
+
+    users = User.objects.filter(username=request.user.username)
+    if users is None:
+        return None
+
+    return users[0].host
+
+
 def sharing_posts_enabled(request):
 
-    # TODO: We need to find a way to get the host this came from
     node_settings = None
-    host = request.scheme + "://" + request.META['HTTP_HOST']
+    host = get_hostname(request)
+    if host is None:
+        return False
+
     try:
         node_settings = NodeSetting.objects.all()[0]
         if node_settings.share_posts is False:
@@ -44,31 +60,34 @@ def sharing_posts_enabled(request):
 def allow_server_only_posts(request):
 
     node_settings = None
-    host = request.scheme + "://" + request.META['HTTP_HOST']
+    host = get_hostname(request)
 
     try:
         node_settings = NodeSetting.objects.all()[0]
     except:
-        print("SERVER ONLY: FALSE")
         return False
 
     if host == node_settings.host:
-        print("SERVER ONLY: TRUE")
         return True
 
-    print("SERVER ONLY: FALSE")
     return False
 
-# TODO: Get this from a request header
-# TODO: Actually, we still can use the Requestor_id from the query param so we
-# can test our own api...
+
 def get_requestor_id(request):
+
+    try:
+        requestor_id = request.META['HTTP_X_UUID']
+        return str(requestor_id)
+    except:
+        pass
 
     try:
         if request.GET.get('user', None) is not None:
             return uuid.UUID(request.GET['user'])
     except:
         return None
+
+    return None
 
 
 class UserAPIView(generics.GenericAPIView):
@@ -109,7 +128,6 @@ class PostAPIView(generics.GenericAPIView):
         data = None
         queryset = None
         path = request.path
-        server_only = allow_server_only_posts(request)
         requestor_id = get_requestor_id(request)
 
         path_all_public_posts = ['/service/posts/', '/api/posts/', '/posts/']
@@ -119,11 +137,17 @@ class PostAPIView(generics.GenericAPIView):
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+        host = get_hostname(request)
+        if host is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         if not sharing_posts_enabled(request):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         if requestor_id is None and path not in path_all_public_posts:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        server_only = allow_server_only_posts(request)
 
         # Get all posts from a single author that are visible to the requestor
         if 'author_id' in self.kwargs.keys():
@@ -193,7 +217,7 @@ class PostAPIView(generics.GenericAPIView):
     def filter_out_image_posts(self, request, queryset):
 
         try:
-            host = request.scheme + "://" + request.META['HTTP_HOST']
+            host = get_hostname(request)
             node_settings = NodeSetting.objects.all()[0]
             if node_settings.share_imgs is False:
                 if not host == node_settings.host:
@@ -223,8 +247,11 @@ class CommentAPIView(generics.GenericAPIView):
         if requestor_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        host = get_hostname(request)
+        if host is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         server_only = allow_server_only_posts(request)
-        host = request.scheme + "://" + request.META['HTTP_HOST']
 
         if 'post_id' in self.kwargs.keys():
             post_id = self.kwargs['post_id']
