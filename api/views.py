@@ -5,75 +5,71 @@ from rest_framework import pagination, generics, views, status, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-import socket
-import requests
-import uuid
+from .serializers import UserSerializer, PostSerializer, CommentSerializer, UserFriendSerializer
+from .serializers import UserFriendSerializer
 
-from users.models import User, Node, NodeSetting
-from posts.models import Post
-from comments.models import Comment
+from .paginators import PostPagination, CommentPagination
+
 from friends.models import Follow, FriendRequest
+from users.models import User, Node, NodeSetting
+from comments.models import Comment
+from posts.models import Post
 
 from friends.views import follows
 
-from .serializers import UserSerializer, PostSerializer, CommentSerializer, UserFriendSerializer
-from .paginators import PostPagination, CommentPagination
+import requests
+import socket
+import uuid
 
-# TODO: For privacy issues, send 403?
 
-# TODO:
-# As a server admin, I want to be able to add nodes to share with
-# As a server admin, I want to be able to remove nodes and stop sharing with them.
-# As a server admin, I can limit nodes connecting to me via authentication.
-# As a server admin, node to node connections can be authenticated with HTTP Basic Auth
-# As a server admin, I can disable the node to node interfaces for connections that are not authenticated!
+# Check if we have enabled sharing posts with other servers
+def sharing_posts_enabled(request):
 
-# CAN POST COMMENTS TO OTHER SERVERS coool
-# TODO: FOAF
-# TODO:
-
-def authorized(request):
-
+    # TODO: We need to find a way to get the host this came from
+    node_settings = None
     host = request.scheme + "://" + request.META['HTTP_HOST']
-
-    # TODO: Authentication
-    nodes = Node.objects.all()
-    for node in nodes:
-        if host == node.host:
-            return True
-
-    node_settings = NodeSetting.objects.all()[0]
-    if host == node_settings.host:
-        return True
-    # If the request didn't come from one of our connected nodes,
-    # then check if the request came from an authenticated user
-    if not request.user.is_authenticated:
-        return False
+    try:
+        node_settings = NodeSetting.objects.all()[0]
+        if node_settings.share_posts is False:
+            if not host == node_settings.host:
+                print("Requesting host: " + host)
+                print("Requesting host: " + node_settings.host)
+                return False
+    except:
+        pass
 
     return True
 
+# TODO: Verify
+def allow_server_only_posts(request):
 
-# Remove all image posts from a set of posts
-def filter_out_image_posts(queryset):
-    new_queryset = Post.objects.none()
-    for post in queryset:
-        if not post.is_image:
-            new_queryset |= Post.objects.filter(id=post.id)
-    return new_queryset
+    node_settings = None
+    host = request.scheme + "://" + request.META['HTTP_HOST']
 
+    try:
+        node_settings = NodeSetting.objects.all()[0]
+    except:
+        print("SERVER ONLY: FALSE")
+        return False
+
+    if host == node_settings.host:
+        print("SERVER ONLY: TRUE")
+        return True
+
+    print("SERVER ONLY: FALSE")
+    return False
+
+# TODO: Get this from a request header
+# TODO: Actually, we still can use the Requestor_id from the query param so we
+# can test our own api...
 def get_requestor_id(request):
 
-    # Get the requestors ID, but make sure it is a valid UUID
-    requestor_id = ""
     try:
         if request.GET.get('user', None) is not None:
             return uuid.UUID(request.GET['user'])
-        # TODO: The request needs to have come from our server for the below
-        # to be guaranteed to work
-        else:
-            return request.user.id
     except:
         return None
+
 
 class UserAPIView(generics.GenericAPIView):
 
@@ -82,7 +78,7 @@ class UserAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
 
-        if not authorized(request):
+        if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         if 'author_id' in kwargs.keys():
@@ -91,7 +87,6 @@ class UserAPIView(generics.GenericAPIView):
                 queryset = User.objects.get(id=author_id, is_active=True)
             except:
                 return Response(status=status.HTTP_404_NOT_FOUND)
-
         else:
             queryset = User.objects.filter(is_active=True)
 
@@ -103,8 +98,6 @@ class UserAPIView(generics.GenericAPIView):
         return Response(serializer.data)
 
 
-# TODO: As a server admin, I want to share or not share posts with users on other servers.
-# TODO: As a server admin, I want to share or not share images with users on other servers.
 class PostAPIView(generics.GenericAPIView):
 
     queryset = Post.objects.all()
@@ -113,87 +106,104 @@ class PostAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
 
-        if not authorized(request):
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        # Check if we have enabled sharing posts with other servers
-        node_settings = None
-        host = request.scheme + "://" + request.META['HTTP_HOST']
-
-        try:
-            node_settings = NodeSetting.objects.all()[0]
-            if node_settings.share_posts is False:
-                if not host == node_settings.host:
-                    return Response(status=status.HTTP_401_UNAUTHORIZED)
-        except:
-            pass
-
-        server_only = False
-        if host == node_settings.host:
-            server_only = True
-
-        data = ""
-        queryset = ""
+        data = None
+        queryset = None
         path = request.path
+        server_only = allow_server_only_posts(request)
         requestor_id = get_requestor_id(request)
 
-        if requestor_id is None:
+        path_all_public_posts = ['/service/posts/', '/api/posts/', '/posts/']
+        path_all_user_visible_posts =['/service/author/posts/', '/api/author/posts/', '/author/posts/']
+
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        if not sharing_posts_enabled(request):
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        if requestor_id is None and path not in path_all_public_posts:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        # Get all posts from a single author that are visible to the requestor
         if 'author_id' in self.kwargs.keys():
             author_id = self.kwargs['author_id']
-            try:
-                author = User.objects.get(id=author_id)
-            except:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+            try: author = User.objects.get(id=author_id)
+            except: return Response(status=status.HTTP_404_NOT_FOUND)
+            queryset = self.get_posts_from_single_author(author.id, requestor_id, server_only).filter(unlisted=False)
 
-            queryset = Post.objects.none()
-            if requestor_id == author_id:
-                queryset = Post.objects.filter(user=requestor_id, unlisted=False)
-            else:
-                queryset = Post.objects.filter_user_visible_posts_by_user_id(user_id=requestor_id, server_only=server_only).filter(user=author_id)
-                queryset = queryset | Post.objects.filter(user=author_id, privacy=Post.PUBLIC)
-
+        # Get a single post if it is visible to the requesting user
         elif 'post_id' in kwargs.keys():
             post_id = self.kwargs['post_id']
-            queryset = Post.objects.filter_user_visible_posts_by_user_id(user_id=requestor_id, server_only=server_only).filter(id=post_id)
+            queryset = Post.objects.filter_user_visible_posts_by_user_id(
+                user_id=requestor_id, server_only=server_only).filter(id=post_id)
+            queryset = self.filter_out_image_posts(request, queryset)
 
-        elif path == "/service/author/posts":
-            # Get all posts visible to the requesting user
-            queryset = Post.objects.filter_user_visible_posts_by_user_id(user_id=requestor_id, server_only=server_only)
+        # Get all posts visible to the requesting user
+        elif path in path_all_user_visible_posts:
+            queryset = Post.objects.filter_user_visible_posts_by_user_id(
+                user_id=requestor_id, server_only=server_only).filter(unlisted=False)
 
+        # Get all public posts
+        elif path in path_all_public_posts:
+            queryset = Post.objects.filter(privacy=Post.PUBLIC).filter(unlisted=False)
+
+        # Not a valid path
         else:
-            queryset = Post.objects.filter(privacy=Post.PUBLIC)
-
-        if node_settings is not None and node_settings.share_imgs is False:
-            if not host == node_settings.host:
-                queryset = filter_out_image_posts(queryset)
-
-        serializer = PostSerializer(queryset, many=True)
-        data = serializer.data
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
-        return Response(data)
 
     def post(self, request, *args, **kwargs):
 
-        if not authorized(request):
+        if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        # TODO: We need to incorporate UUIDs for posts first
         return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+
 
     def put(self, request, *args, **kwargs):
 
-        if not authorized(request):
+        if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        # TODO: We need to incorporate UUIDs for posts first
         return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+
+
+    def get_posts_from_single_author(self, author_id, requestor_id, server_only):
+
+        queryset = Post.objects.none()
+        if requestor_id == author_id:
+            queryset = Post.objects.filter(user=requestor_id, unlisted=False)
+        else:
+            queryset = Post.objects.filter_user_visible_posts_by_user_id(
+                user_id=requestor_id, server_only=server_only).filter(user=author_id, unlisted=False)
+            queryset = queryset | Post.objects.filter(
+                user=author_id, privacy=Post.PUBLIC)
+
+        return queryset
+
+    # Remove all image posts from a set of posts, only if we are not sharing
+    # with the server that made the request. However, if we are the server that
+    # made the request, then we won't filter them out.
+    def filter_out_image_posts(self, request, queryset):
+
+        try:
+            host = request.scheme + "://" + request.META['HTTP_HOST']
+            node_settings = NodeSetting.objects.all()[0]
+            if node_settings.share_imgs is False:
+                if not host == node_settings.host:
+                    new_queryset = Post.objects.none()
+                    for post in queryset:
+                        if not post.is_image:
+                            new_queryset |= Post.objects.filter(id=post.id)
+                    return new_queryset
+        except:
+            pass
+
+        return queryset
 
 
 class CommentAPIView(generics.GenericAPIView):
@@ -204,38 +214,28 @@ class CommentAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
 
-        if not authorized(request):
+        if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         requestor_id = get_requestor_id(request)
         if requestor_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        server_only = False
-        node_settings = None
+        server_only = allow_server_only_posts(request)
         host = request.scheme + "://" + request.META['HTTP_HOST']
-
-        try:
-            node_settings = NodeSetting.objects.all()[0]
-            if host == node_settings.host:
-                server_only = True
-        except:
-            pass
 
         if 'post_id' in self.kwargs.keys():
             post_id = self.kwargs['post_id']
             try:
-                queryset = Post.objects.filter_user_visible_posts_by_user_id(user_id=requestor_id, server_only=server_only).filter(id=post_id)[0].comments
+                queryset = Post.objects.filter_user_visible_posts_by_user_id(
+                    user_id=requestor_id, server_only=server_only).filter(id=post_id)[0].comments
             except:
                 Response(status=status.HTTP_404_NOT_FOUND)
 
         page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
-        serializer = CommentSerializer(queryset, many=True)
-        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
 
@@ -251,63 +251,40 @@ class CommentAPIView(generics.GenericAPIView):
             "message": "Comment Added"
         }
 
-        if not authorized(request):
+        if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         requestor_id = get_requestor_id(request)
         if requestor_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        server_only = False
-        node_settings = None
-        host = request.scheme + "://" + request.META['HTTP_HOST']
+        server_only = allow_server_only_posts(request)
 
         try:
-            node_settings = NodeSetting.objects.all()[0]
-            if host == node_settings.host:
-                server_only = True
-        except:
-            pass
-
-        # Retrieves JSON data
-        data = request.data
-        try:
-            #post_id = data['post'].split("/")[-1]
+            data = request.data
             post_id = kwargs['post_id']
             content = data['comment']['comment']
             content_type = "text/plain"
             author_id = data['comment']['author']['id'].split("/")[-1]
         except:
-            # If the JSON was not what we wanted, send a 400
             Response(status=status.HTTP_400_BAD_REQUEST)
 
         # Check that the requesting user has visibility of that post
-        post = Post.objects.filter_user_visible_posts_by_user_id(user_id=requestor_id, server_only=server_only).filter(id=post_id)
+        post = Post.objects.filter_user_visible_posts_by_user_id(
+            user_id=requestor_id, server_only=server_only).filter(id=post_id)
         if post is None:
-
             return Response(response_failed, status=status.HTTP_403_FORBIDDEN)
 
-        # TODO: Create the actual post
-        failed = False
         try:
-            # ERROR: ["'<built-in function id>' is not a valid UUID."]
             post=post[0]
             instance = get_object_or_404(Post, id=post.id)
             comment = Comment(parent=None, user=author_id, content=content, object_id=post.id, content_type=post.get_content_type)
             comment.save()
         except Exception as e:
             print(e)
-            failed = True
 
         return Response(response_ok, status=status.HTTP_200_OK)
-# {
-# 	"comment":{
-# 	    "author":{
-#                    "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471"
-# 	   },
-# 	   "comment":"Sick Olde English"
-# 	}
-# }
+
 
 class FriendAPIView(generics.GenericAPIView):
 
@@ -316,7 +293,7 @@ class FriendAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
 
-        if not authorized(request):
+        if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         if 'author_id' in self.kwargs.keys():
@@ -343,8 +320,10 @@ class FriendAPIView(generics.GenericAPIView):
 
             friend_list = ""
             try:
-                followers = User.objects.filter(follower__user2=author_id1, is_active=True)
-                following = User.objects.filter(followee__user1=author_id1, is_active=True)
+                followers = User.objects.filter(
+                    follower__user2=author_id1, is_active=True)
+                following = User.objects.filter(
+                    followee__user1=author_id1, is_active=True)
                 friend_list = following & followers
             except:
                 return Response(status=status.HTTP_404_NOT_FOUND)
@@ -379,7 +358,7 @@ class FriendAPIView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
 
-        if not authorized(request):
+        if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         # Retrieves JSON data
@@ -419,7 +398,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
 
-        if not authorized(request):
+        if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         # Retrieves JSON data

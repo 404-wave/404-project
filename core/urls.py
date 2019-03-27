@@ -10,7 +10,7 @@ urlpatterns = [
     path('friends/', views.friends, name='my_friends'),
     path('profile/', views.profile, name='my_profile'),
     path('profile/<uuid:pk>', views.profile, name='profile'),
-    path('profile/edit/',views.edit_profile,name='edit_profile')
+    path('profile/edit/',views.edit_profile,name='edit_profile'),
     path('profile/follow/', friends.views.follow, name='follow'),
     path('profile/unfollow/', friends.views.unfollow, name='unfollow'),
 ]

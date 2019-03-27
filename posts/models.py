@@ -118,7 +118,6 @@ class PostManager(models.Manager):
         friends = following & followers
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
 
-
         friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
         friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
         friends_of_friends = friends_followers & friends_following
@@ -137,8 +136,6 @@ class PostManager(models.Manager):
             If unlisted is passed as True, the function will remove unlisted posts from the list.
             If it is passed as False, then it will not remove the unlisted posts.
         """
-        #if kwargs.get('remove_unlisted', True):
-        all_posts = all_posts.filter(unlisted=False)
         return all_posts.order_by('-timestamp')
 
 

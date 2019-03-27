@@ -19,7 +19,7 @@ class User(AbstractUser):
         return self.username
 
 
-class Node(models.Model, AbstractUser):
+class Node(models.Model):
 
     host = models.CharField(max_length = 500)
     sharing = models.BooleanField(default=True)
