@@ -7,7 +7,7 @@ class AuthTest(TestCase):
 
     def test_auth(self):
 
-        test_url = 'https://b71bb2e5.ngrok.io/service/posts/510cf811-9342-4d6d-beca-3a41d858762b/'
+        test_url = 'https://b71bb2e5.ngrok.io/service/posts/'
         headers = {
             'Accept':'application/json',
             # The UUID of the REQUESTING USER -- change as necessary

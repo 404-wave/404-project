@@ -15,6 +15,7 @@ from mimetypes import guess_type
 import uuid
 import json
 import requests
+from requests.auth import HTTPBasicAuth
 
 
 # Create your models here.
@@ -88,10 +89,14 @@ class PostManager(models.Manager):
 
             # headers = {
             # }
-            url = node.host + "/service/author/posts?user=" + str(user.id)
+            url = node.host + "/service/author/posts/"
 
             try:
-                response = requests.get(url)
+                headers = {
+                    'Accept':'application/json',
+                    'X-UUID': str(user.id)
+                }
+                response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
 
                 print(url)
                 print(response.status_code)
