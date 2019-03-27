@@ -107,8 +107,8 @@ def follow(request):
 
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
-    follower =json.loads(request.GET['follower'])
-    followee = json.loads(request.GET['followee'])
+    follower =request.GET['follower']
+    followee = request.GET['followee']
     followerID = follower.id
     followeeID = followee.id
     server = request.server
