@@ -174,7 +174,7 @@ function closeDropDown(){
   }
 }
 
-function addFromOtherNode(content){
+function addFromOtherNode(data){
   console.log("WE HERE")
   const followerID = data['followerID'];
   const followeeID = data['followeeID'];
