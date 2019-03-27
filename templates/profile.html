@@ -18,12 +18,8 @@
           <div id="followBtnContainer">
             {% if user.id != request.user.id %}
               <div id="followBtnContainer">
-                {% if user.host is not requestor.host %}
-
-                <button class = "friend_btn" id = {{button_text}} onclick="change_follow('{{ request.user }}', '{{ user }}', this)">{{button_text}}</button> 
-                {% endif %}
-                {% if user.host is requestor.host %}
-                <button class = "friend_btn" id = {{button_text}} onclick="change_follow('{{ request.user }}', '{{ user }}', this)">{{button_text}}</button>
+                <button class = "friend_btn" id = {{button_text}} onclick="change_follow('{{ request.user.id }}','{{ request.user.username }}','{{ request.user.host }} ', '{{ user.id }}','{{user.username }}','{{ user.host }}', this)">{{button_text}}</button> 
+              
                 {% endif %}
               </div>
             {% endif %}

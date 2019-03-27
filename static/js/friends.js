@@ -40,7 +40,8 @@ function populateFriendsList(data) {
   }
 }
 
-function changeFollowFromOtherNode(followerr,followeee, instance){
+function changeFollowFromOtherNode(followerID,followerUser,followerHost,
+  followeeID,followeeUser,followeeHost,, instance){
   let follower = JSON.parse(followerr);
   let followee = JSON.parse(followeee);
   let url_val = 'follow/';
@@ -50,12 +51,12 @@ function changeFollowFromOtherNode(followerr,followeee, instance){
   $.ajax({
     url:url_val,
     data:{
-      followerID: follower["id"],
-      followeeID: followee["id"],
-      followerUser: follower["username"],
-      followeeUser: followee["username"],
-      'server': followee["host"],
-      'host':follower["host"],
+      followerID: followerID,
+      followeeID: followeeID,
+      followerUser: followerUser,
+      followeeUser: followeeUser,
+      'server': followeeHost,
+      'host':followerHost,
     },
     success: function(data){
       addFromOtherNode(data);
@@ -66,25 +67,21 @@ function changeFollowFromOtherNode(followerr,followeee, instance){
   });
 
 }
-function change_follow(followerr, followeee, e) {
-  console.log("FOLLOWER: ");
-  console.log(followerr);
-  let follower = JSON.parse(followerr);
-  let followee = JSON.parse(followeee);
+function change_follow(followerID,followerUser,followerHost,
+  followeeID,followeeUser,followeeHost, e) {
   let url_val = 'follow/';
   if (e.id != "Follow"){
     url_val = "unfollow/";
   }
   $.ajax({
     url: url_val,
-    data: {
-      
-      followerID: follower["id"],
-      followeeID: followee["id"],
-      followerUser: follower["username"],
-      followeeUser: followee["username"],
-      'server': followee["host"],
-      'host':follower["host"],
+    data: {      
+      followerID: followerID,
+      followeeID: followeeID,
+      followerUser: followerUser,
+      followeeUser: followeeUser,
+      'server': followeeHost,
+      'host':followerHost,
     },
     success: function (data) {
       switchButton(data, e);
@@ -98,10 +95,8 @@ function change_follow(followerr, followeee, e) {
 
 
 function switchButton(data, button) {
-  let follower =data['follower']
-  let followee = data['followee']
-  let followerID = follower.id
-  let followeeID = followee.id
+  let followerID = data['followerID'];
+  let followeeID = data['followeeID'];
   var text_val = "Unfollow";
   let div = document.getElementById(button.id);
   if (button.id != "Follow") {
