@@ -118,17 +118,44 @@ def follows(user1, user2):
         else:
             return False
 
+
 def friend_requests(request):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
-
-    friend_reqs = FriendRequest.objects.filter(recipient=request.user)
-    #TODO make sure the users are active too
-    user_filter = Q()
+    print ("REQUEST FRIEND")
+    friend_reqs = FriendRequest.objects.filter(recipient=request.user.id)
+    host = request.get_host()
+    data2 = {"posts": []}
     for reqs in friend_reqs:
+        print(reqs.requestor)
         user_filter = user_filter | Q(username=reqs.requestor)
+        user = User.objects.filter(id = reqs.requestor)
+        if not user:
+            user = get_user(reqs.requestor_server, reqs.requestor)
+        else:
+            user = user[0]
+        host = strip_host(user.host)
+        data2["posts"].append({'id':str(user.id), 'username':user.username, 'host': host})
+    return HttpResponse(json.dumps(data2), content_type='application/json')
 
-    data = User.objects.filter(user_filter)
-    serialized_data = serializers.serialize('json',data,fields=('username'))
-    #print("DATAAAAA: " + serialized_data)
-    return HttpResponse(serialized_data, content_type='application/json')
+
+def strip_host(host):
+    re_result = re.search("(^https?:\/\/)(.*)", host)
+    if (re_result):
+        host = re_result.group(2)
+    return host
+
+
+def get_user(server, id):
+    user = User()
+    build_request = server+'/service/author/'+str(id)
+    print (build_request)
+    try:
+        r=requests.get(build_request)
+        response = r.json()
+    except:
+        print("That user does not exist")
+    user.username = response['displayName']
+    user.id = response['id']
+    user.host = server
+    return user
