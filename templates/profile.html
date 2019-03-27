@@ -18,7 +18,7 @@
           <div id="followBtnContainer">
             {% if user.id != request.user.id %}
               <div id="followBtnContainer">
-                {% if user.host is not requestor.host %}
+                {% if user.host is not request.user.host %}
 
                 <button class = "friend_btn" id = {{button_text}} onclick="changeFollowFromOtherNode('{{ request.user.id }}','{{ request.user.username }}','{{ request.user.host }} ', '{{ user.id }}','{{user.username }}','{{ user.host }}', this)">{{button_text}}</button> 
                 {% endif %}

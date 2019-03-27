@@ -249,7 +249,6 @@ def profile(request, value=None, pk=None):
 		if (following == False):
 			button_text = "Follow"
 	context = {'user':user,
-				'requestor':request.user,
 				'following':following,
 				'button_text':button_text,
 	}

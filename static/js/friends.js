@@ -46,6 +46,11 @@ function changeFollowFromOtherNode(followerID,followerUser,followerHost,
   if (instance.id != "Follow"){
     url_val =  "unfollow/";
   }
+  console.log("FOLLOWEE HOST: ");
+  
+  console.log(followeeHost)
+  console.log("FOLLOWER HOST:")
+  console.log(followerHost)
   $.ajax({
     url:url_val,
     data:{
@@ -187,7 +192,7 @@ function addFromOtherNode(data){
   const request_user_url = hostUrl+"/"+ followerID;
   const req_profile_url = hostUrl + "/home/profile/"+ followerID;
   const recip_user_url = serverUrl+"/"+followeeID;
-  const recip_profile_url = serverUrl+"home/profile/"+ followeeID;
+  const recip_profile_url = serverUrl+"/home/profile/"+ followeeID;
   let payload = {
     "query":"friendrequest",
     "author": {

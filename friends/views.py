@@ -114,7 +114,10 @@ def follow(request):
     followeeUser = request.GET['followeeUser']
     server = request.GET['server']
     host = request.GET['host']
-    
+    print("server")
+    print(server)
+    print("host")
+    print(host)
     user1 = followerID
     user2 = followeeID
 
