@@ -140,7 +140,7 @@ def follow(request):
     #     exists_in_table.delete()
 
     data = {'followerID': followerID,
-             'followee': followeeID,
+             'followeeID': followeeID,
              'followerUser': followerUser,
              'followeeUser':followeeUser,
             'server': server,

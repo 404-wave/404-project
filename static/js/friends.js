@@ -167,19 +167,26 @@ function closeDropDown(){
 }
 
 function addFromOtherNode(data){
-  console.log("WE HERE")
+  
   const followerID = data['followerID'];
   const followeeID = data['followeeID'];
-  const serverUrl = data['server'];
-  const hostUrl = data['host'];
+  let serverUrl = data['server'];
+  let hostUrl = data['host'];
+  if (serverUrl[serverUrl.length -1] != '/'){
+    serverUrl = serverUrl+'/';
+  }
+  if(hostUrl[hostUrl.length-1] != '/'){
+    hostUrl = hostUrl +'/';
+  }
+  
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser'];
 
-  const path = hostUrl + "/service/friendrequest/";
-  const request_user_url = hostUrl+"/"+ followerID;
-  const req_profile_url = hostUrl + "/home/profile/"+ followerID;
-  const recip_user_url = serverUrl+"/"+followeeID;
-  const recip_profile_url = serverUrl+"/home/profile/"+ followeeID;
+  const path = hostUrl + "service/friendrequest/";
+  const request_user_url = hostUrl+ followerID;
+  const req_profile_url = hostUrl + "home/profile/"+ followerID;
+  const recip_user_url = serverUrl+followeeID;
+  const recip_profile_url = serverUrl+"home/profile/"+ followeeID;
   let payload = {
     "query":"friendrequest",
     "author": {
