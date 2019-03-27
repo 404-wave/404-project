@@ -41,7 +41,7 @@ function populateFriendsList(data) {
 }
 
 function changeFollowFromOtherNode(followerID,followerUser,followerHost,
-  followeeID,followeeUser,followeeHost,, instance){
+  followeeID,followeeUser,followeeHost, instance){
   let follower = JSON.parse(followerr);
   let followee = JSON.parse(followeee);
   let url_val = 'follow/';
@@ -67,8 +67,7 @@ function changeFollowFromOtherNode(followerID,followerUser,followerHost,
   });
 
 }
-function change_follow(followerID,followerUser,followerHost,
-  followeeID,followeeUser,followeeHost, e) {
+function change_follow(followerID,followeeID,e) {
   let url_val = 'follow/';
   if (e.id != "Follow"){
     url_val = "unfollow/";
@@ -78,10 +77,6 @@ function change_follow(followerID,followerUser,followerHost,
     data: {      
       followerID: followerID,
       followeeID: followeeID,
-      followerUser: followerUser,
-      followeeUser: followeeUser,
-      'server': followeeHost,
-      'host':followerHost,
     },
     success: function (data) {
       switchButton(data, e);
