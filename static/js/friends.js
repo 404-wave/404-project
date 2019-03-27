@@ -10,7 +10,7 @@ function filterFriends(opt, e) {
     },
     error: function(xhr, status, error) {
       console.log(error)
-    }
+    } 
   });
 }
 

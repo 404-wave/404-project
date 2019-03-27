@@ -64,6 +64,7 @@ def followers(request):
     else:
         followers = User.objects.none()
 
+    
     data = serializers.serialize('json', followers, fields=('username'))
     return HttpResponse(data, content_type="application/json")
 
@@ -175,3 +176,16 @@ def friend_requests(request):
     serialized_data = serializers.serialize('json',data,fields=('username'))
     #print("DATAAAAA: " + serialized_data)
     return HttpResponse(serialized_data, content_type='application/json')
+
+def get_user(server, id):
+    user = User()
+    build_request = server+'/service/author/'+profile_id
+    try:
+        r=requests.get(build_request)
+        response = r.json()
+    except:
+        return HttpResponseNotFound("That user does not exist")
+    user.username = response['displayName']
+    user.id = response['id']
+    user.host = service
+    return user
