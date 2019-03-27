@@ -10,7 +10,7 @@ function filterFriends(opt, e) {
     },
     error: function(xhr, status, error) {
       console.log(error)
-    }
+    } 
   });
 }
 
@@ -114,6 +114,7 @@ function filterRequests(){
 
 }
 
+
 function populateRequests(data){
   // Remove the users in the friends list
   dropdown = document.getElementById("dropdown");
@@ -130,6 +131,7 @@ function populateRequests(data){
   }
   dropdown.classList.toggle("show");
 }
+
 
 function closeDropDown(){
   //Credit https://www.w3schools.com/howto/howto_js_dropdown.asp

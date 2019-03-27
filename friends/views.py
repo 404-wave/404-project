@@ -69,6 +69,7 @@ def followers(request):
     else:
         followers = User.objects.none()
 
+    
     data = serializers.serialize('json', followers, fields=('username'))
     return HttpResponse(data, content_type="application/json")
 
@@ -165,14 +166,14 @@ def follows(user1ID, user2ID):
         else:
             return False
 
+
 def friend_requests(request):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
     print ("REQUEST FRIEND")
     friend_reqs = FriendRequest.objects.filter(recipient=request.user.id)
-    #gives list of friends id
-    print (friend_reqs)
     host = request.get_host()
+    data2 = {"posts": []}
     user_filter = Q()
     l = list()
     data2 = {
@@ -187,11 +188,6 @@ def friend_requests(request):
             user = user[0]
         host = strip_host(user.host)
         data2["posts"].append({'id':str(user.id), 'username':user.username, 'host': host})
-
-    print("DATAAAAA: ", data2)
-
-    data3 = User.objects.filter(user_filter)
-    serialized_data = serializers.serialize('json',data3,fields=('username'))
     return HttpResponse(json.dumps(data2), content_type='application/json')
 
 
@@ -215,4 +211,3 @@ def get_user(server, id):
     user.id = response['id']
     user.host = server
     return user
-

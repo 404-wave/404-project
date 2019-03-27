@@ -316,12 +316,30 @@ class FriendAPIView(generics.GenericAPIView):
             friends = ""
             try:
                 
-                followers = User.objects.filter(follower__user2=author_id, is_active=True)
+                #followers = User.objects.filter(follower__user2=author_id, is_active=True)
                 # following = User.objects.filter(followee__user1=author_id, is_active=True)
                 # friends = following & followers
 
-                #Above code would mean that if the user followed them, they would be considered friends,
-                #so they would never get a friend request
+                uid = author_id
+                user_Q = Q()
+                follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+
+                if len(follow_obj) != 0:
+                    for follow in follow_obj:
+                        if follow.user1==uid:
+                            recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                            if len(recip_object) != 0:
+                                user_Q = user_Q | Q(id=follow.user2)
+                        elif follow.user2==uid:
+                            recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                            if len(recip_object) != 0:
+                                user_Q = user_Q | Q(id=follow.user1)
+                    if len(user_Q) != 0:
+                        friends = User.objects.filter(user_Q)
+                    else:
+                        friends = User.objects.none()
+                else:
+                    friends = User.objects.none()
                 
                 
             except:
@@ -338,28 +356,14 @@ class FriendAPIView(generics.GenericAPIView):
             author_id1 = self.kwargs['author_id1']
             author_id2 = self.kwargs['author_id2']
 
-            friend_list = ""
-            try:
-                followers = User.objects.filter(follower__user2=author_id1, is_active=True)
-                following = User.objects.filter(followee__user1=author_id1, is_active=True)
-                friend_list = following & followers
-            except:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+            #TODO Check if they actually exist in other servers
+            a1_follows_a2 = follows(author_id1,author_id2)
+            a2_follows_a1 = follows(author_id2,author_id1)
 
-            friends = False
-            for friend in friend_list:
-                if friend.id == author_id2:
-                    friends = True
-                    break
-
-            # Whether there is friendship or not, we need some author data
-            author1 = User
-            author2 = User
-            try:
-                author1 = User.objects.get(id=author_id1)
-                author2 = User.objects.get(id=author_id2)
-            except:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+            if a1_follows_a2 & a2_follows_a1:
+                friends = True
+            else:
+                friends = False
 
             response = {
                 "query":"friends",
@@ -389,9 +393,29 @@ class FriendAPIView(generics.GenericAPIView):
             Response(status=status.HTTP_400_BAD_REQUEST)
 
         author_id = author.split("/")[-1]
-        followers = User.objects.filter(follower__user2=author_id, is_active=True)
-        following = User.objects.filter(followee__user1=author_id, is_active=True)
-        friends = following & followers
+        # followers = User.objects.filter(follower__user2=author_id, is_active=True)
+        # following = User.objects.filter(followee__user1=author_id, is_active=True)
+        # friends = following & followers
+        uid = author_id
+        user_Q = Q()
+        follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+
+        if len(follow_obj) != 0:
+            for follow in follow_obj:
+                if follow.user1==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user2)
+                elif follow.user2==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user1)
+            if len(user_Q) != 0:
+                friends = User.objects.filter(user_Q)
+            else:
+                friends = User.objects.none()
+        else:
+            friends = User.objects.none()
 
         friend_list = list()
         for potential_friend in authors:
