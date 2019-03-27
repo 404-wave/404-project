@@ -47,6 +47,14 @@ function change_follow(followerID,followerUser,followerHost,
   if (e.id != "Follow"){
     url_val = "unfollow/";
   }
+  console.log(followerID);
+  console.log(followerUser);
+  console.log(followerHost);
+  console.log(followeeID);
+  console.log(followeeUser);
+  console.log(followeeHost);
+  
+  
   $.ajax({
     url: url_val,
     data: {      
