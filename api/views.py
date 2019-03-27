@@ -101,9 +101,22 @@ class UserAPIView(generics.GenericAPIView):
         else:
             queryset = User.objects.filter(is_active=True)
 
-        followers = User.objects.filter(follower__user2=author_id, is_active=True)
-        following = User.objects.filter(followee__user1=author_id, is_active=True)
-        friends = following & followers
+        if len(follow_obj) != 0:
+            for follow in follow_obj:
+                if follow.user1==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user2)
+                elif follow.user2==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user1)
+            if len(user_Q) != 0:
+                friends = User.objects.filter(user_Q)
+            else:
+                friends = User.objects.none()
+        else:
+            friends = User.objects.none()
 
         serializer = UserSerializer(queryset, many=False, context={'friends':friends})
         return Response(serializer.data)

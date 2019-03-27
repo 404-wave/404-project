@@ -40,17 +40,40 @@ function populateFriendsList(data) {
   }
 }
 
+function changeFollowFromOtherNode(follower,followee, instance){
+  let url_val = 'follow/';
+  if (instance.id != "Follow"){
+    url_val =  "unfollow/";
+  }
+  $.ajax({
+    url:url_val,
+    data:{
+      follower: follower,
+      followee: followee,
+      'server': followee.host,
+      'host':follower.host,
+    },
+    success: function(data){
+      addFromOtherNode(data);
+    },
+    error: function(data){
+      console.log(error)
+    }
+  });
 
-function change_follow(followerID, followeeID, e) {
-  var url_val = "follow/";
+}
+function change_follow(follower, followee, e) {
+  let url_val = 'follow/';
   if (e.id != "Follow"){
     url_val = "unfollow/";
   }
   $.ajax({
     url: url_val,
     data: {
-      followerID: followerID,
-      followeeID: followeeID
+      follower: follower,
+      followee: followee,
+      'server': followee.host,
+      'host': follower.host,
     },
     success: function (data) {
       switchButton(data, e);
@@ -64,8 +87,10 @@ function change_follow(followerID, followeeID, e) {
 
 
 function switchButton(data, button) {
-  let followerID = data["followerID"];
-  let followeeID = data["followeeID"];
+  let follower =data['follower']
+  let followee = data['followee']
+  let followerID = follower.id
+  let followeeID = followee.id
   var text_val = "Unfollow";
   let div = document.getElementById(button.id);
   if (button.id != "Follow") {
@@ -150,43 +175,38 @@ function closeDropDown(){
   }
 }
 
-function addFromOtherNode(userid,username){
+function addFromOtherNode(data){
   console.log("WE HERE")
-  const path = "http://127.0.0.1:3000/service/friendrequest/";
-  const request_user_url = "http://127.0.0.1:8000/"+ userid;
-  const req_profile_url = "http://127.0.0.1:8000/home/profile/"+ userid;
-  const recip_user_url = "http://127.0.0.1:3000/1f8a90a5cc2e4fa0b3aaaaadb5d06f7a";
- 
+  const followerID = data['follower'].id;
+  const followeeID = data['followee'].id;
+  const serverUrl = data.server;
+  const hostUrl = data.host;
+  const followerUsername = data['follower'].username;
+  const followeeUsername = data['followee'].username;
+
+  print("HOST URL:");
+  print(hostUrl);
+  const path = hostUrl + "/service/friendrequest/";
+  const request_user_url = hostUrl+"/"+ followerID;
+  const req_profile_url = hostUrl + "/home/profile/"+ followerID;
+  const recip_user_url = serverUrl+"/"+followeeID;
+  const recip_profile_url = serverUrl+"home/profile/"+ followeeID;
   let payload = {
     "query":"friendrequest",
     "author": {
         "id":  request_user_url,
-        "host": "http://127.0.0.1:8000/",
-        "displayName": username,
+        "host": hostUrl,
+        "displayName": followerUsername,
         "url":req_profile_url,
         },  
     "friend": {
         "id": recip_user_url,
-        "host": "http://127.0.0.1:3000/",
-        "displayName": "test-user",
-        "url": "http://127.0.0.1:3000/home/profile/63429406-e4bc-425d-8ad3-7526a11ecd08",
-        }
+        "host": serverUrl,
+        "displayName": followeeUsername,
+        "url": recip_profile_url
+    }
   };
-  // $.ajax({
-  //   type:"POST",
-  //   url: path,
-  //   crossDomain: true,
-  //   data: JSON.stringify(payload),
-  //   dataType:"json",
-  //   contentType:"application/json",
-  //   success: function (data) {
-  //     console.log(data);
-  //   },
-  //   error: function(xhr, status, error) {
-  //     console.log(error)
-  //   }
-  // });
-  // console.log(JSON.stringify(payload,null,2));
+
   let metaData = {
     'method':'POST',
     'mode':'no-cors',

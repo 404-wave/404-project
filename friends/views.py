@@ -107,16 +107,20 @@ def follow(request):
 
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
-
-    followerID = request.GET['followerID']
-    followeeID = request.GET['followeeID']
+    follower =request.GET['follower']
+    followee = request.GET['followee']
+    followerID = follower.id
+    followeeID = followee.id
+    server = request.server
+    host = request.host
     print("FOLLOWEE :")
     print(followeeID)
-    # TODO: Find a good way to error handle these two DB calls
-    user1 = User.objects.get(pk=followerID)
-    user2 = User.objects.get(pk=followeeID)
-    Follow.objects.create(user1=user1.id, user2=user2.id)
-
+    if server == host:
+        # TODO: Find a good way to error handle these two DB calls
+        user1 = User.objects.get(pk=followerID)
+        user2 = User.objects.get(pk=followeeID)
+        
+    Follow.objects.create(user1=followerID, user2=followeeID)
      ####add into FriendRequest table####
     #Query to see if the person they want to follow is already following requestor
     exists_in_table = FriendRequest.objects.filter(requestor=user2.id,recipient=user1.id)
@@ -126,7 +130,11 @@ def follow(request):
     elif len(exists_in_table) != 0:
         exists_in_table.delete()
 
-    data = {'followerID': followerID, 'followeeID': followeeID}
+    data = {'follower': follower,
+             'followee': followee,
+            'server': server,
+            'host': host
+            }
     return HttpResponse(json.dumps(data), content_type="application/json")
     #return HttpResponse()
 
