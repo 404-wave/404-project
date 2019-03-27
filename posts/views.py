@@ -15,6 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 import base64
 from mimetypes import guess_type
 import requests
+from requests.auth import HTTPBasicAuth
 from users.models import Node
 
 """
@@ -58,10 +59,13 @@ def posts_detail(request, id):
 
         ##############################################################################
         for node in Node.objects.all():
-            # headers = {
-            # }
-            url = node.host + \
-                '/service/posts/{0}?user='.format(id) + str(request.user.id)
+            headers = {
+                'Accept': 'application/json',
+                'X-UUID': str(request.user.id)
+            }
+            url = node.host + "/service/posts/"
+            response = requests.get(url, headers=headers, auth=HTTPBasicAuth(
+                str(node.username), str(node.password)))
             print(url)
             response = requests.get(url)
             print("Status code: " + str(response.status_code))
@@ -110,11 +114,11 @@ def posts_detail(request, id):
 
         new_comment, created = Comment.objects.get_or_create(
 
-            user = request.user.id,
-            content_type = content_type,
-            object_id = obj_id,
-            content = content_data,
-            parent = parent_obj
+            user=request.user.id,
+            content_type=content_type,
+            object_id=obj_id,
+            content=content_data,
+            parent=parent_obj
 
 
         )
@@ -127,13 +131,11 @@ def posts_detail(request, id):
     else:
         comments = instance.comments
 
-
     # TODO: instance.user really should be the username of the person who made
     # the comment. But this could be someone from a different server, so we need
     # to firstly check to see if there is a user on our server with user_id, or
     # scan the node table to see if the user exists somewhere else, then get
     # their username.
-
 
     context = {
         "user": request.user,
