@@ -40,37 +40,9 @@ function populateFriendsList(data) {
   }
 }
 
-function changeFollowFromOtherNode(followerID,followerUser,followerHost,
-  followeeID,followeeUser,followeeHost, instance){
-  let url_val = 'follow/';
-  if (instance.id != "Follow"){
-    url_val =  "unfollow/";
-  }
-  console.log("FOLLOWEE HOST: ");
-  
-  console.log(followeeHost)
-  console.log("FOLLOWER HOST:")
-  console.log(followerHost)
-  $.ajax({
-    url:url_val,
-    data:{
-      followerID: followerID,
-      followeeID: followeeID,
-      followerUser: followerUser,
-      followeeUser: followeeUser,
-      'server': followeeHost,
-      'host':followerHost,
-    },
-    success: function(data){
-      addFromOtherNode(data);
-    },
-    error: function(xhr,status,error){
-      console.log(error)
-    }
-  });
 
-}
-function change_follow(followerID,followeeID,e) {
+function change_follow(followerID,followerUser,followerHost,
+  followeeID,followeeUser,followeeHost,e) {
   let url_val = 'follow/';
   if (e.id != "Follow"){
     url_val = "unfollow/";
@@ -80,8 +52,15 @@ function change_follow(followerID,followeeID,e) {
     data: {      
       followerID: followerID,
       followeeID: followeeID,
+      followerUser: followerUser,
+      followeeUser: followeeUser,
+      'server': followeeHost,
+      'host':followerHost,
     },
     success: function (data) {
+      if (followerHost != followeeHost){
+        addFromOtherNode(data);
+      }
       switchButton(data, e);
       //eplaceUnfollowButton(data);
     },
