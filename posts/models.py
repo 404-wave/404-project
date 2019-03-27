@@ -15,6 +15,7 @@ from mimetypes import guess_type
 import uuid
 import json
 import requests
+from requests.auth import HTTPBasicAuth
 
 
 # Create your models here.
@@ -88,22 +89,31 @@ class PostManager(models.Manager):
 
             # headers = {
             # }
-            url = node.host + "/service/author/posts?user=" + str(user.id)
+            url = node.host + "/service/author/posts/"
 
-            response = requests.get(url)
+            try:
+                headers = {
+                    'Accept':'application/json',
+                    'X-UUID': str(user.id)
+                }
+                response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
 
-            print(url)
-            print(response.status_code)
-            if (response.status_code > 199 and response.status_code <300):
-                responselist = response.json()
-                #if servers are bad and don't include the author server we do
-                for item in responselist:
-                    if (item['author']['host'] == ''):
-                        print ("ADDING HOST")
-                        item['author']['host'] = node.host
-                posts_from_servers.extend(responselist)
-        
-         
+                print(url)
+                print(response.status_code)
+                if (response.status_code > 199 and response.status_code <300):
+                    responselist = response.json()
+                    print("CONTENT:")
+                    print(response.content)
+                    #if servers are bad and don't include the author server we do
+                    for item in responselist:
+                        if (item['author']['host'] == ''):
+                            print ("ADDING HOST")
+                            item['author']['host'] = node.host
+                    posts_from_servers.extend(responselist)
+            except:
+                pass
+
+
             #print(response.json())
             #posts_from_servers.extend(response.json())
         ####################################################################
