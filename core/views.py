@@ -142,7 +142,7 @@ def home(request):
 		print(type(streamlist))
 
 		print("Stream list len: ", len(streamlist))
-		print("Stream list: ", streamlist)
+		#print("Stream list: ", streamlist)
 
 		#Cast QuerySet to list for Github
 		streamlist = list(streamlist)

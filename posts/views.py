@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 from .models import Post
 from .forms import PostForm, ImageForm
-from users.models import User, Node
+from users.models import User, Node, NodeSetting
 from datetime import datetime
 
 from comments.forms import CommentForm
@@ -39,6 +39,7 @@ def posts_detail(request, id):
         elif isinstance(post, Post):
             ids.append(post.id)
     if id not in ids:
+        #do something here to make it not 404
         return HttpResponseRedirect('/home')
     instance = None
     try:
@@ -48,9 +49,11 @@ def posts_detail(request, id):
         # TODO: This should work if we have an endpoint to get a specific post
         #       eg: /service/author/posts/id?
 
+        #NO UUID in urls?
+        #remove in url.py in posts, home.html
         # ##############################################################################
         # for node in Node.objects.all():
-        #     url = node.host + '/service/author/posts/{0}'.format(id)
+        #     url = node.host + '/service/posts/' + str(id) + "?user=" + str(request.user.id)
         #     response = requests.get(url)
         #     if response.status_code == 200:
         #         instance = response.json()
@@ -64,6 +67,13 @@ def posts_detail(request, id):
         "object_id": instance.id
     }
 
+    #https://stackoverflow.com/questions/12615154/how-to-get-the-currently-logged-in-users-user-id-in-django
+    #Credit: K Z (https://stackoverflow.com/users/853611/k-z)
+    current_user = request.user
+    user_id = current_user.id
+    post_id = instance.id
+    home_host = NodeSetting.objects.all()[0]
+
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
     if comment_form.is_valid():
@@ -71,44 +81,74 @@ def posts_detail(request, id):
         content_type = ContentType.objects.get(model=comment_type)
         obj_id = comment_form.cleaned_data.get("object_id")
         content_data = comment_form.cleaned_data.get("content")
-        parent_obj = None
-        try:
-            parent_id = int(request.POST.get("parent_id"))
-        except:
-            parent_id = None
-        if parent_id:
-            parent_querySet = Comment.objects.filter(id=parent_id)
-            if parent_querySet.exists() and parent_querySet.count() == 1:
-                parent_obj = parent_querySet.first()
+        # parent_obj = None
+        # try:
+        #     parent_id = int(request.POST.get("parent_id"))
+        # except:
+        #     parent_id = None
+        # if parent_id:
+        #     parent_querySet = Comment.objects.filter(id=parent_id)
+        #     if parent_querySet.exists() and parent_querySet.count() == 1:
+        #         parent_obj = parent_querySet.first()
 
-        new_comment, created = Comment.objects.get_or_create(
-            user=request.user,
-            content_type=content_type,
-            object_id=obj_id,
-            content=content_data,
-            parent=parent_obj
+        # new_comment, created = Comment.objects.get_or_create(
+        #     user=request.user,
+        #     content_type=content_type,
+        #     object_id=obj_id,
+        #     content=content_data,
+        #     parent=parent_obj
 
-        )
-        return HttpResponseRedirect(new_comment.content_object.get_detail_absolute_url())
-        if created:
-            print("comment worked.")
+        # )
+        for node in Node.objects.all():
+            build_endpoint = str(node.host) + "/service/posts/" + str(post_id) + "/comments?user=" + str(current_user.id)
+            build_data = {
+                "query": "addComment",
+                "post": str(node.host) + "/posts/" + str(post_id),
+                "comment":{
+                    "author":{
+                        "id": str(home_host.host) + "/author/" + str(user_id),
+                        "host": str(home_host.host) + "/",
+                        "url": str(home_host.host) + "/author/" + str(user_id),
+                        "github": current_user.github
+                    },
+                    "comment": content_data,
+                    "content_type": content_type,
+                    "published": str(datetime.now().isoformat()),
+                    "id": str(obj_id)
+                }
+            }
+
+            #https://www.programcreek.com/python/example/6251/requests.post
+            r=requests.post(url=build_endpoint, data=build_data)
+            #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
+            #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
+            if r.status_code == 200:
+                break
+        #change this to go back to post detail?
+        #POST OBJECT.get_detail_absolute_url
+        #instance.get.....
+        print(r)
+        return HttpResponseRedirect(instance.get_detail_absolute_url())
+        # return HttpResponseRedirect(new_comment.content_object.get_detail_absolute_url())
+        # if created:
+        #     print("comment worked.")
 
     #Build and send GET request for comments
-    #https://stackoverflow.com/questions/12615154/how-to-get-the-currently-logged-in-users-user-id-in-django
-    #Credit: K Z (https://stackoverflow.com/users/853611/k-z)
-    current_user = request.user
-    user_id = current_user.id
-    post_id = instance.id
 
     for node in Node.objects.all():
         build_request = node.host + "/service/posts/" + str(post_id) + "/comments?user=" + str(current_user.id)
         r=requests.get(build_request)
+        #print(r)
         #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
         #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
         if r.status_code == 200:
             break
-        
+
+    # build_request = "https://myblog-cool.herokuapp.com/service/posts/?author_uuid=" + str(current_user.id)
+    # r=requests.get(build_request)
+    # print(r)
     response = r.json()
+    print(response)
     #Parse date into more readbale format
     #https://stackoverflow.com/questions/18795713/parse-and-format-the-date-from-the-github-api-in-python
     #Credit: IQAndreas (https://stackoverflow.com/users/617937/iqandreas)
