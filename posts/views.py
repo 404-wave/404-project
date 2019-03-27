@@ -14,6 +14,8 @@ from comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 import base64
 from mimetypes import guess_type
+import requests
+from users.models import Node
 
 """
     Shows the details about a post.
@@ -31,35 +33,62 @@ def posts_detail(request, id):
     user_posts = Post.objects.filter_user_visible_posts(
         request.user, remove_unlisted=False)
     ids = []
+    current_id_found = False
     for post in user_posts:
         if isinstance(post, dict):
-            ids.append(post.get('id'))
+            ids.append(str(post.get('id')))
         elif isinstance(post, Post):
-            ids.append(post.id)
-    if id not in ids:
+            ids.append(str(post.id))
+        if ids[-1] == str(id):
+            current_id_found = True
+    print("Current Id Found: " + str(current_id_found))
+    if str(id) not in ids and not current_id_found:
+        print("the given id" + str(id) + "not present in ids" + str(ids))
         return HttpResponseRedirect('/home')
     instance = None
     try:
         # instance = Post.objects.get(id=id)
         instance = Post.objects.get(id=id)
     except Post.DoesNotExist:
+
         # TODO: This should work if we have an endpoint to get a specific post
         #       eg: /service/author/posts/id?
 
-        # ##############################################################################
-        # for node in Node.objects.all():
-        #     url = node.host + '/service/author/posts/{0}'.format(id)
-        #     response = requests.get(url)
-        #     if response.status_code == 200:
-        #         instance = response.json()
-        #         break
+        # instance is a dictionary and if yes, then comments should be instance[‘comments’]
+
+        ##############################################################################
+        for node in Node.objects.all():
+            # headers = {
+            # }
+            url = node.host + \
+                '/service/posts/{0}?user='.format(id) + str(request.user.id)
+            print(url)
+            response = requests.get(url)
+            print("Status code: " + str(response.status_code))
+
+            if response.status_code == 200:
+                instance = response.json()
+                print("Response from server")
+                print(instance)
+                if isinstance(instance, list) and len(instance) == 1:
+                    instance = instance[0]
+                break
         # #################################################################################
+
         if instance is None:
+            print("Instance is none. Redirecting")
             return HttpResponseRedirect('/home')
 
+    # if instance is a dictionary, then comments should be instance[‘comments’]
+
+    if isinstance(instance, dict):
+        content_type = instance['contentType']
+    else:
+        content_type = instance.get_content_type
+
     initial_data = {
-        "content_type": instance.get_content_type,
-        "object_id": instance.id
+        "content_type": content_type,
+        "object_id": id
     }
 
     # Creates a form to post comments
@@ -80,20 +109,34 @@ def posts_detail(request, id):
                 parent_obj = parent_querySet.first()
 
         new_comment, created = Comment.objects.get_or_create(
-            user=request.user,
-            content_type=content_type,
-            object_id=obj_id,
-            content=content_data,
-            parent=parent_obj
+
+            user = request.user.id,
+            content_type = content_type,
+            object_id = obj_id,
+            content = content_data,
+            parent = parent_obj
+
 
         )
         return HttpResponseRedirect(new_comment.content_object.get_detail_absolute_url())
         if created:
             print("comment worked.")
 
-    comments = instance.comments
+    if isinstance(instance, dict):
+        comments = instance['comments']
+    else:
+        comments = instance.comments
+
+
+    # TODO: instance.user really should be the username of the person who made
+    # the comment. But this could be someone from a different server, so we need
+    # to firstly check to see if there is a user on our server with user_id, or
+    # scan the node table to see if the user exists somewhere else, then get
+    # their username.
+
+
     context = {
-        "user": instance.user,
+        "user": request.user,
         "instance": instance,
         "comments": comments,
         "comment_form": comment_form
