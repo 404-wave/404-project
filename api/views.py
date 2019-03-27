@@ -101,6 +101,10 @@ class UserAPIView(generics.GenericAPIView):
         else:
             queryset = User.objects.filter(is_active=True)
 
+        uid = author_id
+        user_Q = Q()
+        follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+        
         if len(follow_obj) != 0:
             for follow in follow_obj:
                 if follow.user1==uid:
