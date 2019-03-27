@@ -18,7 +18,7 @@ class NodeAdmin(admin.ModelAdmin):
 
 class NodeSettingAdmin(admin.ModelAdmin):
 
-    list_display = ['id', 'require_auth']
+    list_display = ['id']
 
 
 admin.site.register(User, UserAdmin)
