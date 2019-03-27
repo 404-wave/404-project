@@ -42,8 +42,6 @@ function populateFriendsList(data) {
 
 function changeFollowFromOtherNode(followerID,followerUser,followerHost,
   followeeID,followeeUser,followeeHost, instance){
-  let follower = JSON.parse(followerr);
-  let followee = JSON.parse(followeee);
   let url_val = 'follow/';
   if (instance.id != "Follow"){
     url_val =  "unfollow/";
@@ -61,7 +59,7 @@ function changeFollowFromOtherNode(followerID,followerUser,followerHost,
     success: function(data){
       addFromOtherNode(data);
     },
-    error: function(data){
+    error: function(xhr,status,error){
       console.log(error)
     }
   });
