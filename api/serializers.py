@@ -3,6 +3,7 @@ from posts.models import Post
 from comments.models import Comment
 from users.models import User
 
+
 class UserSerializer(serializers.ModelSerializer):
 
     friends = serializers.SerializerMethodField('_friends')
@@ -12,7 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'host', 'displayName', 'url', 'friends', 'github', 'firstName', 'lastName', 'email', 'bio')
+        fields = ('id', 'host', 'displayName', 'url', 'friends',
+                  'github', 'firstName', 'lastName', 'email', 'bio')
 
     def _friends(self, obj):
         friends = self.context.get('friends')
@@ -54,12 +56,11 @@ class PostSerializer(serializers.ModelSerializer):
     source = serializers.SerializerMethodField('_source')
     origin = serializers.SerializerMethodField('_origin')
 
-
     class Meta:
         model = Post
         fields = ('id', 'user', 'contentType', 'categories', 'description',
-                    'published', 'content', 'author', 'comments', 'visibility',
-                     'visible_to', 'unlisted', 'source', 'origin')
+                  'published', 'content', 'author', 'comments', 'visibility',
+                  'visible_to', 'unlisted', 'source', 'origin')
 
     # TODO
     def _source(self, obj):

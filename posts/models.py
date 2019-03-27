@@ -86,11 +86,8 @@ class PostManager(models.Manager):
         posts_from_servers = []
         for node in Node.objects.all():
 
-            # 
-            header = {
-
-            }
-
+            # headers = {
+            # }
             url = node.host + "/service/author/posts?user=" + str(user.id)
 
             response = requests.get(url)

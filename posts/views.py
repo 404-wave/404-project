@@ -54,17 +54,15 @@ def posts_detail(request, id):
         # TODO: This should work if we have an endpoint to get a specific post
         #       eg: /service/author/posts/id?
 
-
-        
         # instance is a dictionary and if yes, then comments should be instance[‘comments’]
-
 
         ##############################################################################
         for node in Node.objects.all():
+            # headers = {
+            # }
             url = node.host + \
                 '/service/posts/{0}?user='.format(id) + str(request.user.id)
             print(url)
-            # print("USER ID", request.user.id)
             response = requests.get(url)
             print("Status code: " + str(response.status_code))
 
@@ -81,9 +79,16 @@ def posts_detail(request, id):
             print("Instance is none. Redirecting")
             return HttpResponseRedirect('/home')
 
+    # if instance is a dictionary, then comments should be instance[‘comments’]
+
+    if isinstance(instance, dict):
+        content_type = instance['contentType']
+    else:
+        content_type = instance.get_content_type
+
     initial_data = {
-        "content_type": instance.get_content_type,
-        "object_id": instance.id
+        "content_type": content_type,
+        "object_id": id
     }
 
     # Creates a form to post comments
@@ -115,10 +120,13 @@ def posts_detail(request, id):
         if created:
             print("comment worked.")
 
-    comments = instance.comments
+    if isinstance(instance, dict):
+        comments = instance['comments']
+    else:
+        comments = instance.comments
 
     context = {
-        "user": instance.user,
+        "user": request.user,
         "instance": instance,
         "comments": comments,
         "comment_form": comment_form
