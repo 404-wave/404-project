@@ -130,8 +130,10 @@ def follow(request):
     elif len(exists_in_table) != 0:
         exists_in_table.delete()
 
-    data = {'follower': follower,
-             'followee': followee,
+    data = {'followerID': followerID,
+             'followee': followeeID,
+             'followerUser': follower.username,
+             'followeeUser':followee.username,
             'server': server,
             'host': host
             }

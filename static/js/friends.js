@@ -177,13 +177,12 @@ function closeDropDown(){
 
 function addFromOtherNode(content){
   console.log("WE HERE")
-  let data = JSON.parse(content);
-  const followerID = data['follower'].id;
-  const followeeID = data['followee'].id;
-  const serverUrl = data.server;
-  const hostUrl = data.host;
-  const followerUsername = data['follower'].username;
-  const followeeUsername = data['followee'].username;
+  const followerID = data['followerID'];
+  const followeeID = data['followeeID'];
+  const serverUrl = data['server'];
+  const hostUrl = data['host'];
+  const followerUsername = data['followerUser'];
+  const followeeUsername = data['followeeUser'];
 
   print("HOST URL:");
   print(hostUrl);
