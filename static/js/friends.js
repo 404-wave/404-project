@@ -67,6 +67,8 @@ function changeFollowFromOtherNode(followerr,followeee, instance){
 
 }
 function change_follow(followerr, followeee, e) {
+  console.log("FOLLOWER: ")
+  console.log(follower)
   let follower = JSON.parse(followerr);
   let followee = JSON.parse(followeee);
   let url_val = 'follow/';
@@ -76,6 +78,7 @@ function change_follow(followerr, followeee, e) {
   $.ajax({
     url: url_val,
     data: {
+      
       followerID: follower["id"],
       followeeID: followee["id"],
       followerUser: follower["username"],
