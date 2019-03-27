@@ -57,7 +57,7 @@ class PostSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField('_comments')
     published = serializers.SerializerMethodField('_published')
     visibility = serializers.SerializerMethodField('_visibility')
-    visible_to = serializers.SerializerMethodField('_visible_to')
+    visibleTo = serializers.SerializerMethodField('_visible_to')
     categories = serializers.SerializerMethodField('_categories')
     description = serializers.SerializerMethodField('_description')
     title = serializers.SerializerMethodField('_title')
@@ -70,7 +70,7 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ('id', 'user', 'contentType', 'categories', 'description',
                   'published', 'title', 'content', 'author', 'comments', 'visibility',
-                  'visible_to', 'unlisted', 'source', 'origin')
+                  'visibleTo', 'unlisted', 'source', 'origin')
 
     # TODO
     def _source(self, obj):
