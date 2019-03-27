@@ -171,7 +171,8 @@ class PostAPIView(generics.GenericAPIView):
 
         # Get all public posts
         elif path in path_all_public_posts:
-            queryset = Post.objects.filter(privacy=Post.PUBLIC).filter(unlisted=False)
+            queryset = Post.objects.filter(privacy=Post.PUBLIC).filter(unlisted=False).order_by('timestamp')
+
 
         # Not a valid path
         else:
