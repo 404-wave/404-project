@@ -101,7 +101,7 @@ def friends(request):
             elif follow.user2==uid:
                 recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
                 if recip_object:
-                    user= User.objects.filter(id=Follow.user1)
+                    user= User.objects.filter(id=follow.user1)
                     if user:
                         user=user.get()
                     else:
