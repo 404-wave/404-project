@@ -34,32 +34,18 @@ def following(request):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
 
-    # E.g., look at Follow table results where I am the follower
-    # following = User.objects.filter(followee__user1=request.user.id, is_active=True)
-    user_query = Q()
     following = list()
     following_obj = Follow.objects.filter(user1=request.user.id)
-    # if len(following_obj) != 0:
-    #     for followee in following_obj:
 
-    #         user_query = user_query | Q(id=followee.user2)
-        
-    #     following = User.objects.filter(user_query)
-    # else:
-    #     following = User.objects.none()
-    
     if following_obj:
         for followings in following_obj:
             user = User.objects.filter(id=followings.user2)
             if not user:
                 user = get_user(followings.user2_server,followings.user2)
-                print(user)
             else:
                 user=user.get()
             following.append(user)
 
-        
-    
     data = serializers.serialize('json', following, fields=('username'))
     return HttpResponse(data, content_type="application/json")
 
@@ -72,16 +58,16 @@ def followers(request):
     # Look at Follow table results where I am the followee
     # followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
     follower_obj = Follow.objects.filter(Q(user2=request.user.id))
+    followers = list()
     
-    if len(follower_obj) != 0:
-        user_Q = Q()
+    if follower_obj:
         for follower in follower_obj:
-            user_Q = user_Q | Q(id=follower.user1)
-        followers = User.objects.filter(user_Q)
-    else:
-        followers = User.objects.none()
-
-
+            user = User.objects.filter(id=follower.user1)
+            if not user:
+                user = get_user(follower.user1_server,follower.user1)
+            else:
+                user=user.get()
+            followers.append(user)
     
     data = serializers.serialize('json', followers, fields=('username'))
     return HttpResponse(data, content_type="application/json")
