@@ -7,7 +7,6 @@ from posts.models import Post
 import requests
 
 
-
 class UserSerializer(serializers.ModelSerializer):
 
     friends = serializers.SerializerMethodField('_friends')
@@ -57,10 +56,10 @@ class PostSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField('_comments')
     published = serializers.SerializerMethodField('_published')
     visibility = serializers.SerializerMethodField('_visibility')
-    visible_to = serializers.SerializerMethodField('_visible_to')
+    visibleTo = serializers.SerializerMethodField('_visible_to')
     categories = serializers.SerializerMethodField('_categories')
     description = serializers.SerializerMethodField('_description')
-
+    title = serializers.SerializerMethodField('_title')
     source = serializers.SerializerMethodField('_source')
     origin = serializers.SerializerMethodField('_origin')
 
@@ -69,14 +68,14 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'user', 'contentType', 'categories', 'description',
-                  'published', 'content', 'author', 'comments', 'visibility',
-                  'visible_to', 'unlisted', 'source', 'origin')
+                  'published', 'title', 'content', 'author', 'comments', 'visibility',
+                  'visibleTo', 'unlisted', 'source', 'origin')
 
     # TODO
     def _source(self, obj):
         try:
             node_settings = NodeSetting.objects.all()[0]
-            url_to_post = node_settings.host + "/posts/" + str(obj.id) + "/"
+            url_to_post = node_settings.host + "/service/posts/" + str(obj.id) + "/"
             return url_to_post
         except:
             return ""
@@ -111,7 +110,12 @@ class PostSerializer(serializers.ModelSerializer):
         return list()
 
     def _description(self, obj):
-        return ""
+        if obj.is_image:
+            return "Image post"
+        return "Text post"
+
+    def _title(self, obj):
+        return str(obj.title)
 
     def _content_type(self, obj):
         return obj.content_type
@@ -155,7 +159,7 @@ class PostAuthorSerializer(serializers.ModelSerializer):
         return obj.username
 
     def _id(self, obj):
-        return str(obj.host) + str(obj.id)
+        return str(obj.id)
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -201,7 +205,7 @@ class CommentSerializer(serializers.ModelSerializer):
         return serialized_author.data
 
     def _published(self, obj):
-        return obj.timestamp
+        return obj.published
 
     def _comment(self, obj):
         return obj.content
@@ -211,6 +215,7 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
 
     displayName = serializers.SerializerMethodField('_username')
     id = serializers.SerializerMethodField('_id')
+    # url = serializers.SerializerMethodField('_url')
 
     class Meta:
         model = User
@@ -219,5 +224,8 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
     def _username(self, obj):
         return obj.username
 
+    # def _url(self, obj):
+    #     return
+
     def _id(self, obj):
-        return str(obj.host) + str(obj.id)
+        return str(obj.id)

@@ -153,5 +153,6 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media_cdn")
 
 APPEND_SLASH = True
+CORS_ORIGIN_ALLOW_ALL = True
 
 django_heroku.settings(locals())
