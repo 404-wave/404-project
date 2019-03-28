@@ -531,4 +531,4 @@ class FriendRequestAPIView(generics.GenericAPIView):
             except:
                 Response(status=status.HTTP_409_CONFLICT)
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
