@@ -118,7 +118,8 @@ class PostManager(models.Manager):
                     # if responselist["posts"][0]["author"]["host"] == '':
                     #     responselist["posts"][0]["author"]["host"] = node.host
                     posts_from_servers.extend(responselist["posts"])
-            except:
+            except Exception as e:
+                print(e)
                 pass
 
 
