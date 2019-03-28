@@ -469,9 +469,14 @@ class FriendRequestAPIView(generics.GenericAPIView):
         
         author_id = None
         friend_id = None
+        author_host = None
+        friend_host = None
+
         try:
             author_id = data['author']['id'].split("/")[-1]
             friend_id = data['friend']['id'].split("/")[-1]
+            author_host = data['author']['host']
+            friend_host = data['friend']['host']
         except:
             # If the JSON was not what we wanted, send a 400
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -496,31 +501,26 @@ class FriendRequestAPIView(generics.GenericAPIView):
         already_following = False
         if (len(following) != 0):
             for followee in following:
-               
                 if str(friend_id) == str(followee.id):
-                    
                     already_following = True
     
         # If user1 is already following user2, then a request must have previously been made
        
         if not already_following:
-            
             try:
-                
                 try:
-                    Follow.objects.create(user1=user1, user1_server =user1.host, user2=user2, user2_server = user2.host)
+                    Follow.objects.create(user1=author_id, user1_server =author_host, user2=friend_id, user2_server = friend_host)
                 except:
-                    
                     print(" Couldn't create object")
                     return Response(status=status.HTTP_409_CONFLICT)
                 print("Created object")
                 
                 # Query to see if the person they want to follow is already following requestor
-                exists_in_table = FriendRequest.objects.filter(requestor=user2,recipient=user1)
+                exists_in_table = FriendRequest.objects.filter(requestor=friend_id,recipient=author_id)
 
                 if (len(exists_in_table) == 0) & (follows(user2,user1) == False):
                     
-                                    FriendRequest.objects.create(requestor= user1, requestor_server = user1.host, recipient= user2, recipient_server = user2.host)
+                    FriendRequest.objects.create(requestor= author_id, requestor_server = author_host, recipient= friend_id, recipient_server = friend_host)
 
                 elif len(exists_in_table) != 0:
                     exists_in_table.delete()
