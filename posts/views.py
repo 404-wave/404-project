@@ -15,8 +15,9 @@ from django.contrib.contenttypes.models import ContentType
 import base64
 from mimetypes import guess_type
 import requests
-from users.models import Node
-
+from users.models import Node, NodeSetting
+import uuid
+from requests.auth import HTTPBasicAuth
 """
     Shows the details about a post.
     Allows use to post comments under the post.
@@ -91,6 +92,13 @@ def posts_detail(request, id):
         "object_id": id
     }
 
+    #https://stackoverflow.com/questions/12615154/how-to-get-the-currently-logged-in-users-user-id-in-django
+    #Credit: K Z (https://stackoverflow.com/users/853611/k-z)
+    current_user = request.user
+    user_id = current_user.id
+    post_id = instance.id
+    #print(post_id)
+    home_host = NodeSetting.objects.all()[0]
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
     if comment_form.is_valid():
@@ -99,26 +107,64 @@ def posts_detail(request, id):
         obj_id = comment_form.cleaned_data.get("object_id")
         content_data = comment_form.cleaned_data.get("content")
         parent_obj = None
-        try:
-            parent_id = int(request.POST.get("parent_id"))
-        except:
-            parent_id = None
-        if parent_id:
-            parent_querySet = Comment.objects.filter(id=parent_id)
-            if parent_querySet.exists() and parent_querySet.count() == 1:
-                parent_obj = parent_querySet.first()
+        # try:
+        #     parent_id = int(request.POST.get("parent_id"))
+        # except:
+        #     parent_id = None
+        # if parent_id:
+        #     parent_querySet = Comment.objects.filter(id=parent_id)
+        #     if parent_querySet.exists() and parent_querySet.count() == 1:
+        #         parent_obj = parent_querySet.first()
 
-        new_comment, created = Comment.objects.get_or_create(
+        # new_comment, created = Comment.objects.get_or_create(
 
-            user = request.user.id,
-            content_type = content_type,
-            object_id = obj_id,
-            content = content_data,
-            parent = parent_obj
+        #     user = request.user.id,
+        #     content_type = content_type,
+        #     object_id = obj_id,
+        #     content = content_data,
+        #     parent = parent_obj
 
 
-        )
-        return HttpResponseRedirect(new_comment.content_object.get_detail_absolute_url())
+        # )
+
+        for node in Node.objects.all():
+            #build_endpoint = str(node.host) + "/service/posts/" + "3f46f9c3-256f-441c-899e-928b095df627" + "/comments/"
+            #print(build_endpoint)
+            build_endpoint = str(node.host) + "/service/posts/" + str(post_id) + "/comments/"
+            headers = {
+                    'Accept':'application/json',
+                    'X-UUID': str(user_id)
+                }
+
+            build_data = {
+                "query": "addComment",
+                "post": str(node.host) + "/service/posts/" + str(post_id),
+                "comment":{
+                    "author":{
+                        "id": str(home_host.host) + "/service/author/" + str(user_id),
+                        "host": str(home_host.host),
+                        "url": str(home_host.host) + "/service/author/" + str(user_id),
+                        "github": current_user.github
+                    },
+                    "comment": content_data,
+                    "content_type": "text/plain",
+                    "published": str(datetime.now().isoformat()),
+                    "id": str(uuid.uuid4())
+                }
+            }
+            #print(build_data)
+            #https://www.programcreek.com/python/example/6251/requests.post
+            r=requests.post(url=build_endpoint, data=build_data, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+            #print(r)
+            #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
+            #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
+            if r.status_code == 200:
+                break
+        #change this to go back to post detail?
+        #POST OBJECT.get_detail_absolute_url
+        #instance.get.....
+        print(r.content)
+        return HttpResponseRedirect(instance.get_detail_absolute_url())
         if created:
             print("comment worked.")
 
