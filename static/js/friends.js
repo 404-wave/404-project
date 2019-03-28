@@ -172,7 +172,7 @@ function addFromOtherNode(data){
   const followeeID = data['followeeID'];
   let serverUrl = data['server'];
   serverUrl = serverUrl.replace(/\s+/g,"");
-  if(serverUrl.endsWith("/" == false)){
+  if(serverUrl.endsWith("/") == false){
     serverUrl = serverUrl + "/";
   }
   let hostUrl = data['host'];
