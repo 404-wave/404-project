@@ -173,7 +173,7 @@ class PostManager(models.Manager):
         private_posts = Post.objects.none()
         for post in Post.objects.filter(privacy=1):
             for user in post.accessible_users.all():
-                if user.id == user_id:
+                if str(user.id) == user_id:
                     private_posts |= Post.objects.filter(id=post.id)
 
         followers = User.objects.filter(follower__user2=user_id, is_active=True)
