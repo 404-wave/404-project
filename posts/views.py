@@ -126,7 +126,7 @@ def posts_detail(request, id):
 
 
         # )
-
+        print("content_data is :" + str(content_data))
         for node in Node.objects.all():
             #build_endpoint = str(node.host) + "/service/posts/" + "3f46f9c3-256f-441c-899e-928b095df627" + "/comments/"
             #print(build_endpoint)
@@ -135,11 +135,11 @@ def posts_detail(request, id):
                     'Accept':'application/json',
                     'X-UUID': str(user_id)
                 }
-
+            print("build_endpoint is: " + str(build_endpoint))
             build_data = {
                 "query": "addComment",
                 "post": str(node.host) + "/service/posts/" + str(post_id),
-                "comment":{
+                "comment": {
                     "author":{
                         "id": str(home_host.host) + "/service/author/" + str(user_id),
                         "host": str(home_host.host),
@@ -152,17 +152,19 @@ def posts_detail(request, id):
                     "id": str(uuid.uuid4())
                 }
             }
-            #print(build_data)
+            print("build_data is: " + str(build_data))
             #https://www.programcreek.com/python/example/6251/requests.post
-            r=requests.post(url=build_endpoint, data=build_data, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+            r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
             #print(r)
             #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
             #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
             if r.status_code == 200:
+                print(node.host)
                 break
         #change this to go back to post detail?
         #POST OBJECT.get_detail_absolute_url
         #instance.get.....
+        print(r)
         print(r.content)
         return HttpResponseRedirect(instance.get_detail_absolute_url())
         if created:

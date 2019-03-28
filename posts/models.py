@@ -98,12 +98,12 @@ class PostManager(models.Manager):
                 }
                 response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
 
-                print(url)
-                print(response.status_code)
+                #print(url)
+                #print(response.status_code)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
                     print("CONTENT:")
-                    print(response.content)
+                    #print(response.content)
                     #if servers are bad and don't include the author server we do
                     for item in responselist:
                         if (item['author']['host'] == ''):

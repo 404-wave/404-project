@@ -289,7 +289,6 @@ class CommentAPIView(generics.GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         server_only = allow_server_only_posts(request)
-
         try:
             data = request.data
             post_id = kwargs['post_id']
