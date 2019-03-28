@@ -505,6 +505,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
         print("already following")
         print(already_following)
         if not already_following:
+            print("inside if statement")
             try:
                 user1 = author_id
                 user2 = friend_id
@@ -531,6 +532,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
                     exists_in_table.delete()
 
             except:
+                print("Exception 409 but not showing it for some reason")
                 Response(status=status.HTTP_409_CONFLICT)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
