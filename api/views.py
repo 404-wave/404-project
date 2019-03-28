@@ -400,27 +400,9 @@ class FriendAPIView(generics.GenericAPIView):
             author_id1 = self.kwargs['author_id1']
             author_id2 = self.kwargs['author_id2']
 
-<<<<<<< HEAD
             #TODO Check if they actually exist in other servers
             a1_follows_a2 = follows(author_id1,author_id2)
             a2_follows_a1 = follows(author_id2,author_id1)
-=======
-            friend_list = ""
-            try:
-                followers = User.objects.filter(
-                    follower__user2=author_id1, is_active=True)
-                following = User.objects.filter(
-                    followee__user1=author_id1, is_active=True)
-                friend_list = following & followers
-            except:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-
-            friends = False
-            for friend in friend_list:
-                if str(friend.id) == str(author_id2):
-                    friends = True
-                    break
->>>>>>> origin/deployment
 
             if a1_follows_a2 & a2_follows_a1:
                 friends = True
