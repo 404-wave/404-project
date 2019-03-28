@@ -155,7 +155,7 @@ class PostAPIView(generics.GenericAPIView):
             try: author = User.objects.get(id=author_id)
             except: return Response(status=status.HTTP_404_NOT_FOUND)
             queryset = self.get_posts_from_single_author(
-                author.id, requestor_id, server_only).filter(unlisted=False)
+                author_id, requestor_id, server_only).filter(unlisted=False)
 
         # Get a single post if it is visible to the requesting user
         elif 'post_id' in kwargs.keys():
