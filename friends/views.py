@@ -50,7 +50,7 @@ def following(request):
     
     if following_obj:
         for followings in following_obj:
-            print(followings)
+            print(followings.user2)
             user = User.objects.filter(id=followings.user2)
             if not user:
                 user = get_user(followings.user2_server,follows.user2)
