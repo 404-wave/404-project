@@ -57,6 +57,7 @@ def posts_detail(request, id):
         # instance is a dictionary and if yes, then comments should be instance[‘comments’]
 
         for node in Node.objects.all():
+            
             url = node.host + "/service/posts/{0}".format(str(id))
 
             # test_url = 'https://local:localpassword@cmput-404-proj-test.herokuapp.com/service/posts/{0}'.format(  str(id))

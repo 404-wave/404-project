@@ -72,7 +72,7 @@ def allow_server_only_posts(request):
     except:
         return False
 
-    if host == node_settings.host:
+    if str(host) == str(node_settings.host):
         return True
 
     return False
@@ -177,11 +177,13 @@ class PostAPIView(generics.GenericAPIView):
             try: author = User.objects.get(id=author_id)
             except: return Response(status=status.HTTP_404_NOT_FOUND)
             queryset = self.get_posts_from_single_author(
-                author.id, requestor_id, server_only).filter(unlisted=False)
+                author_id, requestor_id, server_only).filter(unlisted=False)
 
         # Get a single post if it is visible to the requesting user
         elif 'post_id' in kwargs.keys():
             post_id = self.kwargs['post_id']
+            try: Post.objects.get(id=post_id)
+            except: return Response(status=status.HTTP_404_NOT_FOUND)
             queryset = Post.objects.filter_user_visible_posts_by_user_id(
                 user_id=requestor_id, server_only=server_only).filter(id=post_id)
             queryset = self.filter_out_image_posts(request, queryset)
@@ -312,28 +314,31 @@ class CommentAPIView(generics.GenericAPIView):
 
         server_only = allow_server_only_posts(request)
 
+        # post_id = None
+        # author_id = None
+        # content = None
         try:
             data = request.data
-            post_id = kwargs['post_id']
+            post_id = uuid.UUID(data['post'].split("/")[-1])
+            author_id = uuid.UUID(data['comment']['author']['id'].split("/")[-1])
             content = data['comment']['comment']
-            content_type = "text/plain"
-            author_id = data['comment']['author']['id'].split("/")[-1]
-        except:
+        except Exception as e:
             Response(status=status.HTTP_400_BAD_REQUEST)
 
+
         # Check that the requesting user has visibility of that post
-        post = Post.objects.filter_user_visible_posts_by_user_id(
+        posts = Post.objects.filter_user_visible_posts_by_user_id(
             user_id=requestor_id, server_only=server_only).filter(id=post_id)
-        if post is None:
+        if posts is None:
             return Response(response_failed, status=status.HTTP_403_FORBIDDEN)
 
         try:
-            post=post[0]
+            post=posts[0]
             instance = get_object_or_404(Post, id=post.id)
             comment = Comment(parent=None, user=author_id, content=content, object_id=post.id, content_type=post.get_content_type)
             comment.save()
         except Exception as e:
-            print(e)
+            return Response(response_failed, status=status.HTTP_200_OK)
 
         return Response(response_ok, status=status.HTTP_200_OK)
 
@@ -395,9 +400,27 @@ class FriendAPIView(generics.GenericAPIView):
             author_id1 = self.kwargs['author_id1']
             author_id2 = self.kwargs['author_id2']
 
+<<<<<<< HEAD
             #TODO Check if they actually exist in other servers
             a1_follows_a2 = follows(author_id1,author_id2)
             a2_follows_a1 = follows(author_id2,author_id1)
+=======
+            friend_list = ""
+            try:
+                followers = User.objects.filter(
+                    follower__user2=author_id1, is_active=True)
+                following = User.objects.filter(
+                    followee__user1=author_id1, is_active=True)
+                friend_list = following & followers
+            except:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+            friends = False
+            for friend in friend_list:
+                if str(friend.id) == str(author_id2):
+                    friends = True
+                    break
+>>>>>>> origin/deployment
 
             if a1_follows_a2 & a2_follows_a1:
                 friends = True
