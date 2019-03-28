@@ -211,6 +211,8 @@ def get_user(server, id):
     user = User()
     build_request = server+'/service/author/'+str(id)
     print (build_request)
+    print(server)
+    print(id)
     try:
         r=requests.get(build_request)
         response = r.json()
