@@ -134,7 +134,7 @@ LOGOUT_REDIRECT_URL = 'login'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Edmonton'
 
 USE_I18N = True
 
@@ -159,3 +159,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media_cdn")
 django_heroku.settings(locals())
 
 CORS_ORIGIN_ALLOW_ALL = True
+APPEND_SLASH = True
+
+django_heroku.settings(locals())
