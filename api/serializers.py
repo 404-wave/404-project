@@ -180,7 +180,7 @@ class CommentSerializer(serializers.ModelSerializer):
             found = False
             for node in Node.objects.all():
                 url = node.host + "/service/author/" + str(obj.user)
-                r = requests.get(url)
+                r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
                 if (r.status_code == 200):
                     try:
                         json = r.json()
@@ -191,6 +191,7 @@ class CommentSerializer(serializers.ModelSerializer):
                         id = json['id']
                         author = User(host=host, id=id, github=github, url=url, username=username)
                         found = True
+                        break
                     except:
                         # TODO: What to do when the host of the author sends bad data?
                         return dict()
@@ -228,4 +229,4 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
     #     return
 
     def _id(self, obj):
-        return str(obj.id)
+        return str(obj.user)
