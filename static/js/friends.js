@@ -210,7 +210,10 @@ function addFromOtherNode(data){
   // }
   $.ajax({
     url:path,
+    type:"POST",
     body:JSON.stringify(payload),
+    dataType: "json",
+    contentType: "application/json",
     success: function(){
       console.log("Successfully sent Request to Other Server");
     },
