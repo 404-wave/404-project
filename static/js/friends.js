@@ -163,11 +163,11 @@ function addFromOtherNode(data){
   
   const followerID = data['followerID'];
   const followeeID = data['followeeID'];
-  let serverUrl = data['server'];
+  let serverUrl = data['followeeServer'];
   serverUrl = serverUrl.replace(/\s+/g,"");
   if(serverUrl.endsWith("/") == false){ serverUrl = serverUrl + "/";}
   if(serverUrl.indexOf("https://" === -1)){ serverUrl = "https://"+serverUrl;}
-  let hostUrl = data['host'];
+  let hostUrl = data['followerServer'];
   hostUrl = hostUrl.replace(/\s+/g,"");
   if (hostUrl.endsWith("/") == false){hostUrl = hostUrl +"/";}
   if(hostUrl.indexOf("https://" === -1)){ hostUrl = "https://"+hostUrl;}
@@ -199,15 +199,7 @@ function addFromOtherNode(data){
   };
 
   console.log(JSON.stringify(payload,null,2));
-  // let metaData = {
-  //   'method':'POST',
-  //   'mode':'cors',
-  //   'body': JSON.stringify(payload),
-  //   'headers':{
-  //     'Content-Type':'application/json',
-  //     'Accept':'application/json',
-  //   }
-  // }
+
   $.ajax({
     url:path,
     type:"POST",
@@ -221,15 +213,5 @@ function addFromOtherNode(data){
       console.log("error: ",error);
     }
   });
-
-
-  // console.log("path:")
-  // console.log(path)
-  // fetch(path ,metaData)
-  // .then(body=>body.json)
-  // .catch(error => {
-  //   console.log("error",error);
-  //   alert("Error: ",error);
-  // });
 
 }
