@@ -230,4 +230,4 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
     #     return
 
     def _id(self, obj):
-        return str(obj.user)
+        return str(obj.id)
