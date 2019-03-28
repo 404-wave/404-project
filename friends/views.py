@@ -117,13 +117,14 @@ def follow(request):
     followeeID = request.GET['followeeID']
     followerUser = request.GET['followerUser']
     followeeUser = request.GET['followeeUser']
-    server = request.GET['server']
-    host = request.GET['host']
+    followerServer = request.GET['followerserver']
+    followeeServer = request.GET['followeeserver']
 
     user1 = followerID
     user2 = followeeID
+    Follow.objects.create(user1=followerID, user1_server = followerServer,  
+    user2=followeeID, user2_server = followeeServer)
 
-    Follow.objects.create(user1=followerID, user2=followeeID)
      ####add into FriendRequest table####
     #Query to see if the person they want to follow is already following requestor
     exists_in_table = FriendRequest.objects.filter(requestor=user2,recipient=user1)
@@ -137,8 +138,8 @@ def follow(request):
              'followeeID': followeeID,
              'followerUser': followerUser,
              'followeeUser':followeeUser,
-            'server': server,
-            'host': host
+            'followerServer': followerServer,
+            'followeeServer': followeeServer
             }
     return HttpResponse(json.dumps(data), content_type="application/json")
     #return HttpResponse()

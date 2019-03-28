@@ -55,8 +55,8 @@ function change_follow(followerID,followerUser,followerHost,
       followeeID: followeeID,
       followerUser: followerUser,
       followeeUser: followeeUser,
-      'server': followeeHost,
-      'host':followerHost,
+      'followeeserver': followeeHost,
+      'followerserver':followerHost,
     },
     success: function (data) {
       if (followerHost != followeeHost && e.id == "Follow"){

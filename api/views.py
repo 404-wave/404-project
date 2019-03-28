@@ -508,7 +508,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
             try:
                 
                 try:
-                    Follow.objects.create(user1=user1, user2=user2)
+                    Follow.objects.create(user1=user1, user1_server =user1.host, user2=user2, user2_server = user2.host)
                 except:
                     
                     print(" Couldn't create object")
@@ -520,7 +520,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
                 if (len(exists_in_table) == 0) & (follows(user2,user1) == False):
                     
-                                    FriendRequest.objects.create(requestor= user1,recipient= user2)
+                                    FriendRequest.objects.create(requestor= user1, requestor_server = user1.host, recipient= user2, recipient_server = user2.host)
 
                 elif len(exists_in_table) != 0:
                     exists_in_table.delete()
