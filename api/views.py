@@ -489,11 +489,11 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
              following_user_Q = Q()
              following_obj = Follow.objects.filter(user1=author_id,is_active=True)
-            print("inside filtering for follow obj")
-            print("author_id")
-            print(author_id)
-            print("friend_id")
-            print(friend_id)
+             print("inside filtering for follow obj")
+             print("author_id")
+             print(author_id)
+             print("friend_id")
+             print(friend_id)
              print(len(following_obj))
              for fr in following_obj:
                  following_user_Q = following_user_Q | Q(id= fr.user2)
