@@ -5,6 +5,7 @@ from users.models import User, Node, NodeSetting
 from posts.models import Post
 
 import requests
+from requests.auth import HTTPBasicAuth
 
 
 class UserSerializer(serializers.ModelSerializer):
