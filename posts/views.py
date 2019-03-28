@@ -57,8 +57,7 @@ def posts_detail(request, id):
         # instance is a dictionary and if yes, then comments should be instance[‘comments’]
 
         for node in Node.objects.all():
-<<<<<<< HEAD
-=======
+            
             url = node.host + "/service/posts/{0}".format(str(id))
 
             # test_url = 'https://local:localpassword@cmput-404-proj-test.herokuapp.com/service/posts/{0}'.format(  str(id))
@@ -67,18 +66,11 @@ def posts_detail(request, id):
             # response = requests.get(test_url, headers=headers)
             # response = requests.get(test_url, headers=headers, auth = HTTPBasicAuth('local', 'localpassword'))
 
->>>>>>> origin
             headers = {
                 'Accept': 'application/json',
                 'X-UUID': str(request.user.id)
             }
-<<<<<<< HEAD
-            url = node.host + "/service/posts/"
-            response = requests.get(url, headers=headers, auth=HTTPBasicAuth(
-                str(node.username), str(node.password)))
-=======
             response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
->>>>>>> origin
             print(url)
             print("Status code: " + str(response.status_code))
 
