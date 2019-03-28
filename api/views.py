@@ -505,17 +505,23 @@ class FriendRequestAPIView(generics.GenericAPIView):
                 user2 = friend_id
                 Follow.objects.create(user1=user1, user2=user2)
                 print("Created object")
-                tst = Follow.objects.filter(user=user1)
-                print(l"len of follow obj:\t" + str(len(tst)))
-
+                try:
+                    tst = Follow.objects.filter(user=user1)
+                    print(l"len of follow obj:\t" + str(len(tst)))
+                except:
+                    "Filtering Follow object didn't work"
                 # Query to see if the person they want to follow is already following requestor
                 exists_in_table = FriendRequest.objects.filter(requestor=user2,recipient=user1)
 
                 if (len(exists_in_table) == 0) & (follows(user2,user1) == False):
                     print("Creating FR object")
+                
                     FriendRequest.objects.create(requestor= user1,recipient= user2)
-                    x = FriendRequest.objects.filter(requestor=user1)
-                    print("len of FR obj: \t" + str(len(x)))
+                    try:
+                        x = FriendRequest.objects.filter(requestor=user1)
+                        print("len of FR obj: \t" + str(len(x)))
+                    except:
+                        print("Filtering FR object didn't work")
                 elif len(exists_in_table) != 0:
                     exists_in_table.delete()
 
