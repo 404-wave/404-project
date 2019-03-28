@@ -9,9 +9,9 @@ import os
 import re
 import requests
 import core.views
-from users.models import User
+from users.models import User, Node
 from friends.models import Follow, FriendRequest
-from friends.models import Follow
+from requests.auth import HTTPBasicAuth
 
 # Just get a list of Users on the server, minus the user making the request
 def find(request):
@@ -212,16 +212,21 @@ def strip_host(host):
 
 def get_user(server, id):
     user = User()
+    print("SERECER", server)
+    node = Node.objects.filter(host = server)[0]
+    print (node.username, node.password)
     server = standardize_url(server)
     build_request = server+'service/author/'+str(id)
     print (build_request)
-    print(server)
     print(id)
+    print ("REE")
+
     try:
-        r=requests.get(build_request)
+        r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
         response = r.json()
     except:
         print("That user does not exist")
+        return
     user.username = response['displayName']
     user.id = response['id']
     user.host = server
