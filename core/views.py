@@ -201,13 +201,14 @@ def get_user(parameters):
 	user = User()
 	id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)'	
 	re_result = re.search(id_regex, parameters)
-
 	server = re_result.group(1)
 	profile_id = re_result.group(2)
-	node = Node.objects.filter(host = 'https://'+server)[0]
-	print ("NODE", node, node.username, node.password)
+	##double check id is not our server id
+	server_user = User.objects.filter(id = profile_id)
+	if server_user:
+		return server_user[0]
 	build_request = 'https://'+server+'/service/author/'+profile_id
-	print (build_request)
+	node = Node.objects.filter(host = 'https://'+server)[0]
 	r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
 	try:
 		r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
@@ -240,7 +241,8 @@ def profile(request, value=None, pk=None):
 		user = User.objects.get(pk=pk)
 	else:
 		user = get_user(value)
-
+	print ("SDSD")
+	print (user)
 	button_text = "Unfollow"
 	if request.user.id is not user.id:
 		following = follows(request.user.id, user.id)

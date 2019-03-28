@@ -15,16 +15,10 @@ from requests.auth import HTTPBasicAuth
 
 # Just get a list of Users on the server, minus the user making the request
 def find(request):
-
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
-
-
-
     server_users = User.objects.exclude(pk=request.user.id).filter(is_active=True)
-
-    data = serializers.serialize('json', server_users, fields=('username'))
-
+    data = serializers.serialize('json', server_users, fields=('username', 'host'))
     return HttpResponse(data, content_type="application/json")
 
 
@@ -36,7 +30,6 @@ def following(request):
 
     following = list()
     following_obj = Follow.objects.filter(user1=request.user.id)
-    print ("FIND FOLLOWING")
     if following_obj:
         for followings in following_obj:
             user = User.objects.filter(id=followings.user2)
@@ -81,12 +74,10 @@ def friends(request):
     # followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
     # following = User.objects.filter(followee__user1=request.user.id, is_active=True)
     # friends = following & followers
-    print ("FRIENDS")
     #TODO make more efficient
     uid = request.user.id
     friends = set()
     follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
-    print (follow_obj)
     if follow_obj:
         for follow in follow_obj:
             if ((follow.user1==uid) & (follow.user2 not in friends)):
@@ -109,8 +100,6 @@ def friends(request):
                     friends.add(user)
 
     data = serializers.serialize('json', friends, fields=('username', 'host'))
-    print ("DATA")
-    print (data)
     return HttpResponse(data, content_type="application/json") 
 
 def follow(request):
@@ -185,17 +174,11 @@ def follows(user1ID, user2ID):
 def friend_requests(request):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
-    print ("REQUEST FRIEND")
     friend_reqs = FriendRequest.objects.filter(recipient=request.user.id)
     host = request.get_host()
     data2 = {"posts": []}
-    user_filter = Q()
-    l = list()
-    data2 = {
-    "posts": []}
+    data2 = {"posts": []}
     for reqs in friend_reqs:
-        print(reqs.requestor)
-        user_filter = user_filter | Q(username=reqs.requestor)
         user = User.objects.filter(id = reqs.requestor)
         if not user:
             user = get_user(reqs.requestor_server, reqs.requestor)
@@ -214,16 +197,11 @@ def strip_host(host):
 
 def get_user(server, id):
     user = User()
-    print ("SERVER", server)
     server = remove_backslash(server)
-    print ("SERVER", server)
     node = Node.objects.filter(host = server)
-    print (node)
     node = node[0]
-    print (node)
     server = standardize_url(server)
     build_request = server+'service/author/'+str(id)
-    print (build_request)
     try:
         r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
         response = r.json()
