@@ -201,24 +201,34 @@ function addFromOtherNode(data){
   };
 
   console.log(JSON.stringify(payload,null,2));
-  let metaData = {
-    'method':'POST',
-    'mode':'cors',
-    'body': JSON.stringify(payload),
-    'headers':{
-      'Content-Type':'application/json',
-      'Accept':'application/json',
+  // let metaData = {
+  //   'method':'POST',
+  //   'mode':'cors',
+  //   'body': JSON.stringify(payload),
+  //   'headers':{
+  //     'Content-Type':'application/json',
+  //     'Accept':'application/json',
+  //   }
+  // }
+  $.ajax({
+    url:path,
+    body:JSON.stringify(payload),
+    success: function(){
+      console.log("Successfully sent Request to Other Server");
+    },
+    error: function(xhr,status,error){
+      console.log("error: ",error);
     }
-  }
-  
-  console.log("path:")
-  console.log(path)
-  fetch(path ,metaData)
-  .then(body=>body.json)
-  .catch(error => {
-    console.log("error",error);
-    alert("Error: ",error);
-    
   });
+
+
+  // console.log("path:")
+  // console.log(path)
+  // fetch(path ,metaData)
+  // .then(body=>body.json)
+  // .catch(error => {
+  //   console.log("error",error);
+  //   alert("Error: ",error);
+  // });
 
 }
