@@ -506,7 +506,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
                 Follow.objects.create(user1=user1, user2=user2)
                 print("Created object")
                 try:
-                    tst = Follow.objects.filter(user=user1)
+                    tst = Follow.objects.filter(user1=user1)
                     print(l"len of follow obj:\t" + str(len(tst)))
                 except:
                     "Filtering Follow object didn't work"
