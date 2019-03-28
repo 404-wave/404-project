@@ -84,25 +84,29 @@ def friends(request):
 
     #TODO make more efficient
     uid = request.user.id
-    user_Q = Q()
+    friends = list()
     follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
 
-    if len(follow_obj) != 0:
+    if follow_obj:
         for follow in follow_obj:
             if follow.user1==uid:
                 recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                if len(recip_object) != 0:
-                    user_Q = user_Q | Q(id=follow.user2)
+                if recip_object:
+                    user = User.objects.filter(id=follow.user2)
+                    if user:    
+                        user=user.get()
+                    else:
+                        user = get_user(follow.user2_server,follow.user2)
+                    friends.append(user)
             elif follow.user2==uid:
                 recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                if len(recip_object) != 0:
-                    user_Q = user_Q | Q(id=follow.user1)
-        if len(user_Q) != 0:
-            friends = User.objects.filter(user_Q)
-        else:
-            friends = User.objects.none()
-    else:
-        friends = User.objects.none()
+                if recip_object:
+                    user= User.objects.filter(id=Follow.user1)
+                    if user:
+                        user=user.get()
+                    else:
+                        user= get_user(follow.user1_server,follow.user1)
+                    friends.append(user)
 
     data = serializers.serialize('json', friends, fields=('username'))
     return HttpResponse(data, content_type="application/json") 
@@ -208,11 +212,7 @@ def strip_host(host):
 
 def get_user(server, id):
     user = User()
-    server = server.replace(" ","")
-    if server.startswith("https://") is False:
-        server = "https://"+server
-    if server.endswith("/") is False:
-        server = server+"/"
+    server = standardize_url(server)
     build_request = server+'service/author/'+str(id)
     print (build_request)
     print(server)
@@ -226,3 +226,11 @@ def get_user(server, id):
     user.id = response['id']
     user.host = server
     return user
+
+def standardize_url(server):
+    server = server.replace(" ","")
+    if server.startswith("https://") is False:
+        server = "https://"+server
+    if server.endswith("/") is False:
+        server = server+"/"
+    return server
