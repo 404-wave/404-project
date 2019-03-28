@@ -97,7 +97,7 @@ def friends(request):
                         user=user.get()
                     else:
                         user = get_user(follow.user2_server,follow.user2)
-                    friends.append(user)
+                    friends.add(user)
             elif ((follow.user2==uid) & (follow.user1 not in friends)):
                 recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
                 if recip_object:
@@ -106,7 +106,7 @@ def friends(request):
                         user=user.get()
                     else:
                         user= get_user(follow.user1_server,follow.user1)
-                    friends.append(user)
+                    friends.add(user)
 
     data = serializers.serialize('json', friends, fields=('username'))
     return HttpResponse(data, content_type="application/json") 
