@@ -228,16 +228,16 @@ function tempAddNode(){
   let payload = {
     "query":"friendrequest",
     "author": {
-        "id":  "https://fast-forest-91959.herokuapp.com/aa2d733d-e1b9-413c-a046-dc93b31fd9ac",
+        "id":  "https://fast-forest-91959.herokuapp.com/author/aa2d733d-e1b9-413c-a046-dc93b31fd9ac",
         "host": "https://fast-forest-91959.herokuapp.com/",
         "displayName": "test",
-        "url":"https://fast-forest-91959.herokuapp.com/home/profile/aa2d733d-e1b9-413c-a046-dc93b31fd9ac",
+        "url":"https://fast-forest-91959.herokuapp.com/author/aa2d733d-e1b9-413c-a046-dc93b31fd9ac",
         },  
     "friend": {
-        "id": "https://myblog-cool.herokuapp.com/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a",
+        "id": "https://myblog-cool.herokuapp.com/author/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a",
         "host": "https://myblog-cool.herokuapp.com/",
         "displayName": "Jackson0",
-        "url": "https://myblog-cool.herokuapp.com/home/profile/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a"
+        "url": "https://myblog-cool.herokuapp.com/author/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a"
     }
   };
 
