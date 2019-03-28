@@ -164,14 +164,19 @@ function addFromOtherNode(data){
   const followerID = data['followerID'];
   const followeeID = data['followeeID'];
   let serverUrl = data['followeeServer'];
-  serverUrl = serverUrl.replace(/\s+/g,"");
-  if(serverUrl.endsWith("/") == false){ serverUrl = serverUrl + "/";}
-  if(serverUrl.indexOf("https://") === -1){ serverUrl = "https://"+serverUrl;}
+  serverUrl = standardizeUrl(serverUrl);
   let hostUrl = data['followerServer'];
-  hostUrl = hostUrl.replace(/\s+/g,"");
-  if (hostUrl.endsWith("/") == false){hostUrl = hostUrl +"/";}
-  if(hostUrl.indexOf("https://") === -1){ hostUrl = "https://"+hostUrl;}
+  hostUrl = standardizeUrl(hostUrl);
   
+  let nodeList = data['nodes'];
+  let userPassObj = findNodeUserAndPass(nodeList,serverUrl);
+  const nodeUsername = userPassObj['username'];
+  const nodePassword = userPassObj['password'];
+  console.log("NODEUSERNAME:");
+  console.log(nodeUsername);
+  console.log("NODEPASSWORD:");
+  console.log(nodePassword);
+
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser'];
 
@@ -206,6 +211,8 @@ function addFromOtherNode(data){
     data:JSON.stringify(payload),
     dataType: "json",
     contentType: "application/json",
+    username: nodeUsername,
+    password: nodePassword,
     success: function(){
       console.log("Successfully sent Request to Other Server");
     },
@@ -214,4 +221,28 @@ function addFromOtherNode(data){
     }
   });
 
+}
+
+function standardizeUrl(url){
+  let serverUrl = url.replace(/\s+/g,"");
+  if(serverUrl.endsWith("/") == false){
+     serverUrl = serverUrl + "/";
+  }
+  if(serverUrl.indexOf("https://") === -1){ 
+    serverUrl = "https://"+serverUrl;
+  }
+  return serverUrl;
+}
+
+function findNodeUserAndPass(nodeList,server){
+  for(let node in nodeList){
+    let stand_node = standardizeUrl(node);
+    if (stand_node == server){
+      let data = {
+        'username':nodeList[node]['username'],
+        'password':nodeList[node]['password']
+      };
+      return data;
+    }
+  }
 }

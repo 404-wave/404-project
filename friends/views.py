@@ -9,7 +9,7 @@ import os
 import re
 import requests
 import core.views
-from users.models import User
+from users.models import User, Node
 from friends.models import Follow, FriendRequest
 from friends.models import Follow
 
@@ -136,13 +136,23 @@ def follow(request):
         FriendRequest.objects.create(requestor= user1,recipient= user2)
     elif len(exists_in_table) != 0:
         exists_in_table.delete()
+    
+    nodes = Node.objects.all()
+    nodeList = dict()
+    for node in nodes:
+        nodeList[node.host]= {
+            'sharing':node.sharing,
+            'username':node.username,
+            'password':node.password,
+        }
 
     data = {'followerID': followerID,
              'followeeID': followeeID,
              'followerUser': followerUser,
              'followeeUser':followeeUser,
             'followerServer': followerServer,
-            'followeeServer': followeeServer
+            'followeeServer': followeeServer,
+            'nodes': nodeList
             }
     return HttpResponse(json.dumps(data), content_type="application/json")
     #return HttpResponse()
