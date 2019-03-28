@@ -19,9 +19,9 @@ class Follow(models.Model):
 class FriendRequest(models.Model):
 
     requestor = models.UUIDField()
-    requestor_server = models.CharField(max_length=200)
+    requestor_server = models.CharField(max_length=200,default="000")
     recipient = models.UUIDField()
-    recipient_server = models.CharField(max_length=200)
+    recipient_server = models.CharField(max_length=200,default="000")
 
     class Meta:
         unique_together = (('requestor','recipient'), )
