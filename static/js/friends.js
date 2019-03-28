@@ -165,14 +165,12 @@ function addFromOtherNode(data){
   const followeeID = data['followeeID'];
   let serverUrl = data['server'];
   serverUrl = serverUrl.replace(/\s+/g,"");
-  if(serverUrl.endsWith("/") == false){
-    serverUrl = serverUrl + "/";
-  }
+  if(serverUrl.endsWith("/") == false){ serverUrl = serverUrl + "/";}
+  if(serverUrl.indexOf("https://" === -1)){ serverUrl = "https://"+serverUrl;}
   let hostUrl = data['host'];
   hostUrl = hostUrl.replace(/\s+/g,"");
-  if (hostUrl.endsWith("/") == false){
-    hostUrl = hostUrl +"/";
-  }
+  if (hostUrl.endsWith("/") == false){hostUrl = hostUrl +"/";}
+  if(hostUrl.indexOf("https://" === -1)){ hostUrl = "https://"+hostUrl;}
   
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser'];
