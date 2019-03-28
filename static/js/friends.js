@@ -221,6 +221,10 @@ function addFromOtherNode(data){
   console.log(metaData.headers);
   fetch(path ,metaData)
   .then(body=>body.json)
-  .catch(error => alert("Error: ",error));
+  .catch(error => {
+    console.log("error",error);
+    alert("Error: ",error);
+    
+  });
 
 }
