@@ -467,9 +467,6 @@ class FriendRequestAPIView(generics.GenericAPIView):
         # Retrieves JSON data
         data = request.data
         
-        print("DATAAA: ")
-        print(data)
-
         author_id = None
         friend_id = None
         try:
@@ -480,11 +477,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         following = User.objects.none()
-        print("outside filtering for follow obj")
-        print("author_id")
-        print(author_id)
-        print("friend_id")
-        print(friend_id)
+       
         try:
             # followers = User.objects.filter(follower__user2=author_id, is_active=True)
             # following = User.objects.filter(followee__user1=author_id, is_active=True)
@@ -492,12 +485,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
              following_user_Q = Q()
              following_obj = Follow.objects.filter(user1=author_id,is_active=True)
-             print("inside filtering for follow obj")
-             print("author_id")
-             print(author_id)
-             print("friend_id")
-             print(friend_id)
-             print(len(following_obj))
+        
              for fr in following_obj:
                  following_user_Q = following_user_Q | Q(id= fr.user2)
              following = User.objects.filter(following_user_Q)
@@ -508,60 +496,32 @@ class FriendRequestAPIView(generics.GenericAPIView):
         already_following = False
         if (len(following) != 0):
             for followee in following:
-                print("folowee:")
-                print(folowee.username)
+               
                 if str(friend_id) == str(followee.id):
-                    print("Already following is True")
+                    
                     already_following = True
     
         # If user1 is already following user2, then a request must have previously been made
-        print("already following")
-        print(already_following)
+       
         if not already_following:
-            print("inside if statement")
             
-            print("author_id")
-            print(author_id)
-            print("friend_id")
-            print(friend_id)
             try:
-                print("before user1 = author and user2 = friend")
-                print("author_id")
-                print(author_id)
-                print("friend_id")
-                print(friend_id)
-                user1 = author_id
-                user2 = friend_id
-                print("After user1=author")
-                print("author_id")
-                print(author_id)
-                print("friend_id")
-                print(friend_id)
+                
                 try:
                     Follow.objects.create(user1=user1, user2=user2)
                 except:
-                    print(user1)
-                    print(user2)
+                    
                     print(" Couldn't create object")
                     return Response(status=status.HTTP_409_CONFLICT)
                 print("Created object")
-                try:
-                    tst = Follow.objects.filter(user1=user1)
-                    print("len of follow obj:\t" + str(len(tst)))
-                except:
-                    "Filtering Follow object didn't work"
+                
                 # Query to see if the person they want to follow is already following requestor
                 exists_in_table = FriendRequest.objects.filter(requestor=user2,recipient=user1)
 
                 if (len(exists_in_table) == 0) & (follows(user2,user1) == False):
-                    print("Creating FR object")
-                
-                    FriendRequest.objects.create(requestor= user1,recipient= user2)
-                    try:
-                        x = FriendRequest.objects.filter(requestor=user1)
-                        print("len of FR obj: \t" + str(len(x)))
-                    except:
-                        print("Filtering FR object didn't work")
+                    
+                                    FriendRequest.objects.create(requestor= user1,recipient= user2)
+
                 elif len(exists_in_table) != 0:
                     exists_in_table.delete()
 
