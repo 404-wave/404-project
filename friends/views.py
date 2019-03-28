@@ -50,13 +50,14 @@ def following(request):
     
     if following_obj:
         for followings in following_obj:
-            user = User.obects.filter(id=followings.user2)
+            user = User.objects.filter(id=followings.user2)
             if not user:
                 user = get_user(followings.user2_server,follows.user2)
+                print(user)
             else:
                 user=user.get()
             following.append(user)
-            
+
         
     
     data = serializers.serialize('json', following, fields=('username'))
