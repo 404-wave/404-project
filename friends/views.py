@@ -36,7 +36,7 @@ def following(request):
 
     following = list()
     following_obj = Follow.objects.filter(user1=request.user.id)
-
+    print ("FIND FOLLOWING")
     if following_obj:
         for followings in following_obj:
             user = User.objects.filter(id=followings.user2)
@@ -46,7 +46,7 @@ def following(request):
                 user=user.get()
             following.append(user)
 
-    data = serializers.serialize('json', following, fields=('username'))
+    data = serializers.serialize('json', following, fields=('username', 'host'))
     return HttpResponse(data, content_type="application/json")
 
 # Get a list of Users who follow the current user
@@ -69,7 +69,7 @@ def followers(request):
                 user=user.get()
             followers.append(user)
     
-    data = serializers.serialize('json', followers, fields=('username'))
+    data = serializers.serialize('json', followers, fields=('username', 'host'))
     return HttpResponse(data, content_type="application/json")
 
 # Get a list of Users who the current user is friends with
@@ -81,12 +81,12 @@ def friends(request):
     # followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
     # following = User.objects.filter(followee__user1=request.user.id, is_active=True)
     # friends = following & followers
-
+    print ("FRIENDS")
     #TODO make more efficient
     uid = request.user.id
     friends = set()
     follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
-
+    print (follow_obj)
     if follow_obj:
         for follow in follow_obj:
             if ((follow.user1==uid) & (follow.user2 not in friends)):
@@ -108,7 +108,9 @@ def friends(request):
                         user= get_user(follow.user1_server,follow.user1)
                     friends.add(user)
 
-    data = serializers.serialize('json', friends, fields=('username'))
+    data = serializers.serialize('json', friends, fields=('username', 'host'))
+    print ("DATA")
+    print (data)
     return HttpResponse(data, content_type="application/json") 
 
 def follow(request):
@@ -212,15 +214,16 @@ def strip_host(host):
 
 def get_user(server, id):
     user = User()
-    print("SERECER", server)
-    node = Node.objects.filter(host = server)[0]
-    print (node.username, node.password)
+    print ("SERVER", server)
+    server = remove_backslash(server)
+    print ("SERVER", server)
+    node = Node.objects.filter(host = server)
+    print (node)
+    node = node[0]
+    print (node)
     server = standardize_url(server)
     build_request = server+'service/author/'+str(id)
     print (build_request)
-    print(id)
-    print ("REE")
-
     try:
         r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
         response = r.json()
@@ -231,6 +234,12 @@ def get_user(server, id):
     user.id = response['id']
     user.host = server
     return user
+
+def remove_backslash(server):
+    if (server[-1]== '/'):
+        server = server[:-1]
+    return server
+
 
 def standardize_url(server):
     server = server.replace(" ","")

@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseForbidden, HttpResponseNotFound
+from requests.auth import HTTPBasicAuth
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,7 +18,7 @@ from friends.models import FriendRequest
 from friends.views import follows
 from posts.forms import PostForm
 from posts.models import Post
-from users.models import User
+from users.models import User, Node
 
 
 # TODO: use the REST API once it is established
@@ -198,26 +199,29 @@ def home(request):
 
 def get_user(parameters):
 	user = User()
-
 	id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)'	
 	re_result = re.search(id_regex, parameters)
-	service = re_result.group(1)
+
+	server = re_result.group(1)
 	profile_id = re_result.group(2)
-	print ("IN PROFILE", service)
-	print ("IN PROFILE", profile_id)
-	build_request = 'https://' + service+ '/service/author/'+profile_id
+	node = Node.objects.filter(host = 'https://'+server)[0]
+	print ("NODE", node, node.username, node.password)
+	build_request = 'https://'+server+'/service/author/'+profile_id
+	print (build_request)
+	r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
 	try:
-		r=requests.get(build_request)
+		r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
 		response = r.json()
 	except:
-		return HttpResponseNotFound("That user does not exist")
+		print("That user does not exist")
+		return
 	user.bio = response['bio']
 	user.username = response['displayName']
 	user.first_name = response['firstName']
 	user.last_name = response['lastName']
 	user.email = response['email']
 	user.id = response['id']
-	user.host = service
+	user.host = server
 	user.friends = response['friends']
 	return user
 
@@ -230,6 +234,7 @@ def profile(request, value=None, pk=None):
 		return HttpResponseForbidden()
 	user = User()
 	# If no value, then we know we are looking at 'my_profile'
+	print (pk, value, request)
 	if value is None:
 		pk = pk if pk is not None else request.user.id
 		user = User.objects.get(pk=pk)

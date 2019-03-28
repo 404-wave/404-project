@@ -33,11 +33,20 @@ function populateFriendsList(data) {
   // Insert the new users
   for (var i = 0; i < data.length; ++i) {
     let id = data[i]["pk"];
+    let host = data[i]["fields"]["host"];
+    host = strip_host(host)
     let username = data[i]["fields"]["username"];
     let image = '<img src="/static/images/singleslothwave.png" alt=${username} width="35">'
-    let div = `<div class="friend_name">${image}<a href=\"../profile/${id}\">${username}</a></div>`;
+    let div = `<div class="friend_name">${image}<a href=\"../profile/${host}${id}\">${username}</a></div>`;
     $("#friendContainer").append(div)
   }
+}
+
+function strip_host(host){
+  reg = /https?:\/\//gi;
+  var k = host.replace(reg, '');
+  k = k.replace(/\/$/gi, '')
+  return k;
 }
 
 
