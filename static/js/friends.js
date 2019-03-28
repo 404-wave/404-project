@@ -200,7 +200,7 @@ function addFromOtherNode(data){
     }
   };
 
-  console.log(JSON.stringify(payload),null,2);
+  console.log(JSON.stringify(payload,null,2));
   let metaData = {
     'method':'POST',
     'mode':'no-cors',

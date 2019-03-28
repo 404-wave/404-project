@@ -456,6 +456,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
     queryset = FriendRequest.objects.all()
     serializer_class = UserFriendSerializer
+    parser_classes = (JSONParser,)
     
 
     def post(self, request, *args, **kwargs):
