@@ -7,13 +7,13 @@ class AuthTest(TestCase):
 
     def test_auth(self):
 
-        test_url = 'https://b71bb2e5.ngrok.io/service/posts/'
+        test_url = 'https://cmput-404-proj-test.herokuapp.com/service/posts/'
         headers = {
             'Accept':'application/json',
             # The UUID of the REQUESTING USER -- change as necessary
             'X-UUID': '4a47a810-4b00-4c59-8ec3-e0d4ac0b74fc'
         }
-        r = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('wave', 'wavepassword'))
+        r = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('local', 'localpassword'))
 
         print()
         print()

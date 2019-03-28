@@ -427,6 +427,7 @@ class FriendAPIView(generics.GenericAPIView):
 class FriendRequestAPIView(generics.GenericAPIView):
 
     queryset = FriendRequest.objects.all()
+    serializer_class = UserFriendSerializer
 
     def post(self, request, *args, **kwargs):
 
