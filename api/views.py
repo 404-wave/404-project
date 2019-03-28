@@ -482,6 +482,10 @@ class FriendRequestAPIView(generics.GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         following = User.objects.none()
+        print("AHOST:")
+        print(author_host)
+        print("FHOST")
+        print(friend_host)
        
         try:
             # followers = User.objects.filter(follower__user2=author_id, is_active=True)
