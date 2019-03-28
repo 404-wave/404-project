@@ -158,9 +158,6 @@ class PostManager(models.Manager):
         all_posts = list(all_posts.order_by('-timestamp'))
         all_posts.extend(posts_from_servers)
 
-        for post in all_posts:
-            print(post.content)
-
         return all_posts
 
     def filter_user_visible_posts_by_user_id(self, user_id, server_only, *args, **kwargs):
