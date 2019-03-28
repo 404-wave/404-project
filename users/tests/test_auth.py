@@ -13,7 +13,29 @@ class AuthTest(TestCase):
             # The UUID of the REQUESTING USER -- change as necessary
             'X-UUID': '4a47a810-4b00-4c59-8ec3-e0d4ac0b74fc'
         }
-        r = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('local', 'localpassword'))
+        #r = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('local', 'localpassword'))
+
+
+
+        # url = node.host + "/service/posts/"
+        test_url = 'https://cmput-404-proj-test.herokuapp.com/service/posts/{0}'.format(str('2161facd-48c4-4f53-8006-52cbc6cec971')) + "/"
+
+        #print("This is my request id", request.user.id)
+        print("Here is the url: " + test_url)
+
+        # headers = {
+        #     'Accept': 'application/json',
+        #     'X-UUID': str(request.user.id)
+        # }
+        # response = requests.get(url, headers=headers, auth=HTTPBasicAuth(
+        #     str(node.username), str(node.password)))
+
+        headers = {
+            'Accept': 'application/json',
+            'X-UUID': '2161facd-48c4-4f53-8006-52cbc6cec971'
+        }
+        r = requests.get(test_url, headers=headers,
+                                auth=HTTPBasicAuth('local', 'localpassword'))
 
         print()
         print()

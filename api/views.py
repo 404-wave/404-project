@@ -67,7 +67,7 @@ def allow_server_only_posts(request):
     except:
         return False
 
-    if host == node_settings.host:
+    if str(host) == str(node_settings.host):
         return True
 
     return False
@@ -291,13 +291,14 @@ class CommentAPIView(generics.GenericAPIView):
         server_only = allow_server_only_posts(request)
 
         try:
-            data = request.data
-            post_id = kwargs['post_id']
+            post_id = uuid.UUID(kwargs['post'].split("/")[-1])
+            author_id = uuid.UUID(data['comment']['author']['id'].split("/")[-1])
             content = data['comment']['comment']
-            content_type = "text/plain"
-            author_id = data['comment']['author']['id'].split("/")[-1]
         except:
             Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+
 
         # Check that the requesting user has visibility of that post
         post = Post.objects.filter_user_visible_posts_by_user_id(
