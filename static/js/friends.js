@@ -179,6 +179,8 @@ function addFromOtherNode(data){
 
   let path = serverUrl+"service/friendrequest/";
   path = path.replace(/\s+/g, "");
+  console.log("path:")
+  console.log(path)
   const request_user_url = hostUrl+followerID;
   const req_profile_url = hostUrl+"home/profile/"+followerID;
   const recip_user_url = serverUrl+followeeID;
