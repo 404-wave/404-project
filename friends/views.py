@@ -84,7 +84,7 @@ def friends(request):
 
     #TODO make more efficient
     uid = request.user.id
-    friends = dict()
+    friends = set()
     follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
 
     if follow_obj:
