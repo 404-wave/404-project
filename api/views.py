@@ -290,29 +290,31 @@ class CommentAPIView(generics.GenericAPIView):
 
         server_only = allow_server_only_posts(request)
 
+        # post_id = None
+        # author_id = None
+        # content = None
         try:
-            post_id = uuid.UUID(kwargs['post'].split("/")[-1])
+            data = request.data
+            post_id = uuid.UUID(data['post'].split("/")[-1])
             author_id = uuid.UUID(data['comment']['author']['id'].split("/")[-1])
             content = data['comment']['comment']
-        except:
+        except Exception as e:
             Response(status=status.HTTP_400_BAD_REQUEST)
-
-        try:
 
 
         # Check that the requesting user has visibility of that post
-        post = Post.objects.filter_user_visible_posts_by_user_id(
+        posts = Post.objects.filter_user_visible_posts_by_user_id(
             user_id=requestor_id, server_only=server_only).filter(id=post_id)
-        if post is None:
+        if posts is None:
             return Response(response_failed, status=status.HTTP_403_FORBIDDEN)
 
         try:
-            post=post[0]
+            post=posts[0]
             instance = get_object_or_404(Post, id=post.id)
             comment = Comment(parent=None, user=author_id, content=content, object_id=post.id, content_type=post.get_content_type)
             comment.save()
         except Exception as e:
-            print(e)
+            return Response(response_failed, status=status.HTTP_200_OK)
 
         return Response(response_ok, status=status.HTTP_200_OK)
 
@@ -361,7 +363,7 @@ class FriendAPIView(generics.GenericAPIView):
 
             friends = False
             for friend in friend_list:
-                if friend.id == author_id2:
+                if str(friend.id) == str(author_id2):
                     friends = True
                     break
 
