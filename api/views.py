@@ -321,6 +321,7 @@ class FriendAPIView(generics.GenericAPIView):
 
     queryset = Follow.objects.all()
     serializer_class = UserFriendSerializer
+    parser_classes = (JSONParser,)
 
     def get(self, request, *args, **kwargs):
 
