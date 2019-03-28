@@ -477,15 +477,12 @@ class FriendRequestAPIView(generics.GenericAPIView):
             friend_id = data['friend']['id'].split("/")[-1]
             author_host = data['author']['host']
             friend_host = data['friend']['host']
+
         except:
             # If the JSON was not what we wanted, send a 400
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         following = User.objects.none()
-        print("AHOST:")
-        print(author_host)
-        print("FHOST")
-        print(friend_host)
        
         try:
             # followers = User.objects.filter(follower__user2=author_id, is_active=True)
@@ -513,6 +510,10 @@ class FriendRequestAPIView(generics.GenericAPIView):
         if not already_following:
             try:
                 try:
+                    print(author_id)
+                    print(author_host)
+                    print(friend_id)
+                    print(friend_host)
                     Follow.objects.create(user1=author_id, user1_server =author_host, user2=friend_id, user2_server = friend_host)
                 except:
                     print(" Couldn't create object")
