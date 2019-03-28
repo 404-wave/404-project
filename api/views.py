@@ -102,8 +102,6 @@ class UserAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
 
-        if not request.user.is_authenticated:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         if 'author_id' in kwargs.keys():
             author_id = self.kwargs['author_id']
