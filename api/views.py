@@ -495,7 +495,10 @@ class FriendRequestAPIView(generics.GenericAPIView):
         already_following = False
         if (len(following) != 0):
             for followee in following:
+                print("folowee:")
+                print(folowee.username)
                 if str(friend_id) == str(followee.id):
+                    print("Already following is True")
                     already_following = True
     
         # If user1 is already following user2, then a request must have previously been made
