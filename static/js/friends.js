@@ -172,8 +172,14 @@ function addFromOtherNode(data){
   const followeeID = data['followeeID'];
   let serverUrl = data['server'];
   serverUrl = serverUrl.replace(/\s+/g,"");
+  if(serverUrl.endsWith("/" == false)){
+    serverUrl = serverUrl + "/";
+  }
   let hostUrl = data['host'];
   hostUrl = hostUrl.replace(/\s+/g,"");
+  if (hostUrl.endsWith("/") == false){
+    hostUrl = hostUrl +"/";
+  }
   
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser'];
