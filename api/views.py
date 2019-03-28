@@ -17,6 +17,7 @@ from posts.models import Post
 
 from friends.views import follows
 
+import datetime
 import requests
 import socket
 import uuid
@@ -184,13 +185,51 @@ class PostAPIView(generics.GenericAPIView):
         serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
         return self.get_paginated_response(serializer.data)
 
+		# {
+		# 	"contentType":"text/plain",
+		# 	"content":"Here is some post content."
+		# 	"author":{
+		# 		"id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+		# 	},
+		# 	# visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
+		# 	"visibility":"PUBLIC",
+		# 	"visibleTo":[],
+        #     "unlisted":false
+		# }
 
     def post(self, request, *args, **kwargs):
 
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+        try:
+            data = request.data
+            author_id = uuid.UUID(data['author']['id'].split("/")[-1])
+            content = data['content']
+            content_type = "text/plain"
+            visible_to = data['visibleTo']
+            unlisted = data['unlisted']
+            privacy = data['visbility']
+            if privacy is None:
+                Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            post = Post(user=author_id, content=content, publish=datetime.now(),
+                privacy=privacy, unlisted=unlisted)
+            for author in visible_to:
+                id = uuid.UUID(author.split("/")[-1])
+                post.accessible_users.add(id)
+            post.save()
+
+        except Exception as e:
+            print(e)
+            # TODO: Change the status code
+            return Response(status=status.HTTP_504_GATEWAY_TIMEOUT)
+
+
+        return Response(status=status.HTTP_200_OK)
 
 
     def put(self, request, *args, **kwargs):
@@ -233,6 +272,20 @@ class PostAPIView(generics.GenericAPIView):
             pass
 
         return queryset
+
+    def resolve_privacy(privacy_str):
+        if privacy_str == "PUBLIC":
+            return Post.PUBLIC
+        elif privacy_str == "PRIVATE":
+            return Post.PRIVATE
+        elif privacy_str == "FRIENDS":
+            return Post.FRIENDS
+        elif privacy_str == "FOAF":
+            return Post.FOAF
+        elif privacy_str == "SERVERONLY":
+            return Post.ONLY_SERVER
+        else:
+            return None
 
 
 class CommentAPIView(generics.GenericAPIView):

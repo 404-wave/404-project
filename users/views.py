@@ -21,7 +21,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             host = request.scheme + "://" + request.META['HTTP_HOST']
-            user.url = host + "service/author/" + str(user.id)
+            user.url = host + "author/" + str(user.id)
             user.host = host
             user.save()
             return HttpResponseRedirect(reverse('login'))
