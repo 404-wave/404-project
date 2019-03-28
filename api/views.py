@@ -465,7 +465,8 @@ class FriendRequestAPIView(generics.GenericAPIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         # Retrieves JSON data
-        data = request.body
+        data = json.loads(request.data)
+        
         print("DATAAA: ")
         print(data)
 
