@@ -509,7 +509,13 @@ class FriendRequestAPIView(generics.GenericAPIView):
             try:
                 user1 = author_id
                 user2 = friend_id
-                Follow.objects.create(user1=user1, user2=user2)
+                try:
+                    Follow.objects.create(user1=user1, user2=user2)
+                except:
+                    print(user1)
+                    print(user2)
+                    print(" Couldn't create object")
+                    return Response(status=status.HTTP_409_CONFLICT)
                 print("Created object")
                 try:
                     tst = Follow.objects.filter(user1=user1)
@@ -532,7 +538,6 @@ class FriendRequestAPIView(generics.GenericAPIView):
                     exists_in_table.delete()
 
             except:
-                print("Exception 409 but not showing it for some reason")
-                Response(status=status.HTTP_409_CONFLICT)
+                return Response(status=status.HTTP_409_CONFLICT)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
