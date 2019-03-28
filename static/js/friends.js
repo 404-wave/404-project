@@ -41,18 +41,27 @@ function populateFriendsList(data) {
 }
 
 
-function change_follow(followerID, followeeID, e) {
-  var url_val = "follow/";
+function change_follow(followerID,followerUser,followerHost,
+  followeeID,followeeUser,followeeHost,e) {
+  let url_val = 'follow/';
   if (e.id != "Follow"){
     url_val = "unfollow/";
   }
+
   $.ajax({
     url: url_val,
-    data: {
+    data: {      
       followerID: followerID,
-      followeeID: followeeID
+      followeeID: followeeID,
+      followerUser: followerUser,
+      followeeUser: followeeUser,
+      'server': followeeHost,
+      'host':followerHost,
     },
     success: function (data) {
+      if (followerHost != followeeHost && e.id == "Follow"){
+        addFromOtherNode(data);
+      }
       switchButton(data, e);
       //eplaceUnfollowButton(data);
     },
@@ -64,8 +73,8 @@ function change_follow(followerID, followeeID, e) {
 
 
 function switchButton(data, button) {
-  let followerID = data["followerID"];
-  let followeeID = data["followeeID"];
+  let followerID = data['followerID'];
+  let followeeID = data['followeeID'];
   var text_val = "Unfollow";
   let div = document.getElementById(button.id);
   if (button.id != "Follow") {
@@ -150,57 +159,77 @@ function closeDropDown(){
   }
 }
 
-function addFromOtherNode(userid,username){
-  console.log("WE HERE")
-  const path = "http://127.0.0.1:3000/service/friendrequest/";
-  const request_user_url = "http://127.0.0.1:8000/"+ userid;
-  const req_profile_url = "http://127.0.0.1:8000/home/profile/"+ userid;
-  const recip_user_url = "http://127.0.0.1:3000/1f8a90a5cc2e4fa0b3aaaaadb5d06f7a";
- 
+function addFromOtherNode(data){
+  
+  const followerID = data['followerID'];
+  const followeeID = data['followeeID'];
+  let serverUrl = data['server'];
+  serverUrl = serverUrl.replace(/\s+/g,"");
+  if(serverUrl.endsWith("/") == false){ serverUrl = serverUrl + "/";}
+  if(serverUrl.indexOf("https://" === -1)){ serverUrl = "https://"+serverUrl;}
+  let hostUrl = data['host'];
+  hostUrl = hostUrl.replace(/\s+/g,"");
+  if (hostUrl.endsWith("/") == false){hostUrl = hostUrl +"/";}
+  if(hostUrl.indexOf("https://" === -1)){ hostUrl = "https://"+hostUrl;}
+  
+  const followerUsername = data['followerUser'];
+  const followeeUsername = data['followeeUser'];
+
+  let path = serverUrl+"service/friendrequest/";
+  path = path.replace(/\s+/g, "");
+
+  const request_user_url = hostUrl+followerID;
+  const req_profile_url = hostUrl+"home/profile/"+followerID;
+  const recip_user_url = serverUrl+followeeID;
+  const recip_profile_url = serverUrl+"home/profile/"+followeeID;
   let payload = {
     "query":"friendrequest",
     "author": {
         "id":  request_user_url,
-        "host": "http://127.0.0.1:8000/",
-        "displayName": username,
+        "host": hostUrl,
+        "displayName": followerUsername,
         "url":req_profile_url,
         },  
     "friend": {
         "id": recip_user_url,
-        "host": "http://127.0.0.1:3000/",
-        "displayName": "test-user",
-        "url": "http://127.0.0.1:3000/home/profile/1f8a90a5cc2e4fa0b3aaaaadb5d06f7a",
-        }
-  };
-  // $.ajax({
-  //   type:"POST",
-  //   url: path,
-  //   crossDomain: true,
-  //   data: JSON.stringify(payload),
-  //   dataType:"json",
-  //   contentType:"application/json",
-  //   success: function (data) {
-  //     console.log(data);
-  //   },
-  //   error: function(xhr, status, error) {
-  //     console.log(error)
-  //   }
-  // });
-  // console.log(JSON.stringify(payload,null,2));
-  let metaData = {
-    'method':'POST',
-    'mode':'no-cors',
-    'body': JSON.stringify(payload),
-    'headers':{
-      'Content-Type':'application/json',
-      'Accept':'application/json',
+        "host": serverUrl,
+        "displayName": followeeUsername,
+        "url": recip_profile_url
     }
-  }
-  // console.log(JSON.parse(metaData.data));
-  console.log('\n\n\n')
-  console.log(metaData.headers);
-  fetch(path ,metaData)
-  .then(body=>body.json)
-  .catch(error => alert("Error: ",error));
+  };
+
+  console.log(JSON.stringify(payload,null,2));
+  // let metaData = {
+  //   'method':'POST',
+  //   'mode':'cors',
+  //   'body': JSON.stringify(payload),
+  //   'headers':{
+  //     'Content-Type':'application/json',
+  //     'Accept':'application/json',
+  //   }
+  // }
+  $.ajax({
+    url:path,
+    type:"POST",
+    data:JSON.stringify(payload),
+    dataType: "json",
+    contentType: "application/json",
+    success: function(){
+      console.log("Successfully sent Request to Other Server");
+    },
+    error: function(xhr,status,error){
+      console.log("error: ",error);
+    }
+  });
+
+
+  // console.log("path:")
+  // console.log(path)
+  // fetch(path ,metaData)
+  // .then(body=>body.json)
+  // .catch(error => {
+  //   console.log("error",error);
+  //   alert("Error: ",error);
+  // });
 
 }

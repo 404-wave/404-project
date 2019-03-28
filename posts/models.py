@@ -344,7 +344,7 @@ class Post(models.Model):
     # Used to determine the content type of the post. Necessary for the API
     # users to understand how to handle the actual content of the post.
     content_type = models.CharField(max_length=18 ,choices=ContentType, default="text/plain")
-
+    title = models.TextField(default = "default_title")
     def __str__(self):
         return str(self.user.username)
 

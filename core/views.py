@@ -248,7 +248,11 @@ def profile(request, value=None, pk=None):
 		following = follows(request.user.id, user.id)
 		if (following == False):
 			button_text = "Follow"
-	return render(request, 'profile.html', {'user': user, 'following': following, 'button_text': button_text}) 
+	context = {'user':user,
+				'following':following,
+				'button_text':button_text,
+	}
+	return render(request, 'profile.html', context) 
 
 
 @login_required(login_url='/login')

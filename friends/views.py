@@ -115,22 +115,31 @@ def follow(request):
 
     followerID = request.GET['followerID']
     followeeID = request.GET['followeeID']
+    followerUser = request.GET['followerUser']
+    followeeUser = request.GET['followeeUser']
+    server = request.GET['server']
+    host = request.GET['host']
 
-    # TODO: Find a good way to error handle these two DB calls
-    user1 = User.objects.get(pk=followerID)
-    user2 = User.objects.get(pk=followeeID)
-    Follow.objects.create(user1=user1.id, user2=user2.id)
+    user1 = followerID
+    user2 = followeeID
 
+    Follow.objects.create(user1=followerID, user2=followeeID)
      ####add into FriendRequest table####
     #Query to see if the person they want to follow is already following requestor
-    exists_in_table = FriendRequest.objects.filter(requestor=user2.id,recipient=user1.id)
+    exists_in_table = FriendRequest.objects.filter(requestor=user2,recipient=user1)
 
-    if (len(exists_in_table) == 0) & (follows(user2.id,user1.id) == False):
-        FriendRequest.objects.create(requestor= user1.id,recipient= user2.id)
+    if (len(exists_in_table) == 0) & (follows(user2,user1) == False):
+        FriendRequest.objects.create(requestor= user1,recipient= user2)
     elif len(exists_in_table) != 0:
         exists_in_table.delete()
 
-    data = {'followerID': followerID, 'followeeID': followeeID}
+    data = {'followerID': followerID,
+             'followeeID': followeeID,
+             'followerUser': followerUser,
+             'followeeUser':followeeUser,
+            'server': server,
+            'host': host
+            }
     return HttpResponse(json.dumps(data), content_type="application/json")
     #return HttpResponse()
 

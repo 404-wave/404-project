@@ -52,6 +52,9 @@ class PostForm(forms.ModelForm):
         accessible_users = self.cleaned_data.pop('accessible_users', [])
         print(accessible_users)
         post = super().save(commit)
+        username = post.user.username
+        timestamp = post.timestamp.strftime("%b %-d, %Y, at %H:%M %p")
+        post.title = username+" - "+timestamp
         post.save()
         post.accessible_users.add(*accessible_users)
         post.accessible_users.add(post.user)
@@ -84,6 +87,9 @@ class ImageForm(forms.ModelForm):
         accessible_users = self.cleaned_data.pop('accessible_users', [])
         print(accessible_users)
         post = super().save(commit)
+        username = post.user.username
+        timestamp = post.timestamp.strftime("%b %-d, %Y, at %H:%M %p")
+        post.title = username+" - "+timestamp
         post.save()
         post.accessible_users.add(*accessible_users)
         post.accessible_users.add(post.user)
