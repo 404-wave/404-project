@@ -6,9 +6,9 @@ from users.models import User
 class Follow(models.Model):
     #user1 is follower , user2 is followee
     user1 = models.UUIDField()
-    user1_server = models.CharField(max_length=200)
+    user1_server = models.CharField(max_length=200,default="000")
     user2 = models.UUIDField()
-    user2_server = models.CharField(max_length=200)
+    user2_server = models.CharField(max_length=200,default="000")
 
     class Meta:
         unique_together = (('user1', 'user2'), )
