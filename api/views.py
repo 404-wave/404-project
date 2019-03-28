@@ -467,7 +467,8 @@ class FriendRequestAPIView(generics.GenericAPIView):
         # Retrieves JSON data
         data = request.body
 
-        
+        author_id = None
+        friend_id = None
         try:
             author_id = data['author']['id'].split("/")[-1]
             friend_id = data['friend']['id'].split("/")[-1]
@@ -476,6 +477,11 @@ class FriendRequestAPIView(generics.GenericAPIView):
             Response(status=status.HTTP_400_BAD_REQUEST)
 
         following = User.objects.none()
+        print("outside filtering for follow obj")
+        print("author_id")
+        print(author_id)
+        print("friend_id")
+        print(friend_id)
         try:
             # followers = User.objects.filter(follower__user2=author_id, is_active=True)
             # following = User.objects.filter(followee__user1=author_id, is_active=True)
@@ -483,7 +489,11 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
              following_user_Q = Q()
              following_obj = Follow.objects.filter(user1=author_id,is_active=True)
-             print("we in here")
+            print("inside filtering for follow obj")
+            print("author_id")
+            print(author_id)
+            print("friend_id")
+            print(friend_id)
              print(len(following_obj))
              for fr in following_obj:
                  following_user_Q = following_user_Q | Q(id= fr.user2)
@@ -506,9 +516,24 @@ class FriendRequestAPIView(generics.GenericAPIView):
         print(already_following)
         if not already_following:
             print("inside if statement")
+            
+            print("author_id")
+            print(author_id)
+            print("friend_id")
+            print(friend_id)
             try:
+                print("before user1 = author and user2 = friend")
+                print("author_id")
+                print(author_id)
+                print("friend_id")
+                print(friend_id)
                 user1 = author_id
                 user2 = friend_id
+                print("After user1=author")
+                print("author_id")
+                print(author_id)
+                print("friend_id")
+                print(friend_id)
                 try:
                     Follow.objects.create(user1=user1, user2=user2)
                 except:
