@@ -210,7 +210,7 @@ def strip_host(host):
 
 def get_user(server, id):
     user = User()
-    build_request = server+'/service/author/'+str(id)
+    build_request = server+'service/author/'+str(id)
     print (build_request)
     print(server)
     print(id)
