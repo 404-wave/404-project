@@ -171,24 +171,15 @@ function addFromOtherNode(data){
   const followerID = data['followerID'];
   const followeeID = data['followeeID'];
   let serverUrl = data['server'];
+  serverUrl = serverUrl.replace(/+/g,"");
   let hostUrl = data['host'];
-  if (serverUrl[serverUrl.length -1] != '/' || serverUrl[serverUrl.length -1] == " "){
-    if(serverUrl[serverUrl.length -1] == " "){
-      serverUrl.slice(0,-1);
-    }
-    serverUrl = serverUrl+'/';
-  }
-  if(hostUrl[hostUrl.length-1] != '/' || hostUrl[hostUrl.length -1] == " "){
-    if(hostUrl[hostUrl.length -1] == " "){
-      hostUrl.slice(0,-1);
-    }
-    hostUrl = hostUrl +'/';
-  }
+  hostUrl = hostUrl.replace(/+/g,"");
   
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser'];
 
   const path = hostUrl+"service/friendrequest/";
+  path = path.replace(/+/g, "");
   const request_user_url = hostUrl+followerID;
   const req_profile_url = hostUrl+"home/profile/"+followerID;
   const recip_user_url = serverUrl+followeeID;
