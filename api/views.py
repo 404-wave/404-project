@@ -466,6 +466,8 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
         # Retrieves JSON data
         data = request.body
+        print("DATAAA: ")
+        print(data)
 
         author_id = None
         friend_id = None
@@ -474,7 +476,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
             friend_id = data['friend']['id'].split("/")[-1]
         except:
             # If the JSON was not what we wanted, send a 400
-            Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         following = User.objects.none()
         print("outside filtering for follow obj")
