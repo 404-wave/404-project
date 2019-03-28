@@ -58,6 +58,7 @@ def posts_detail(request, id):
         # instance is a dictionary and if yes, then comments should be instance[‘comments’]
 
         for node in Node.objects.all():
+            
             url = node.host + "/service/posts/{0}".format(str(id))
 
             # test_url = 'https://local:localpassword@cmput-404-proj-test.herokuapp.com/service/posts/{0}'.format(  str(id))
@@ -102,7 +103,12 @@ def posts_detail(request, id):
     #Credit: K Z (https://stackoverflow.com/users/853611/k-z)
     current_user = request.user
     user_id = current_user.id
-    post_id = instance.id
+
+    if isinstance(instance, dict):
+        print('is dict')
+        post_id = instance['id']
+    else:
+        post_id = instance.id
     #print(post_id)
     home_host = NodeSetting.objects.all()[0]
     # Creates a form to post comments

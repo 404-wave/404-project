@@ -20,7 +20,7 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            host = request.scheme + "://" + request.META['HTTP_HOST'] + "/"
+            host = request.scheme + "://" + request.META['HTTP_HOST']
             user.url = host + "service/author/" + str(user.id)
             user.host = host
             user.save()
