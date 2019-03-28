@@ -38,8 +38,8 @@ class Comment(models.Model):
     
     objects = CommentManager()
 
-    # def __str__(self):
-    #     return str(self.user.username)
+    def __str__(self):
+        return str(self.user.username)
 
     class Meta:
         ordering = ['published']

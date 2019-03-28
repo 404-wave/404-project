@@ -15,15 +15,10 @@ from django.contrib.contenttypes.models import ContentType
 import base64
 from mimetypes import guess_type
 import requests
-<<<<<<< HEAD
 from users.models import Node, NodeSetting
 import uuid
 from requests.auth import HTTPBasicAuth
-=======
-from requests.auth import HTTPBasicAuth
-from users.models import Node
 
->>>>>>> 7936ed962ec704e5ac65c6f3b625e0d7c55894f2
 """
     Shows the details about a post.
     Allows use to post comments under the post.
@@ -118,7 +113,7 @@ def posts_detail(request, id):
         obj_id = comment_form.cleaned_data.get("object_id")
         content_data = comment_form.cleaned_data.get("content")
         parent_obj = None
-<<<<<<< HEAD
+
         # try:
         #     parent_id = int(request.POST.get("parent_id"))
         # except:
@@ -138,7 +133,30 @@ def posts_detail(request, id):
 
 
         # )
-        print("content_data is :" + str(content_data))
+        #62892c46-7eab-44b9-b106-8524686adfae
+        # build_endpoint = "https://cmput404-wave.herokuapp.com/service/posts/3f46f9c3-256f-441c-899e-928b095df627/comments/"
+        # headers = {
+        #             'Accept':'application/json',
+        #             'X-UUID': '62892c46-7eab-44b9-b106-8524686adfae'
+        #         }
+        # build_data = {
+        #     "query": "addComment",
+        #     "post": "https://cmput404-wave.herokuapp.com/service/posts/3f46f9c3-256f-441c-899e-928b095df627",
+        #     "comment": {
+        #         "author":{
+        #             "id": "http://127.0.0.1:8000/service/author/62892c46-7eab-44b9-b106-8524686adfae",
+        #             "host": "http://127.0.0.1:8000",
+        #             "url": "http://127.0.0.1:8000/service/author/62892c46-7eab-44b9-b106-8524686adfae",
+        #             "github": ''
+        #         },
+        #         "comment": "test post for deployment",
+        #         "content_type": "text/plain",
+        #         "published": str(datetime.now().isoformat()),
+        #         "id": str(uuid.uuid4())
+        #     }
+        # }
+        #r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str('local'), str('localpassword')))
+        #print("content_data is :" + str(content_data))
         for node in Node.objects.all():
             #build_endpoint = str(node.host) + "/service/posts/" + "3f46f9c3-256f-441c-899e-928b095df627" + "/comments/"
             #print(build_endpoint)
@@ -147,7 +165,7 @@ def posts_detail(request, id):
                     'Accept':'application/json',
                     'X-UUID': str(user_id)
                 }
-            print("build_endpoint is: " + str(build_endpoint))
+            #print("build_endpoint is: " + str(build_endpoint))
             build_data = {
                 "query": "addComment",
                 "post": str(node.host) + "/service/posts/" + str(post_id),
@@ -164,7 +182,7 @@ def posts_detail(request, id):
                     "id": str(uuid.uuid4())
                 }
             }
-            print("build_data is: " + str(build_data))
+            #print("build_data is: " + str(build_data))
             #https://www.programcreek.com/python/example/6251/requests.post
             r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
             #print(r)
