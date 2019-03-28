@@ -526,7 +526,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
                 
             # Query to see if the person they want to follow is already following requestor
             exists_in_table = FriendRequest.objects.filter(requestor=friend_id,recipient=author_id)
-            if (len(exists_in_table) == 0) & (follows(user2,user1) == False):
+            if (len(exists_in_table) == 0) & (follows(friend_id,author_id) == False):
                 try:
                     print("Trying to make FR")
                     FriendRequest.objects.create(requestor= author_id, requestor_server = author_host, recipient= friend_id, recipient_server = friend_host)
