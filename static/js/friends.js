@@ -209,7 +209,7 @@ function addFromOtherNode(data){
   console.log(JSON.stringify(payload,null,2));
   let metaData = {
     'method':'POST',
-    'mode':'no-cors',
+    'mode':'cors',
     'body': JSON.stringify(payload),
     'headers':{
       'Content-Type':'application/json',
