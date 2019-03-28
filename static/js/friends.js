@@ -171,15 +171,15 @@ function addFromOtherNode(data){
   const followerID = data['followerID'];
   const followeeID = data['followeeID'];
   let serverUrl = data['server'];
-  serverUrl = serverUrl.replace(/+/g,"");
+  serverUrl = serverUrl.replace(/\s+/g,"");
   let hostUrl = data['host'];
-  hostUrl = hostUrl.replace(/+/g,"");
+  hostUrl = hostUrl.replace(/\s+/g,"");
   
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser'];
 
   const path = hostUrl+"service/friendrequest/";
-  path = path.replace(/+/g, "");
+  path = path.replace(/\s+/g, "");
   const request_user_url = hostUrl+followerID;
   const req_profile_url = hostUrl+"home/profile/"+followerID;
   const recip_user_url = serverUrl+followeeID;
