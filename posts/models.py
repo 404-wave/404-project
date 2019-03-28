@@ -116,16 +116,13 @@ class PostManager(models.Manager):
                 # print(test_url)
                 print(url)
                 print(response.status_code)
+                print(response.content)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
                     print("CONTENT:")
-                    print(response.content)
+                    #print(response.content)
                     print()
-                    print()
-                    print(responselist["posts"][1]["content"])
-                    print(responselist["posts"][0]["content"])
-                    print()
-                    print()
+
                     #if servers are bad and don't include the author server we do
                     for item in responselist["posts"]:
                         if (item['author']['host'] == ''):
@@ -238,7 +235,7 @@ class PostManager(models.Manager):
         private_posts = Post.objects.none()
         for post in Post.objects.filter(privacy=1):
             for user in post.accessible_users.all():
-                if user.id == user_id:
+                if str(user.id) == user_id:
                     private_posts |= Post.objects.filter(id=post.id)
 
         # followers = User.objects.filter(follower__user2=user_id, is_active=True)
