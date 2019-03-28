@@ -160,6 +160,8 @@ class PostAPIView(generics.GenericAPIView):
         # Get a single post if it is visible to the requesting user
         elif 'post_id' in kwargs.keys():
             post_id = self.kwargs['post_id']
+            try: Post.objects.get(id=post_id)
+            except: return Response(status=status.HTTP_404_NOT_FOUND)
             queryset = Post.objects.filter_user_visible_posts_by_user_id(
                 user_id=requestor_id, server_only=server_only).filter(id=post_id)
             queryset = self.filter_out_image_posts(request, queryset)

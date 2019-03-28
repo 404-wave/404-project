@@ -18,7 +18,7 @@ class AuthTest(TestCase):
 
 
         # url = node.host + "/service/posts/"
-        test_url = 'https://cmput-404-proj-test.herokuapp.com/service/posts/{0}'.format(str('2161facd-48c4-4f53-8006-52cbc6cec971')) + "/"
+        test_url = 'http://127.0.0.1:8000/service/posts/{0}'.format(str('1f15016f-70a1-47ac-9aed-f89c925d24f6')) + "/"
 
         #print("This is my request id", request.user.id)
         print("Here is the url: " + test_url)
@@ -35,7 +35,7 @@ class AuthTest(TestCase):
             'X-UUID': '2161facd-48c4-4f53-8006-52cbc6cec971'
         }
         r = requests.get(test_url, headers=headers,
-                                auth=HTTPBasicAuth('local', 'localpassword'))
+                                auth=HTTPBasicAuth('local3', 'localpassword'))
 
         print()
         print()
