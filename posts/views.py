@@ -52,39 +52,50 @@ def posts_detail(request, id):
         instance = Post.objects.get(id=id)
     except Post.DoesNotExist:
 
-        # TODO: This should work if we have an endpoint to get a specific post
-        #       eg: /service/author/posts/id?
-
+        # This should work if we have an endpoint to get a specific post
+        #       eg: /service/posts/{POST_ID}/
         # instance is a dictionary and if yes, then comments should be instance[‘comments’]
 
-        ##############################################################################
         for node in Node.objects.all():
+<<<<<<< HEAD
+=======
+            url = node.host + "/service/posts/{0}".format(str(id))
+
+            # test_url = 'https://local:localpassword@cmput-404-proj-test.herokuapp.com/service/posts/{0}'.format(  str(id))
+            # print("This is my request id", request.user.id)
+            # print(test_url)
+            # response = requests.get(test_url, headers=headers)
+            # response = requests.get(test_url, headers=headers, auth = HTTPBasicAuth('local', 'localpassword'))
+
+>>>>>>> origin
             headers = {
                 'Accept': 'application/json',
                 'X-UUID': str(request.user.id)
             }
+<<<<<<< HEAD
             url = node.host + "/service/posts/"
             response = requests.get(url, headers=headers, auth=HTTPBasicAuth(
                 str(node.username), str(node.password)))
+=======
+            response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+>>>>>>> origin
             print(url)
-            response = requests.get(url)
             print("Status code: " + str(response.status_code))
 
             if response.status_code == 200:
                 instance = response.json()
                 print("Response from server")
                 print(instance)
-                if isinstance(instance, list) and len(instance) == 1:
-                    instance = instance[0]
+                print(len(instance['posts']))
+                if isinstance(instance.get('posts', None), list) and len(instance['posts']) == 1:
+                    instance = instance['posts'][0]
                 break
-        # #################################################################################
 
         if instance is None:
             print("Instance is none. Redirecting")
             return HttpResponseRedirect('/home')
 
     # if instance is a dictionary, then comments should be instance[‘comments’]
-
     if isinstance(instance, dict):
         content_type = instance['contentType']
     else:
