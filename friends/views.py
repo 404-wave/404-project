@@ -37,16 +37,27 @@ def following(request):
     # E.g., look at Follow table results where I am the follower
     # following = User.objects.filter(followee__user1=request.user.id, is_active=True)
     user_query = Q()
+    following = list()
     following_obj = Follow.objects.filter(user1=request.user.id)
-    if len(following_obj) != 0:
-        for followee in following_obj:
+    # if len(following_obj) != 0:
+    #     for followee in following_obj:
 
-            user_query = user_query | Q(id=followee.user2)
+    #         user_query = user_query | Q(id=followee.user2)
         
-        following = User.objects.filter(user_query)
-    else:
-        following = User.objects.none()
- 
+    #     following = User.objects.filter(user_query)
+    # else:
+    #     following = User.objects.none()
+    
+    if following_obj:
+        for followings in following_obj:
+            user = User.obects.filter(id=followings.user2)
+            if not user:
+                user = get_user(followings.user2_server,follows.user2)
+            else:
+                user=user.get()
+            following.append(user)
+            
+        
     
     data = serializers.serialize('json', following, fields=('username'))
     return HttpResponse(data, content_type="application/json")
@@ -68,6 +79,7 @@ def followers(request):
         followers = User.objects.filter(user_Q)
     else:
         followers = User.objects.none()
+
 
     
     data = serializers.serialize('json', followers, fields=('username'))
@@ -199,7 +211,6 @@ def friend_requests(request):
         host = strip_host(user.host)
         data2["posts"].append({'id':str(user.id), 'username':user.username, 'host': host})
     return HttpResponse(json.dumps(data2), content_type='application/json')
-
 
 def strip_host(host):
     re_result = re.search("(^https?:\/\/)(.*)", host)
