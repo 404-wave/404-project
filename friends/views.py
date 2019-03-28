@@ -223,6 +223,8 @@ def strip_host(host):
 def get_user(server, id):
     user = User()
     server = server.replace(" ","")
+    if server.startswith("https://") is False:
+        server = "https://"+server
     if server.endswith("/") is False:
         server = server+"/"
     build_request = server+'service/author/'+str(id)
