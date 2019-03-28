@@ -166,11 +166,11 @@ function addFromOtherNode(data){
   let serverUrl = data['followeeServer'];
   serverUrl = serverUrl.replace(/\s+/g,"");
   if(serverUrl.endsWith("/") == false){ serverUrl = serverUrl + "/";}
-  if(serverUrl.indexOf("https://" === -1)){ serverUrl = "https://"+serverUrl;}
+  if(serverUrl.indexOf("https://") === -1){ serverUrl = "https://"+serverUrl;}
   let hostUrl = data['followerServer'];
   hostUrl = hostUrl.replace(/\s+/g,"");
   if (hostUrl.endsWith("/") == false){hostUrl = hostUrl +"/";}
-  if(hostUrl.indexOf("https://" === -1)){ hostUrl = "https://"+hostUrl;}
+  if(hostUrl.indexOf("https://") === -1){ hostUrl = "https://"+hostUrl;}
   
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser'];
