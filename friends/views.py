@@ -114,7 +114,7 @@ def friends(request):
                         user= get_user(follow.user1_server,follow.user1)
                     friends.add(user)
 
-    data = serializers.serialize('json', friends, fields=('username'))
+    data = serializers.serialize('json', friends, fields=('username','host'))
     return HttpResponse(data, content_type="application/json") 
 
 def follow(request):
