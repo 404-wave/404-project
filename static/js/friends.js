@@ -51,7 +51,7 @@ function strip_host(host){
 
 
 function change_follow(followerID,followerUser,followerHost,
-  followeeID,followeeUser,followeeHost,csrfToken,e) {
+  followeeID,followeeUser,followeeHost,e) {
   let url_val = 'follow/';
   if (e.id != "Follow"){
     url_val = "unfollow/";
@@ -69,7 +69,7 @@ function change_follow(followerID,followerUser,followerHost,
     },
     success: function (data) {
       if (followerHost != followeeHost && e.id == "Follow"){
-        addFromOtherNode(data,csrfToken);
+        addFromOtherNode(data);
       }
       switchButton(data, e);
       //eplaceUnfollowButton(data);
@@ -204,7 +204,7 @@ function closeDropDown(){
   }
 }
 
-function addFromOtherNode(data,csrf){
+function addFromOtherNode(data){
   
   const followerID = data['followerID'];
   const followeeID = data['followeeID'];
@@ -259,7 +259,7 @@ function addFromOtherNode(data,csrf){
     password: nodePassword,
     contentType: "application/json",
     headers: {"Authorization":"Basic "+nodeUsername+":"+nodePassword,
-                "Csrf-Token":csrf},
+                "x-csrftoken":csrfToken},
     success: function(){
       console.log("Successfully sent Request to Other Server");
     },

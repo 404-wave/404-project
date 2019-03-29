@@ -9,6 +9,7 @@
  <script src="{% static 'js/validation.js' %}"></script>
  <link rel="stylesheet" href="{% static 'style/profile.css' %}">
  <script>window.onload = setTabs;</script>
+ <script>var csrfToken = '{{ csrf_token }}'</script>
  {% endblock %}
  {% block content %}
   {% if user.is_authenticated %}
@@ -19,7 +20,7 @@
             {% if user.id != request.user.id %}
               <div id="followBtnContainer">
 
-                <button class = "friend_btn" id = {{button_text}} onclick="change_follow('{{ request.user.id }}','{{ request.user.username }}','{{ request.user.host }} ', '{{ user.id }}','{{user.username }}','{{ user.host }}','{{ csrf_token }}', this)">{{button_text}}</button> 
+                <button class = "friend_btn" id = {{button_text}} onclick="change_follow('{{ request.user.id }}','{{ request.user.username }}','{{ request.user.host }} ', '{{ user.id }}','{{user.username }}','{{ user.host }}', this)">{{button_text}}</button> 
 
               </div>
             {% endif %}
