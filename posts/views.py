@@ -167,6 +167,7 @@ def posts_detail(request, id):
             #print("build_data is: " + str(build_data))
             #https://www.programcreek.com/python/example/6251/requests.post
             r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+            print("POSTing comment to host: " + str(node.host))
             print("Status code for comment POST: " + str(r.status_code))
 
 
