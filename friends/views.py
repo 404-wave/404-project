@@ -223,12 +223,16 @@ def strip_host(host):
 def get_user(server, id):
     user = User()
     print("SERECER", server)
-    node = Node.objects.filter(host = server)[0]
-    print (node.username, node.password)
     server = standardize_url(server)
+    server = server[:-1]
+    try:
+        node = Node.objects.filter(host = server)[0]
+        print (node.username, node.password)
+    
+    server = server+"/"
     build_request = server+'service/author/'+str(id)
     print (build_request)
-    print(id)
+    print(id)   
     print ("REE")
 
     try:
