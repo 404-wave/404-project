@@ -18,7 +18,7 @@ import requests
 from users.models import Node, NodeSetting
 import uuid
 from requests.auth import HTTPBasicAuth
-
+import json
 """
     Shows the details about a post.
     Allows use to post comments under the post.
@@ -105,7 +105,6 @@ def posts_detail(request, id):
     user_id = current_user.id
 
     if isinstance(instance, dict):
-        print('is dict')
         post_id = instance['id']
     else:
         post_id = instance.id
@@ -115,7 +114,7 @@ def posts_detail(request, id):
     comment_form = CommentForm(request.POST or None, initial=initial_data)
     if comment_form.is_valid():
         comment_type = comment_form.cleaned_data.get("content_type")
-        content_type = ContentType.objects.get(model=comment_type)
+        #content_type = ContentType.objects.get(model=comment_type)
         obj_id = comment_form.cleaned_data.get("object_id")
         content_data = comment_form.cleaned_data.get("content")
         parent_obj = None
@@ -161,8 +160,8 @@ def posts_detail(request, id):
         #         "id": str(uuid.uuid4())
         #     }
         # }
-        #r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str('local'), str('localpassword')))
-        #print("content_data is :" + str(content_data))
+        # r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str('local'), str('localpassword')))
+        # #print("content_data is :" + str(content_data))
         for node in Node.objects.all():
             #build_endpoint = str(node.host) + "/service/posts/" + "3f46f9c3-256f-441c-899e-928b095df627" + "/comments/"
             #print(build_endpoint)
@@ -171,7 +170,7 @@ def posts_detail(request, id):
                     'Accept':'application/json',
                     'X-UUID': str(user_id)
                 }
-            #print("build_endpoint is: " + str(build_endpoint))
+            print("build_endpoint is: " + str(build_endpoint))
             build_data = {
                 "query": "addComment",
                 "post": str(node.host) + "/service/posts/" + str(post_id),
@@ -188,24 +187,27 @@ def posts_detail(request, id):
                     "id": str(uuid.uuid4())
                 }
             }
-            #print("build_data is: " + str(build_data))
+            print("build_data is: " + str(build_data))
             #https://www.programcreek.com/python/example/6251/requests.post
             r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
             #print(r)
             #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
             #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
-            if r.status_code == 200:
-                print(node.host)
+            success = json.loads(r.content)['success']
+            if r.status_code == True:
                 break
         #change this to go back to post detail?
         #POST OBJECT.get_detail_absolute_url
         #instance.get.....
         print(r)
         print(r.content)
-        return HttpResponseRedirect(instance.get_detail_absolute_url())
+        #return HttpResponseRedirect(instance.get_detail_absolute_url())
+        #http://127.0.0.1:8000/posts/detail/eb010781-a6ea-4856-becc-d60417346384/
+        redirect_url = str(home_host.host) + '/posts/detail/' + str(post_id)
+        return redirect(redirect_url)
 
-        if created:
-            print("comment worked.")
+        # if created:
+        #     print("comment worked.")
 
     if isinstance(instance, dict):
         comments = instance['comments']
