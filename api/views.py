@@ -166,6 +166,9 @@ class PostAPIView(generics.GenericAPIView):
                 user_id=requestor_id, server_only=server_only).filter(id=post_id)
             queryset = self.filter_out_image_posts(request, queryset)
 
+            if queryset.count() == 0:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
         # Get all posts visible to the requesting user
         elif path in path_all_user_visible_posts:
             queryset = Post.objects.filter_user_visible_posts_by_user_id(
@@ -241,7 +244,6 @@ class PostAPIView(generics.GenericAPIView):
                         post.accessible_users.add(id)
 
             post.accessible_users.add(author_id)
-            #post.save()
 
         except Exception as e:
             print(e)
