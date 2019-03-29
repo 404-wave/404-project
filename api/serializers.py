@@ -1,7 +1,12 @@
 from rest_framework import serializers
-from posts.models import Post
+
 from comments.models import Comment
-from users.models import User
+from users.models import User, Node, NodeSetting
+from posts.models import Post
+
+import requests
+from requests.auth import HTTPBasicAuth
+
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -12,7 +17,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'host', 'displayName', 'url', 'friends', 'github', 'firstName', 'lastName', 'email', 'bio')
+
+        fields = ('id', 'host', 'displayName', 'url', 'friends', 'github',
+                    'firstName', 'lastName', 'email', 'bio')
+
 
     def _friends(self, obj):
         friends = self.context.get('friends')
@@ -43,37 +51,72 @@ class UserFriendSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
 
-    contentType = serializers.SerializerMethodField('_content_type')
+    source = serializers.SerializerMethodField('_source')
+    origin = serializers.SerializerMethodField('_origin')
     author = serializers.SerializerMethodField('_author')
     comments = serializers.SerializerMethodField('_comments')
     published = serializers.SerializerMethodField('_published')
     visibility = serializers.SerializerMethodField('_visibility')
-    visible_to = serializers.SerializerMethodField('_visible_to')
+    visibleTo = serializers.SerializerMethodField('_visible_to')
     categories = serializers.SerializerMethodField('_categories')
     description = serializers.SerializerMethodField('_description')
+    title = serializers.SerializerMethodField('_title')
     source = serializers.SerializerMethodField('_source')
     origin = serializers.SerializerMethodField('_origin')
 
+    contentType = serializers.SerializerMethodField('_content_type')
 
     class Meta:
         model = Post
         fields = ('id', 'user', 'contentType', 'categories', 'description',
-                    'published', 'content', 'author', 'comments', 'visibility',
-                     'visible_to', 'unlisted', 'source', 'origin')
+                  'published', 'title', 'content', 'author', 'comments', 'visibility',
+                  'visibleTo', 'unlisted', 'source', 'origin')
 
     # TODO
     def _source(self, obj):
-        return ""
+        try:
+            node_settings = NodeSetting.objects.all()[0]
+            url_to_post = node_settings.host + "/posts/" + str(obj.id) + "/"
+            return url_to_post
+        except:
+            return ""
 
     # TODO:
     def _origin(self, obj):
-        return ""
+        posts = Post.objects.filter(id=obj.id)
+        if posts is None:
+            found = False
+            for node in Node.objects.all():
+                # TODO: This probably needs to be changed to handle
+                # more servers other than just our 1 partner.
+                headers = {'X-UUID': self.context.get('requestor')}
+                url_to_node = node.host + '/posts/' + str(obj.id) + '/'
+                r = requests.get(node.host, headers=headers, auth=HTTPBasicAuth(node.username, node.password))
+                try:
+                    r = response.json()
+                    if r.status_code == 200:
+                        origin = r['posts'][0]['source']
+                        return origin
+                except:
+                    pass
+
+            if not found:
+                return ''
+
+        else:
+            return self._source(obj)
+
 
     def _categories(self, obj):
         return list()
 
     def _description(self, obj):
-        return ""
+        if obj.is_image:
+            return "Image post"
+        return "Text post"
+
+    def _title(self, obj):
+        return str(obj.title)
 
     def _content_type(self, obj):
         return obj.content_type
@@ -92,6 +135,7 @@ class PostSerializer(serializers.ModelSerializer):
         return user_list
 
     def _author(self, obj):
+        # TODO: What if the author is from a different server??? FOAF!
         author = User.objects.get(username=obj.user)
         serialized_author = PostAuthorSerializer(author, many=False)
         return serialized_author.data
@@ -116,7 +160,7 @@ class PostAuthorSerializer(serializers.ModelSerializer):
         return obj.username
 
     def _id(self, obj):
-        return str(obj.host) + str(obj.id)
+        return str(obj.id)
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -130,12 +174,40 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('author', 'comment', 'published', 'id')
 
     def _author(self, obj):
-        author = User.objects.get(username=obj.user)
+
+        try:
+            author = User.objects.get(id=obj.user)
+        except:
+            found = False
+            for node in Node.objects.all():
+                url = node.host + "/author/" + str(obj.user) + "/"
+                r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
+                if (r.status_code == 200):
+                    try:
+                        json = r.json()
+                        username = json['displayName']
+                        github = json['github']
+                        host = json['host']
+                        url = json['url']
+                        id = json['id']
+                        author = User(host=host, id=id, github=github, url=url, username=username)
+                        found = True
+                        break
+                    except:
+                        # TODO: What to do when the host of the author sends bad data?
+                        return dict()
+                else:
+                    continue
+            if not found:
+                # TODO: What to do when the author no longer exists? OR, when them
+                # author does exist, but the server is not sharing with us anymore.
+                return dict()
+
         serialized_author = CommentAuthorSerializer(author, many=False)
         return serialized_author.data
 
     def _published(self, obj):
-        return obj.timestamp
+        return obj.published
 
     def _comment(self, obj):
         return obj.content
@@ -145,6 +217,7 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
 
     displayName = serializers.SerializerMethodField('_username')
     id = serializers.SerializerMethodField('_id')
+    # url = serializers.SerializerMethodField('_url')
 
     class Meta:
         model = User
@@ -153,21 +226,8 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
     def _username(self, obj):
         return obj.username
 
+    # def _url(self, obj):
+    #     return
+
     def _id(self, obj):
-        return str(obj.host) + str(obj.id)
-
-
-# class FriendSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = Friend
-#         fields = ()
-#         http_method_names = ['post']
-#
-#
-# class FriendToFriendSerializer(serializers.ModelSerializer):
-#
-#     class MEta:
-#         model = Friend
-#         fields = ()
-#         http_method_names ['get']
+        return str(obj.id)

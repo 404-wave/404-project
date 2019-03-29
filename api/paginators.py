@@ -1,11 +1,11 @@
-from rest_framework import pagination
 from rest_framework.response import Response
+from rest_framework import pagination
 
-# TODO: Handle next/previous in coordination with requirements
 class PostPagination(pagination.PageNumberPagination):
 
-    page_size_query_param = 'size'
+    page_size = 50
     max_page_size = 50
+    page_size_query_param = 'size'
 
     def get_paginated_response(self, context):
 
@@ -19,11 +19,11 @@ class PostPagination(pagination.PageNumberPagination):
         })
 
 
-# TODO: Handle next/previous in coordination with requirements
 class CommentPagination(pagination.PageNumberPagination):
 
-    page_size_query_param = 'size'
+    page_size = 50
     max_page_size = 50
+    page_size_query_param = 'size'
 
     def get_paginated_response(self, context):
 
