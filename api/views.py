@@ -368,11 +368,11 @@ class CommentAPIView(generics.GenericAPIView):
 
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        requestor_id = get_requestor_id(request)
-        if requestor_id is None:
-            print("When POSTing a comment, requestor ID was not valid or was not sent.")
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        #
+        # requestor_id = get_requestor_id(request)
+        # if requestor_id is None:
+        #     print("When POSTing a comment, requestor ID was not valid or was not sent.")
+        #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         server_only = allow_server_only_posts(request)
 
@@ -387,8 +387,10 @@ class CommentAPIView(generics.GenericAPIView):
             Response(status=status.HTTP_400_BAD_REQUEST)
 
         # Check that the requesting user has visibility of that post
+        # posts = Post.objects.filter_user_visible_posts_by_user_id(
+        #     user_id=requestor_id, server_only=server_only).filter(id=post_id)
         posts = Post.objects.filter_user_visible_posts_by_user_id(
-            user_id=requestor_id, server_only=server_only).filter(id=post_id)
+            user_id=author_id, server_only=server_only).filter(id=post_id)
         if posts is None:
             print("When POSTing a comment, the requesting user did not have visibility if the post.")
             return Response(response_failed, status=status.HTTP_403_FORBIDDEN)
