@@ -198,7 +198,6 @@ def home(request):
 
 def get_user(parameters):
 	user = User()
-
 	id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)'	
 	re_result = re.search(id_regex, parameters)
 	service = re_result.group(1)
@@ -225,6 +224,8 @@ def get_user(parameters):
 
 login_required(login_url='/login')
 def profile(request, value=None, pk=None):
+	if value == "edit":
+		return edit_profile(request)
 
 	if not request.user.is_authenticated:
 		return HttpResponseForbidden()
@@ -235,7 +236,6 @@ def profile(request, value=None, pk=None):
 		user = User.objects.get(pk=pk)
 	else:
 		user = get_user(value)
-
 	button_text = "Unfollow"
 	if request.user.id is not user.id:
 		following = follows(request.user.id, user.id)
