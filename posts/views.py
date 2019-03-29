@@ -189,7 +189,8 @@ def posts_detail(request, id):
         else:
 
             #content_type = ContentType.objects.get(model=comment_type)
-            content_type = ContentType.objects.get_for_model(Post.__class__)
+            #for_concrete_model=False
+            content_type = ContentType.objects.get_for_model(Post())
             new_comment, created = Comment.objects.get_or_create(
 
                 user=request.user.id,
