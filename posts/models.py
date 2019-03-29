@@ -98,14 +98,15 @@ class PostManager(models.Manager):
                 print ("URL", url)
                 # response = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('local', 'localpassword'))
                 response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+
                 print()	
+
                 print(response)
 
                 print()
                 # print(test_url)
                 print(url)
                 print(response.status_code)
-                print(response.content)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
                     print("CONTENT:")
@@ -186,7 +187,7 @@ class PostManager(models.Manager):
         private_posts = Post.objects.none()
         for post in Post.objects.filter(privacy=1):
             for user in post.accessible_users.all():
-                if str(user.id) == user_id:
+                if user.id == user_id:
                     private_posts |= Post.objects.filter(id=post.id)
 
         followers = User.objects.filter(follower__user2=user_id, is_active=True)
