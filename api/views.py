@@ -479,8 +479,8 @@ class FriendAPIView(generics.GenericAPIView):
             response = {
                 "query":"friends",
                 "authors":[
-                    str(author1.host) + str(author1.id),
-                    str(author2.host) + str(author2.id)
+                    str(author1.host) +"/author/"+ str(author1.id),
+                    str(author2.host) +"/author/"+ str(author2.id)
                 ],
                 "friends": friends
             }
