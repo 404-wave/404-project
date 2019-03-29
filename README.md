@@ -22,6 +22,26 @@ TITLE: Make a div into a link </br>
 URL:  https://stackoverflow.com/questions/796087/make-a-div-into-a-link </br>
 ANSWER: https://stackoverflow.com/a/3494108</br>
 AUTHOR: thepeer - https://stackoverflow.com/users/79527/thepeer</br>
+
+## How to set up nodes
+
+On the remote server:</br>
+
+1.) Create an account for the local host using the registration page</br>
+2.) go to the admin page</br>
+3.) find the node you added as a USER (user table). </br>
+4.) set the “is-active” to true</br>
+5.) set the HOST to be the HOSTNAME for that node. (http://127.0.0.1:8000 for localhosts)</br>
+6.) save</br>
+On the local host:v
+1.) go to the admin interface</br>
+2.) add a new row in the Node table</br>
+3.) set the HOST to be the host you are CONNECTING TO (http://Heroku whatever...)</br>
+4.) add the username and password you set up in the last set of steps</br>
+Think of it like this.... on any node, you need other nodes to authenticate with you, so the foreign nodes must be _users_.</br>
+
+But, when you want to add foreign nodes to _get info from_, you just add them to the Node table</br>
+</br>
 ## How to run the project locally:
 ```
 
