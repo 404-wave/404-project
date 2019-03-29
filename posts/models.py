@@ -97,7 +97,7 @@ class PostManager(models.Manager):
                 print("This is my: ", user.id)
                 print ("URL", url)
                 req = requests.Request('GET','url',headers=headers,auth=HTTPBasicAuth(str(node.username), str(node.password)))
-                print (req)
+                print ("RER", req.)
                 # response = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('local', 'localpassword'))
                 response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
                 print()
