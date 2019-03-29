@@ -33,7 +33,7 @@ function populateFriendsList(data) {
   // Insert the new users
   for (var i = 0; i < data.length; ++i) {
     let id = data[i]["pk"];
-    let host = data[i]["fields"]["host"];
+    let host = data[i]["host"];
     host = strip_host(host)
     let username = data[i]["fields"]["username"];
     let image = '<img src="/static/images/singleslothwave.png" alt=${username} width="35">'
