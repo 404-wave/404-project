@@ -215,15 +215,26 @@ def get_user(parameters):
 	except:
 		print("That user does not exist")
 		return
-	user.bio = response['bio']
 	user.username = response['displayName']
-	user.first_name = response['firstName']
-	user.last_name = response['lastName']
-	user.email = response['email']
 	user.id = response['id']
 	user.host = server
-	user.friends = response['friends']
+
+
+	user.bio = optional_attributes(user.bio, response, 'bio')
+	user.first_name = optional_attributes(user.first_name, response, 'firstname')
+	user.last_name = optional_attributes(user.last_name, response, 'lastname')
+	user.email = optional_attributes(user.email, response, 'email')
+
 	return user
+
+
+def optional_attributes(field, response, attr):
+	try:
+		field = response[attr]
+		return field
+	except:
+		return ''
+
 
 
 
