@@ -48,7 +48,7 @@ def following(request):
                 user=user.get()
             following.append(user)
 
-    data = serializers.serialize('json', following, fields=('username','host'))
+    data = serializers.serialize('json', following, fields=('username',"host"))
     return HttpResponse(data, content_type="application/json")
 
 # Get a list of Users who follow the current user
@@ -73,7 +73,7 @@ def followers(request):
                 user=user.get()
             followers.append(user)
     
-    data = serializers.serialize('json', followers, fields=('username'))
+    data = serializers.serialize('json', followers, fields=('username','host'))
     return HttpResponse(data, content_type="application/json")
 
 # Get a list of Users who the current user is friends with
@@ -114,7 +114,7 @@ def friends(request):
                         user= get_user(follow.user1_server,follow.user1)
                     friends.add(user)
 
-    data = serializers.serialize('json', friends, fields=('username'))
+    data = serializers.serialize('json', friends, fields=('username','host'))
     return HttpResponse(data, content_type="application/json") 
 
 def follow(request):
