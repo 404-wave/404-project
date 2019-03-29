@@ -198,7 +198,7 @@ def home(request):
 
 def get_user(parameters):
 	user = User()
-
+	print (parameters)
 	id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)'	
 	re_result = re.search(id_regex, parameters)
 	service = re_result.group(1)
@@ -225,6 +225,8 @@ def get_user(parameters):
 
 login_required(login_url='/login')
 def profile(request, value=None, pk=None):
+	if value == "edit":
+		return edit_profile(request)
 
 	if not request.user.is_authenticated:
 		return HttpResponseForbidden()
@@ -232,10 +234,10 @@ def profile(request, value=None, pk=None):
 	# If no value, then we know we are looking at 'my_profile'
 	if value is None:
 		pk = pk if pk is not None else request.user.id
+		print ("PK", pk)
 		user = User.objects.get(pk=pk)
 	else:
 		user = get_user(value)
-
 	button_text = "Unfollow"
 	if request.user.id is not user.id:
 		following = follows(request.user.id, user.id)
@@ -246,6 +248,7 @@ def profile(request, value=None, pk=None):
 
 @login_required(login_url='/login')
 def edit_profile(request):
+	print ("EDITTT")
 
 	if not request.user.is_authenticated:
 		return HttpResponseForbidden()
