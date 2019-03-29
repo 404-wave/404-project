@@ -55,7 +55,6 @@ def home(request):
 		query = request.GET.get("query")
 		if query:
 			streamlist = streamlist.filter(content__icontains=query)
-
 		print("Stream list len: ", len(streamlist))
 		print("Stream list: ", streamlist)
 
