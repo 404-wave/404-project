@@ -228,14 +228,14 @@ function addFromOtherNode(data){
   let path = serverUrl+"service/friendrequest/";
   path = path.replace(/\s+/g, "");
 
-  // const request_user_url = hostUrl+"author/"+followerID;
-  // const req_profile_url = hostUrl+"author/"+followerID;
-  // const recip_user_url = serverUrl+"author/"+followeeID;
-  // const recip_profile_url = serverUrl+"author/"+followeeID;
-  const request_user_url = hostUrl+followerID;
-  const req_profile_url = hostUrl+"/home/profile"+followerID;
-  const recip_user_url = serverUrl+followeeID;
-  const recip_profile_url = serverUrl+""+followeeID;
+  const request_user_url = hostUrl+"author/"+followerID;
+  const req_profile_url = hostUrl+"author/"+followerID;
+  const recip_user_url = serverUrl+"author/"+followeeID;
+  const recip_profile_url = serverUrl+"author/"+followeeID;
+  // const request_user_url = hostUrl+followerID;
+  // const req_profile_url = hostUrl+"/home/profile"+followerID;
+  // const recip_user_url = serverUrl+followeeID;
+  // const recip_profile_url = serverUrl+""+followeeID;
   let payload = {
     "query":"friendrequest",
     "author": {
@@ -260,7 +260,7 @@ function addFromOtherNode(data){
     data:JSON.stringify(payload),
     dataType: "json",
     contentType: "application/json",
-    headers: {"Authorization":"Basic "+nodeUsername+":"+nodePassword,
+    headers: {"Authorization":"Basic "+btoa(nodeUsername)+":"+btoa(nodePassword),
                 "x-csrftoken":csrfToken,
                 "content-type": "application/json"},
     success: function(){
