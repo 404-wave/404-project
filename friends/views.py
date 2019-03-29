@@ -73,7 +73,7 @@ def followers(request):
                 user=user.get()
             followers.append(user)
     
-    data = serializers.serialize('json', followers, fields=('username'))
+    data = serializers.serialize('json', followers, fields=('username','host'))
     return HttpResponse(data, content_type="application/json")
 
 # Get a list of Users who the current user is friends with
