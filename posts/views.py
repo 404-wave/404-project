@@ -188,7 +188,8 @@ def posts_detail(request, id):
             return redirect(redirect_url)
         else:
 
-            content_type = ContentType.objects.get(model=comment_type)
+            #content_type = ContentType.objects.get(model=comment_type)
+            content_type = ContentType.objects.get_for_model(Post.__class__)
             new_comment, created = Comment.objects.get_or_create(
 
                 user=request.user.id,
