@@ -338,6 +338,9 @@ class CommentAPIView(generics.GenericAPIView):
                     user_id=requestor_id, server_only=server_only).filter(id=post_id)[0].comments
             except:
                 Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            print("When GETing comments, the post ID was not found in the URL.")
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True)
