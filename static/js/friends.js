@@ -270,42 +270,42 @@ function addFromOtherNode(data){
   });
 }
 
-function tempAddNode(){
-  let path = "https://myblog-cool.herokuapp.com/"+"service/friendrequest/";
-  let payload = {
-    "query":"friendrequest",
-    "author": {
-        "id":  "https://fast-forest-91959.herokuapp.com/author/aa2d733d-e1b9-413c-a046-dc93b31fd9ac",
-        "host": "https://fast-forest-91959.herokuapp.com/",
-        "displayName": "test",
-        "url":"https://fast-forest-91959.herokuapp.com/author/aa2d733d-e1b9-413c-a046-dc93b31fd9ac",
-        },  
-    "friend": {
-        "id": "https://myblog-cool.herokuapp.com/author/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a",
-        "host": "https://myblog-cool.herokuapp.com/",
-        "displayName": "Jackson0",
-        "url": "https://myblog-cool.herokuapp.com/author/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a"
-    }
-  };
+// function tempAddNode(){
+//   let path = "https://myblog-cool.herokuapp.com/"+"service/friendrequest/";
+//   let payload = {
+//     "query":"friendrequest",
+//     "author": {
+//         "id":  "https://fast-forest-91959.herokuapp.com/author/aa2d733d-e1b9-413c-a046-dc93b31fd9ac",
+//         "host": "https://fast-forest-91959.herokuapp.com/",
+//         "displayName": "test",
+//         "url":"https://fast-forest-91959.herokuapp.com/author/aa2d733d-e1b9-413c-a046-dc93b31fd9ac",
+//         },  
+//     "friend": {
+//         "id": "https://myblog-cool.herokuapp.com/author/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a",
+//         "host": "https://myblog-cool.herokuapp.com/",
+//         "displayName": "Jackson0",
+//         "url": "https://myblog-cool.herokuapp.com/author/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a"
+//     }
+//   };
 
-  console.log(JSON.stringify(payload,null,2));
-  $.ajax({
-    url:path,
-    type:"POST",
-    data:JSON.stringify(payload),
-    dataType:"json",
-    contentType:"application/json",
-    username: "kerry",
-    password: "kerrypassword",
-    success: function(){
-      console.log("Successfully sent ");
-    },
-    error: function(xhr,status,error){
-      console.log("error: ", error,status);
-    }
+//   console.log(JSON.stringify(payload,null,2));
+//   $.ajax({
+//     url:path,
+//     type:"POST",
+//     data:JSON.stringify(payload),
+//     dataType:"json",
+//     contentType:"application/json",
+//     username: "kerry",
+//     password: "kerrypassword",
+//     success: function(){
+//       console.log("Successfully sent ");
+//     },
+//     error: function(xhr,status,error){
+//       console.log("error: ", error,status);
+//     }
     
-  });
-}
+//   });
+// }
 function standardizeUrl(url){
   let serverUrl = url.replace(/\s+/g,"");
   if(serverUrl.endsWith("/") == false){
