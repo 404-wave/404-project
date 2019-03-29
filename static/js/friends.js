@@ -228,10 +228,14 @@ function addFromOtherNode(data){
   let path = serverUrl+"service/friendrequest/";
   path = path.replace(/\s+/g, "");
 
-  const request_user_url = hostUrl+"author/"+followerID;
-  const req_profile_url = hostUrl+"author/"+followerID;
-  const recip_user_url = serverUrl+"author/"+followeeID;
-  const recip_profile_url = serverUrl+"author/"+followeeID;
+  // const request_user_url = hostUrl+"author/"+followerID;
+  // const req_profile_url = hostUrl+"author/"+followerID;
+  // const recip_user_url = serverUrl+"author/"+followeeID;
+  // const recip_profile_url = serverUrl+"author/"+followeeID;
+  const request_user_url = hostUrl+followerID;
+  const req_profile_url = hostUrl+"/home/profile"+followerID;
+  const recip_user_url = serverUrl+followeeID;
+  const recip_profile_url = serverUrl+"home/profile"+followeeID;
   let payload = {
     "query":"friendrequest",
     "author": {
@@ -250,36 +254,36 @@ function addFromOtherNode(data){
 
   console.log(JSON.stringify(payload,null,2));
 
-  // $.ajax({
-  //   url:path,
-  //   type:"POST",
-  //   data:JSON.stringify(payload),
-  //   dataType: "json",
-  //   contentType: "application/json",
-  //   headers: {"Authorization":"Basic "+nodeUsername+":"+nodePassword,
-  //               "x-csrftoken":csrfToken,
-  //               "cache-control": "no-cache"},
-  //   success: function(){
-  //     console.log("Successfully sent Request to Other Server");
-  //   },
-  //   error: function(xhr,status,error){
-  //     console.log("error: ",error);
-  //   }
-  // });
-  metaData= {
-    "method":"POST",
-    "credentials":"include",
-    "body":JSON.stringify(payload),
-    "mode":"cors",
-    "headers":{
-      "Content-Type":"application/json",
-      "x-csrftoken":csrfToken,
-      "Authorization": "Basic "+nodeUsername+":"+nodePassword
+  $.ajax({
+    url:path,
+    type:"POST",
+    data:JSON.stringify(payload),
+    dataType: "json",
+    contentType: "application/json",
+    headers: {"Authorization":"Basic "+nodeUsername+":"+nodePassword,
+                "x-csrftoken":csrfToken,
+                "cache-control": "no-cache"},
+    success: function(){
+      console.log("Successfully sent Request to Other Server");
+    },
+    error: function(xhr,status,error){
+      console.log("error: ",error);
     }
-  };
-  fetch(path,metaData)
-  .then(body=>body.json())
-  .catch(error=>console.log("error",error));
+  });
+  // metaData= {
+  //   "method":"POST",
+  //   "credentials":"include",
+  //   "body":JSON.stringify(payload),
+  //   "mode":"cors",
+  //   "headers":{
+  //     "Content-Type":"application/json",
+  //     "x-csrftoken":csrfToken,
+  //     "Authorization": "Basic "+nodeUsername+":"+nodePassword
+  //   }
+  // };
+  // fetch(path,metaData)
+  // .then(body=>body.json())
+  // .catch(error=>console.log("error",error));
 
 }
 
