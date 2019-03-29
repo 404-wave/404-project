@@ -32,6 +32,8 @@ function populateFriendsList(data) {
   }
   // Insert the new users
   for (var i = 0; i < data.length; ++i) {
+    console.log(data);
+    console.log(data[i]);
     let id = data[i]["pk"];
     let host = data[i]["host"];
     host = strip_host(host)
