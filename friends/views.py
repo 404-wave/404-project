@@ -15,10 +15,16 @@ from requests.auth import HTTPBasicAuth
 
 # Just get a list of Users on the server, minus the user making the request
 def find(request):
+
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
+
+
+
     server_users = User.objects.exclude(pk=request.user.id).filter(is_active=True)
-    data = serializers.serialize('json', server_users, fields=('username', 'host'))
+
+    data = serializers.serialize('json', server_users, fields=('username'))
+
     return HttpResponse(data, content_type="application/json")
 
 
@@ -30,6 +36,7 @@ def following(request):
 
     following = list()
     following_obj = Follow.objects.filter(user1=request.user.id)
+
     if following_obj:
         for followings in following_obj:
             user = User.objects.filter(id=followings.user2)
@@ -39,7 +46,7 @@ def following(request):
                 user=user.get()
             following.append(user)
 
-    data = serializers.serialize('json', following, fields=('username', 'host'))
+    data = serializers.serialize('json', following, fields=('username'))
     return HttpResponse(data, content_type="application/json")
 
 # Get a list of Users who follow the current user
@@ -62,7 +69,7 @@ def followers(request):
                 user=user.get()
             followers.append(user)
     
-    data = serializers.serialize('json', followers, fields=('username', 'host'))
+    data = serializers.serialize('json', followers, fields=('username'))
     return HttpResponse(data, content_type="application/json")
 
 # Get a list of Users who the current user is friends with
@@ -74,10 +81,12 @@ def friends(request):
     # followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
     # following = User.objects.filter(followee__user1=request.user.id, is_active=True)
     # friends = following & followers
+
     #TODO make more efficient
     uid = request.user.id
     friends = set()
     follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+
     if follow_obj:
         for follow in follow_obj:
             if ((follow.user1==uid) & (follow.user2 not in friends)):
@@ -99,7 +108,7 @@ def friends(request):
                         user= get_user(follow.user1_server,follow.user1)
                     friends.add(user)
 
-    data = serializers.serialize('json', friends, fields=('username', 'host'))
+    data = serializers.serialize('json', friends, fields=('username'))
     return HttpResponse(data, content_type="application/json") 
 
 def follow(request):
@@ -184,11 +193,17 @@ def follows(user1ID, user2ID):
 def friend_requests(request):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
+    print ("REQUEST FRIEND")
     friend_reqs = FriendRequest.objects.filter(recipient=request.user.id)
     host = request.get_host()
     data2 = {"posts": []}
-    data2 = {"posts": []}
+    user_filter = Q()
+    l = list()
+    data2 = {
+    "posts": []}
     for reqs in friend_reqs:
+        print(reqs.requestor)
+        user_filter = user_filter | Q(username=reqs.requestor)
         user = User.objects.filter(id = reqs.requestor)
         if not user:
             user = get_user(reqs.requestor_server, reqs.requestor)
@@ -207,11 +222,15 @@ def strip_host(host):
 
 def get_user(server, id):
     user = User()
-    server = remove_backslash(server)
-    node = Node.objects.filter(host = server)
-    node = node[0]
+    print("SERECER", server)
+    node = Node.objects.filter(host = server)[0]
+    print (node.username, node.password)
     server = standardize_url(server)
     build_request = server+'service/author/'+str(id)
+    print (build_request)
+    print(id)
+    print ("REE")
+
     try:
         r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
         response = r.json()
@@ -222,12 +241,6 @@ def get_user(server, id):
     user.id = response['id']
     user.host = server
     return user
-
-def remove_backslash(server):
-    if (server[-1]== '/'):
-        server = server[:-1]
-    return server
-
 
 def standardize_url(server):
     server = server.replace(" ","")
