@@ -215,7 +215,7 @@ def get_user(parameters):
 	except:
 		print("That user does not exist")
 		return
-	response = {'displayName': 'Jackson2',
+	response = 'displayName': 'Jackson2',
  'github': 'https://github.com/Zhipeng-Chang/',
  'host': 'https://myblog-cool.herokuapp.com/',
  'id': '902f61fd-9513-49cf-9722-17d40230976d',
@@ -224,13 +224,13 @@ def get_user(parameters):
 	user.username = response['displayName']
 	user.id = response['id']
 	user.host = server
-	user.friends = response['friends']
+
 
 	user.bio = optional_attributes(user.bio, response, 'bio')
-	user.bio = optional_attributes(user.bio, response, 'firstname')
-	user.bio = optional_attributes(user.bio, response, 'lastname')
-	user.bio = optional_attributes(user.bio, response, 'email')
-	user.bio = optional_attributes(user.bio, response, 'email')
+	user.firstname = optional_attributes(user.bio, response, 'firstname')
+	user.lastname = optional_attributes(user.lastname, response, 'lastname')
+	user.email = optional_attributes(user.email, response, 'email')
+	user.friends = optional_attributes(user.friends, response, 'friends')
 
 	return user
 
