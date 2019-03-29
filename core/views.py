@@ -227,8 +227,8 @@ def get_user(parameters):
 
 
 	user.bio = optional_attributes(user.bio, response, 'bio')
-	user.firstname = optional_attributes(user.bio, response, 'firstname')
-	user.lastname = optional_attributes(user.lastname, response, 'lastname')
+	user.first_name = optional_attributes(user.bio, response, 'firstname')
+	user.last_name = optional_attributes(user.lastname, response, 'lastname')
 	user.email = optional_attributes(user.email, response, 'email')
 	user.friends = optional_attributes(user.friends, response, 'friends')
 
