@@ -79,12 +79,14 @@ def get_requestor_id(request):
         requestor_id = request.META['HTTP_X_UUID']
         return str(requestor_id)
     except:
+        print("When trying to resolve requestor ID, X-UUID header was not found.")
         pass
 
     try:
         if request.GET.get('user', None) is not None:
             return uuid.UUID(request.GET['user'])
     except:
+        print("When trying to resolve requestor the 'user' query parameter was not found.")
         return None
 
     return None
