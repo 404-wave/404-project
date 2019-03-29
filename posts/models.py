@@ -95,26 +95,23 @@ class PostManager(models.Manager):
                     'X-UUID': str(user.id)
                 }
                 print("This is my: ", user.id)
+                print ("URL", url)
                 # response = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('local', 'localpassword'))
                 response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
 
-                print()
+                print()	
+
                 print(response)
+
                 print()
                 # print(test_url)
                 print(url)
                 print(response.status_code)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
-                    #Note, these print statements can cause errors if a node has 2 or fewer posts
-                    # print("CONTENT:")
-                    # print(response.content)
-                    # print()
-                    # print()
-                    # print(responselist["posts"][1]["content"])
-                    # print(responselist["posts"][0]["content"])
-                    # print()
-                    # print()
+                    print("CONTENT:")
+                    #print(response.content)
+
                     #if servers are bad and don't include the author server we do
                     for item in responselist["posts"]:
                         if (item['author']['host'] == ''):
@@ -122,13 +119,14 @@ class PostManager(models.Manager):
                             item['author']['host'] = node.host
                     # if responselist["posts"][0]["author"]["host"] == '':
                     #     responselist["posts"][0]["author"]["host"] = node.host
+                    
                     posts_from_servers.extend(responselist["posts"])
+            
             except Exception as e:
                 print(e)
                 print(e)
                 print(e)
                 pass
-
 
             #print(response.json())
             #posts_from_servers.extend(response.json())
