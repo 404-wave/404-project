@@ -74,7 +74,6 @@ def posts_detail(request, id):
             response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
             print(url)
             print("Status code: " + str(response.status_code))
-            instance = catch_bad_api(instance)
 
             if response.status_code == 200:
                 instance = response.json()
