@@ -170,7 +170,7 @@ def posts_detail(request, id):
                     'Accept':'application/json',
                     'X-UUID': str(user_id)
                 }
-            print("build_endpoint is: " + str(build_endpoint))
+            #print("build_endpoint is: " + str(build_endpoint))
             build_data = {
                 "query": "addComment",
                 "post": str(node.host) + "/service/posts/" + str(post_id),
@@ -194,7 +194,7 @@ def posts_detail(request, id):
             #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
             #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
             success = json.loads(r.content)['success']
-            if r.status_code == True:
+            if success == True:
                 break
         #change this to go back to post detail?
         #POST OBJECT.get_detail_absolute_url
@@ -211,6 +211,7 @@ def posts_detail(request, id):
 
     if isinstance(instance, dict):
         comments = instance['comments']
+        print(comments)
     else:
         comments = instance.comments
 

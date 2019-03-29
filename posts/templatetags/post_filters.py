@@ -35,10 +35,13 @@ def get_privacy(value1):
 @register.filter(name='get_comment_author')
 def get_comment_author(value1):
     # print(value1)
-    if (isinstance(value1, dict)):
-        return (value1['author']['displayName'])
-    else:
-        return value1.user
+    try:
+        if (isinstance(value1, dict)):
+            return (value1['author']['displayName'])
+        else:
+            return value1.user
+    except:
+        return 'foreign user'
 
 
 @register.filter(name='get_comment_content')
