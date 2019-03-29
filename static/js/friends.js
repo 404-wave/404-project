@@ -260,7 +260,7 @@ function addFromOtherNode(data){
     data:JSON.stringify(payload),
     dataType: "json",
     contentType: "application/json",
-    headers: {"Authorization":"Basic "+btoa(nodeUsername)+":"+btoa(nodePassword),
+    headers: {"Authorization":"Basic "+btoa(nodeUsername+":"+ nodePassword),
                 "x-csrftoken":csrfToken,
                 "content-type": "application/json"},
     success: function(){
