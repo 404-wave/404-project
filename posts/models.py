@@ -93,14 +93,14 @@ class PostManager(models.Manager):
         """
             When you make requests to our partner group for posts and comments
             you need to include an additional query parameter for the _requesting user’s_ UUID.
-            Ex: /service/author/posts/
+            Ex: /author/posts/
 
         """
 
         posts_from_servers = []
         for node in Node.objects.all():
-            url = node.host + "/service/author/posts/"
-            # test_url = 'https://cmput-404-proj-test.herokuapp.com/service/author/posts/'
+            url = node.host + "/author/posts/"
+            # test_url = 'https://cmput-404-proj-test.herokuapp.com/author/posts/'
 
             try:
                 headers = {
@@ -108,20 +108,22 @@ class PostManager(models.Manager):
                     'X-UUID': str(user.id)
                 }
                 print("This is my: ", user.id)
+                print ("URL", url)
                 # response = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('local', 'localpassword'))
                 response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
-                print()
+
+                print()	
+
                 print(response)
+
                 print()
                 # print(test_url)
                 print(url)
                 print(response.status_code)
-                print(response.content)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
                     print("CONTENT:")
                     #print(response.content)
-                    print()
 
                     #if servers are bad and don't include the author server we do
                     for item in responselist["posts"]:
@@ -130,10 +132,14 @@ class PostManager(models.Manager):
                             item['author']['host'] = node.host
                     # if responselist["posts"][0]["author"]["host"] == '':
                     #     responselist["posts"][0]["author"]["host"] = node.host
+                    
                     posts_from_servers.extend(responselist["posts"])
-            except:
+            
+            except Exception as e:
+                print(e)
+                print(e)
+                print(e)
                 pass
-
 
             #print(response.json())
             #posts_from_servers.extend(response.json())
@@ -235,7 +241,7 @@ class PostManager(models.Manager):
         private_posts = Post.objects.none()
         for post in Post.objects.filter(privacy=1):
             for user in post.accessible_users.all():
-                if str(user.id) == user_id:
+                if user.id == user_id:
                     private_posts |= Post.objects.filter(id=post.id)
 
         # followers = User.objects.filter(follower__user2=user_id, is_active=True)

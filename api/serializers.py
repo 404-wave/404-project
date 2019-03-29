@@ -76,7 +76,7 @@ class PostSerializer(serializers.ModelSerializer):
     def _source(self, obj):
         try:
             node_settings = NodeSetting.objects.all()[0]
-            url_to_post = node_settings.host + "/service/posts/" + str(obj.id) + "/"
+            url_to_post = node_settings.host + "/posts/" + str(obj.id) + "/"
             return url_to_post
         except:
             return ""
@@ -180,7 +180,7 @@ class CommentSerializer(serializers.ModelSerializer):
         except:
             found = False
             for node in Node.objects.all():
-                url = node.host + "/service/author/" + str(obj.user)
+                url = node.host + "/author/" + str(obj.user) + "/"
                 r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
                 if (r.status_code == 200):
                     try:

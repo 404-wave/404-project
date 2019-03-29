@@ -13,6 +13,14 @@ def get_author_name(value1):
         return value1.user
 
 
+@register.filter(name='get_post_type')
+def get_post_type(value1):
+    if (isinstance(value1, str)):
+        return False
+    else:
+        return True
+
+
 @register.filter(name='get_author_id')
 def get_author_id(value1):
     if (isinstance(value1, dict)):
@@ -33,6 +41,8 @@ def get_author_id(value1):
 def get_privacy(value1):
     if (isinstance(value1, dict)):
         return (value1['visibility'])
+    if (isinstance(value1, str)):
+        return
     else:
         return value1.get_privacy_display()
 
@@ -40,10 +50,13 @@ def get_privacy(value1):
 @register.filter(name='get_comment_author')
 def get_comment_author(value1):
     # print(value1)
-    if (isinstance(value1, dict)):
-        return (value1['author']['displayName'])
-    else:
-        return value1.user
+    try:
+        if (isinstance(value1, dict)):
+            return (value1['author']['displayName'])
+        else:
+            return value1.user
+    except:
+        return 'foreign user'
 
 
 @register.filter(name='get_comment_content')

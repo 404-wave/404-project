@@ -15,9 +15,10 @@ from django.contrib.contenttypes.models import ContentType
 import base64
 from mimetypes import guess_type
 import requests
+from users.models import Node, NodeSetting
+import uuid
 from requests.auth import HTTPBasicAuth
-from users.models import Node
-
+import json
 """
     Shows the details about a post.
     Allows use to post comments under the post.
@@ -53,14 +54,14 @@ def posts_detail(request, id):
     except Post.DoesNotExist:
 
         # This should work if we have an endpoint to get a specific post
-        #       eg: /service/posts/{POST_ID}/
+        #       eg: /posts/{POST_ID}/
         # instance is a dictionary and if yes, then comments should be instance[‘comments’]
 
         for node in Node.objects.all():
-            
-            url = node.host + "/service/posts/{0}".format(str(id))
 
-            # test_url = 'https://local:localpassword@cmput-404-proj-test.herokuapp.com/service/posts/{0}'.format(  str(id))
+            url = node.host + "/posts/{0}".format(str(id))
+
+            # test_url = 'https://local:localpassword@cmput-404-proj-test.herokuapp.com/posts/{0}'.format(  str(id))
             # print("This is my request id", request.user.id)
             # print(test_url)
             # response = requests.get(test_url, headers=headers)
@@ -98,39 +99,117 @@ def posts_detail(request, id):
         "object_id": id
     }
 
+    #https://stackoverflow.com/questions/12615154/how-to-get-the-currently-logged-in-users-user-id-in-django
+    #Credit: K Z (https://stackoverflow.com/users/853611/k-z)
+    current_user = request.user
+    user_id = current_user.id
+
+    if isinstance(instance, dict):
+        post_id = instance['id']
+    else:
+        post_id = instance.id
+
+    home_host = NodeSetting.objects.all()[0]
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
     if comment_form.is_valid():
         comment_type = comment_form.cleaned_data.get("content_type")
-        content_type = ContentType.objects.get(model=comment_type)
         obj_id = comment_form.cleaned_data.get("object_id")
         content_data = comment_form.cleaned_data.get("content")
         parent_obj = None
-        try:
-            parent_id = int(request.POST.get("parent_id"))
-        except:
-            parent_id = None
-        if parent_id:
-            parent_querySet = Comment.objects.filter(id=parent_id)
-            if parent_querySet.exists() and parent_querySet.count() == 1:
-                parent_obj = parent_querySet.first()
 
-        new_comment, created = Comment.objects.get_or_create(
+        # This is an example of a hardcoded POST request
+        # build_endpoint = "https://cmput404-wave.herokuapp.com/service/posts/3f46f9c3-256f-441c-899e-928b095df627/comments/"
+        # headers = {
+        #             'Accept':'application/json',
+        #             'X-UUID': '62892c46-7eab-44b9-b106-8524686adfae'
+        #         }
+        # build_data = {
+        #     "query": "addComment",
+        #     "post": "https://cmput404-wave.herokuapp.com/service/posts/3f46f9c3-256f-441c-899e-928b095df627",
+        #     "comment": {
+        #         "author":{
+        #             "id": "http://127.0.0.1:8000/service/author/62892c46-7eab-44b9-b106-8524686adfae",
+        #             "host": "http://127.0.0.1:8000",
+        #             "url": "http://127.0.0.1:8000/service/author/62892c46-7eab-44b9-b106-8524686adfae",
+        #             "github": ''
+        #         },
+        #         "comment": "test post for deployment",
+        #         "content_type": "text/plain",
+        #         "published": str(datetime.now().isoformat()),
+        #         "id": str(uuid.uuid4())
+        #     }
+        # }
+        # r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str('local'), str('localpassword')))
 
-            user=request.user.id,
-            content_type=content_type,
-            object_id=obj_id,
-            content=content_data,
-            parent=parent_obj
+        for node in Node.objects.all():
+            #build_endpoint = str(node.host) + "/service/posts/" + "3f46f9c3-256f-441c-899e-928b095df627" + "/comments/"
+            #print(build_endpoint)
+            build_endpoint = str(node.host) + "/service/posts/" + str(post_id) + "/comments/"
+            headers = {
+                    'Accept':'application/json',
+                    'X-UUID': str(user_id)
+                }
+            #print("build_endpoint is: " + str(build_endpoint))
+            build_data = {
+                "query": "addComment",
+                "post": str(node.host) + "/service/posts/" + str(post_id),
+                "comment": {
+                    "author":{
+                        "id": str(home_host.host) + "/service/author/" + str(user_id),
+                        "host": str(home_host.host),
+                        "url": str(home_host.host) + "/service/author/" + str(user_id),
+                        "github": current_user.github
+                    },
+                    "comment": content_data,
+                    "content_type": "text/plain",
+                    "published": str(datetime.now().isoformat()),
+                    "id": str(uuid.uuid4())
+                }
+            }
+            #print("build_data is: " + str(build_data))
+            #https://www.programcreek.com/python/example/6251/requests.post
+            r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+            #print(r)
+            #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
+            #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
+            #Partner group can return "Post Not Found"
+            success = False
+            try:
+                success = json.loads(r.content)['success']
+                if success == True:
+                    break
+            except:
+                pass
+                # success = json.loads(r.content)
+                # if isinstance(success, str):
+                #     print(success)
+                #     break
+
+        if success:
+            redirect_url = str(home_host.host) + '/posts/detail/' + str(post_id)
+            return redirect(redirect_url)
+        else:
+
+            content_type = ContentType.objects.get(model=comment_type)
+            new_comment, created = Comment.objects.get_or_create(
+
+                user=request.user.id,
+                content_type=content_type,
+                object_id=obj_id,
+                content=content_data,
+                parent=parent_obj
 
 
-        )
-        return HttpResponseRedirect(new_comment.content_object.get_detail_absolute_url())
-        if created:
-            print("comment worked.")
+            )
+            redirect_url = str(home_host.host) + '/posts/detail/' + str(post_id)
+            return redirect(redirect_url)
+        # if created:
+        #     print("comment worked.")
 
     if isinstance(instance, dict):
         comments = instance['comments']
+        print(comments)
     else:
         comments = instance.comments
 

@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Q
+from django.utils import timezone
 
 from rest_framework import pagination, generics, views, status, mixins
 from rest_framework.response import Response
@@ -185,6 +185,9 @@ class PostAPIView(generics.GenericAPIView):
                 user_id=requestor_id, server_only=server_only).filter(id=post_id)
             queryset = self.filter_out_image_posts(request, queryset)
 
+            if queryset.count() == 0:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
         # Get all posts visible to the requesting user
         elif path in path_all_user_visible_posts:
             queryset = Post.objects.filter_user_visible_posts_by_user_id(
@@ -203,13 +206,69 @@ class PostAPIView(generics.GenericAPIView):
         serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
         return self.get_paginated_response(serializer.data)
 
+		# {
+		# 	"contentType":"text/plain",
+		# 	"content":"Here is some post content."
+		# 	"author":{
+		# 		"id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+		# 	},
+		# 	# visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
+		# 	"visibility":"PUBLIC",
+		# 	"visibleTo":[],
+        #     "unlisted":false
+		# }
 
+    # Since we only host posts made from our server, POSTing a post requires
+    # that the author is also a user on our server, otherwise a 404 will be
+    # thrown. Since the accessible_users is a ManyToManyField that relies on
+    # our user table, this means only users from our server can see PRIVATE
+    # posts when they are first made here. If someone supplies an ID for a user
+    # that can see the private post but that user isn't on our server, we will
+    # just ignore it.
     def post(self, request, *args, **kwargs):
 
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+        try:
+            data = request.data
+            author_id = uuid.UUID(data['author']['id'].split("/")[-1])
+            privacy = self.resolve_privacy(data['visibility'])
+            visible_to = data['visibleTo']
+            unlisted = data['unlisted']
+            content_type = "text/plain"
+            content = data['content']
+            if privacy is None:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(id=author_id)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            post = Post(user=user, content=content, publish=timezone.now(),
+                privacy=privacy, unlisted=unlisted)
+
+            post.save()
+
+            # Only set visible users to those on our server
+            if privacy == Post.PRIVATE:
+                for author in visible_to:
+                    if not User.objects.filter(id=author).count() == 0:
+                        id = uuid.UUID(author.split("/")[-1])
+                        post.accessible_users.add(id)
+
+            post.accessible_users.add(author_id)
+
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        return Response(status=status.HTTP_200_OK)
 
 
     def put(self, request, *args, **kwargs):
@@ -252,6 +311,20 @@ class PostAPIView(generics.GenericAPIView):
             pass
 
         return queryset
+
+    def resolve_privacy(self, privacy_str):
+        if privacy_str == "PUBLIC":
+            return Post.PUBLIC
+        elif privacy_str == "PRIVATE":
+            return Post.PRIVATE
+        elif privacy_str == "FRIENDS":
+            return Post.FRIENDS
+        elif privacy_str == "FOAF":
+            return Post.FOAF
+        elif privacy_str == "SERVERONLY":
+            return Post.ONLY_SERVER
+        else:
+            return None
 
 
 class CommentAPIView(generics.GenericAPIView):
@@ -311,9 +384,6 @@ class CommentAPIView(generics.GenericAPIView):
 
         server_only = allow_server_only_posts(request)
 
-        # post_id = None
-        # author_id = None
-        # content = None
         try:
             data = request.data
             post_id = uuid.UUID(data['post'].split("/")[-1])
@@ -321,7 +391,6 @@ class CommentAPIView(generics.GenericAPIView):
             content = data['comment']['comment']
         except Exception as e:
             Response(status=status.HTTP_400_BAD_REQUEST)
-
 
         # Check that the requesting user has visibility of that post
         posts = Post.objects.filter_user_visible_posts_by_user_id(

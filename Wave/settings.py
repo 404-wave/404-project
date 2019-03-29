@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
     # local apps
     'rest_framework',
+    'corsheaders',
     'friends',
     'users',
     'core',

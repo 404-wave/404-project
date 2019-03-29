@@ -86,13 +86,14 @@
 						<input name="query" placeholder="Search posts" type="text" value="{{ request.GET.query }}"> <input type="submit" value="Search"> <a href="/home">Clear search</a>
 					</form>
         </div>
+        {% load post_filters %}
         {% for obj in object_list %} <!-- check if is Post object -->
-				 {% if obj.user %}
+        {% if obj|get_post_type %}
 				<div class="stream_post">
 					<div class="top_row">
 						<div class="post_info">
 							<div class="author_edit">
-                  {% load post_filters %}
+             
                 <a class="author" href="{% url 'profile' value=obj|get_author_id %}">{{ obj|get_author_name }}</a>
                 <p class="post_date">{{ obj.timestamp }}</p>
 							</div>
