@@ -51,12 +51,12 @@ function strip_host(host){
 
 
 function change_follow(followerID,followerUser,followerHost,
-  followeeID,followeeUser,followeeHost,e) {
+  followeeID,followeeUser,followeeHost,csrfToken,e) {
   let url_val = 'follow/';
   if (e.id != "Follow"){
     url_val = "unfollow/";
   }
-  let csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+  
   $.ajax({
     url: url_val,
     data: {      
