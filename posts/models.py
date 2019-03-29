@@ -80,14 +80,14 @@ class PostManager(models.Manager):
         """
             When you make requests to our partner group for posts and comments
             you need to include an additional query parameter for the _requesting user’s_ UUID.
-            Ex: /service/author/posts/
+            Ex: /author/posts/
 
         """
 
         posts_from_servers = []
         for node in Node.objects.all():
-            url = node.host + "/service/author/posts/"
-            # test_url = 'https://cmput-404-proj-test.herokuapp.com/service/author/posts/'
+            url = node.host + "/author/posts/"
+            # test_url = 'https://cmput-404-proj-test.herokuapp.com/author/posts/'
 
             try:
                 headers = {
@@ -122,7 +122,10 @@ class PostManager(models.Manager):
                     # if responselist["posts"][0]["author"]["host"] == '':
                     #     responselist["posts"][0]["author"]["host"] = node.host
                     posts_from_servers.extend(responselist["posts"])
-            except:
+            except Exception as e:
+                print(e)
+                print(e)
+                print(e)
                 pass
 
 

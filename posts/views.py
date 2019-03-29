@@ -54,14 +54,14 @@ def posts_detail(request, id):
     except Post.DoesNotExist:
 
         # This should work if we have an endpoint to get a specific post
-        #       eg: /service/posts/{POST_ID}/
+        #       eg: /posts/{POST_ID}/
         # instance is a dictionary and if yes, then comments should be instance[‘comments’]
 
         for node in Node.objects.all():
-            
-            url = node.host + "/service/posts/{0}".format(str(id))
 
-            # test_url = 'https://local:localpassword@cmput-404-proj-test.herokuapp.com/service/posts/{0}'.format(  str(id))
+            url = node.host + "/posts/{0}".format(str(id))
+
+            # test_url = 'https://local:localpassword@cmput-404-proj-test.herokuapp.com/posts/{0}'.format(  str(id))
             # print("This is my request id", request.user.id)
             # print(test_url)
             # response = requests.get(test_url, headers=headers)
