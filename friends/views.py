@@ -48,7 +48,7 @@ def following(request):
                 user=user.get()
             following.append(user)
 
-    data = serializers.serialize('json', following, fields=('username'))
+    data = serializers.serialize('json', following, fields=('username','host'))
     return HttpResponse(data, content_type="application/json")
 
 # Get a list of Users who follow the current user
