@@ -74,14 +74,10 @@ def posts_detail(request, id):
             response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
             print(url)
             print("Status code: " + str(response.status_code))
-            instance = {'title': 'public post from Jackson0 heroku', 'source': 'https://myblog-cool.herokuapp.com/service/posts/4bfa6afe-6548-4617-ab24-d012c85cc370', 'origin': 'https://myblog-cool.herokuapp.com/service/posts/4bfa6afe-6548-4617-ab24-d012c85cc370', 'description': 'public post from Jackson0 heroku', 'contentType': 'text/plain', 'content': 'public post from Jackson0 heroku', 'author': {'id': 'f6ea3270-3e4d-4547-9ee6-8def7f1fe01a', 'displayName': 'Jackson0', 'url': 'https://myblog-cool.herokuapp.com/service/author/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a', 'host': 'https://myblog-cool.herokuapp.com/', 'github': 'https://github.com/Zhipeng-Chang/'}, 'categories': 'test', 'count': 0, 'size': 50, 'next': 'https://myblog-cool.herokuapp.com/service/posts/4bfa6afe-6548-4617-ab24-d012c85cc370/comments', 'comments': [], 'published': '2019-03-25T12:09:45.708682-06:00', 'id': '4bfa6afe-6548-4617-ab24-d012c85cc370', 'visibility': 'PUBLIC', 'visibleTo': 'null', 'unlisted': False}
-            instance = catch_bad_api(instance)
 
             if response.status_code == 200:
                 instance = response.json()
                 print("Response from server")
-                print(instance)
-                instance = {'title': 'public post from Jackson0 heroku', 'source': 'https://myblog-cool.herokuapp.com/service/posts/4bfa6afe-6548-4617-ab24-d012c85cc370', 'origin': 'https://myblog-cool.herokuapp.com/service/posts/4bfa6afe-6548-4617-ab24-d012c85cc370', 'description': 'public post from Jackson0 heroku', 'contentType': 'text/plain', 'content': 'public post from Jackson0 heroku', 'author': {'id': 'f6ea3270-3e4d-4547-9ee6-8def7f1fe01a', 'displayName': 'Jackson0', 'url': 'https://myblog-cool.herokuapp.com/service/author/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a', 'host': 'https://myblog-cool.herokuapp.com/', 'github': 'https://github.com/Zhipeng-Chang/'}, 'categories': 'test', 'count': 0, 'size': 50, 'next': 'https://myblog-cool.herokuapp.com/service/posts/4bfa6afe-6548-4617-ab24-d012c85cc370/comments', 'comments': [], 'published': '2019-03-25T12:09:45.708682-06:00', 'id': '4bfa6afe-6548-4617-ab24-d012c85cc370', 'visibility': 'PUBLIC', 'visibleTo': 'null', 'unlisted': False}
                 instance = catch_bad_api(instance)
 
 
