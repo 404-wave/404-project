@@ -108,37 +108,17 @@ def posts_detail(request, id):
         post_id = instance['id']
     else:
         post_id = instance.id
-    #print(post_id)
+
     home_host = NodeSetting.objects.all()[0]
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
     if comment_form.is_valid():
         comment_type = comment_form.cleaned_data.get("content_type")
-        #content_type = ContentType.objects.get(model=comment_type)
         obj_id = comment_form.cleaned_data.get("object_id")
         content_data = comment_form.cleaned_data.get("content")
         parent_obj = None
 
-        # try:
-        #     parent_id = int(request.POST.get("parent_id"))
-        # except:
-        #     parent_id = None
-        # if parent_id:
-        #     parent_querySet = Comment.objects.filter(id=parent_id)
-        #     if parent_querySet.exists() and parent_querySet.count() == 1:
-        #         parent_obj = parent_querySet.first()
-
-        # new_comment, created = Comment.objects.get_or_create(
-
-        #     user = request.user.id,
-        #     content_type = content_type,
-        #     object_id = obj_id,
-        #     content = content_data,
-        #     parent = parent_obj
-
-
-        # )
-        #62892c46-7eab-44b9-b106-8524686adfae
+        # This is an example of a hardcoded POST request
         # build_endpoint = "https://cmput404-wave.herokuapp.com/service/posts/3f46f9c3-256f-441c-899e-928b095df627/comments/"
         # headers = {
         #             'Accept':'application/json',
@@ -161,7 +141,7 @@ def posts_detail(request, id):
         #     }
         # }
         # r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str('local'), str('localpassword')))
-        # #print("content_data is :" + str(content_data))
+
         for node in Node.objects.all():
             #build_endpoint = str(node.host) + "/service/posts/" + "3f46f9c3-256f-441c-899e-928b095df627" + "/comments/"
             #print(build_endpoint)
@@ -187,33 +167,43 @@ def posts_detail(request, id):
                     "id": str(uuid.uuid4())
                 }
             }
-            print("build_data is: " + str(build_data))
+            #print("build_data is: " + str(build_data))
             #https://www.programcreek.com/python/example/6251/requests.post
             r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
             #print(r)
             #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
             #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
-            #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
-            #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
+            #Partner group can return "Post Not Found"
+            success = False
             try:
                 success = json.loads(r.content)['success']
                 if success == True:
                     break
             except:
-                success = json.loads(r.content)
-                if isinstance(success, str):
-                    print(success)
-                    break
-        #change this to go back to post detail?
-        #POST OBJECT.get_detail_absolute_url
-        #instance.get.....
-        print(r)
-        print(r.content)
-        #return HttpResponseRedirect(instance.get_detail_absolute_url())
-        #http://127.0.0.1:8000/posts/detail/eb010781-a6ea-4856-becc-d60417346384/
-        redirect_url = str(home_host.host) + '/posts/detail/' + str(post_id)
-        return redirect(redirect_url)
+                pass
+                # success = json.loads(r.content)
+                # if isinstance(success, str):
+                #     print(success)
+                #     break
 
+        if success:
+            redirect_url = str(home_host.host) + '/posts/detail/' + str(post_id)
+            return redirect(redirect_url)
+        else:
+
+            content_type = ContentType.objects.get(model=comment_type)
+            new_comment, created = Comment.objects.get_or_create(
+
+                user=request.user.id,
+                content_type=content_type,
+                object_id=obj_id,
+                content=content_data,
+                parent=parent_obj
+
+
+            )
+            redirect_url = str(home_host.host) + '/posts/detail/' + str(post_id)
+            return redirect(redirect_url)
         # if created:
         #     print("comment worked.")
 

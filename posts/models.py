@@ -106,6 +106,7 @@ class PostManager(models.Manager):
                 print(response.status_code)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
+                    #Note, these print statements can cause errors if a node has 2 or fewer posts
                     # print("CONTENT:")
                     # print(response.content)
                     # print()
