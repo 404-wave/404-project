@@ -11,6 +11,7 @@ from users.models import Node
 from django.dispatch import receiver
 from django.db.models.signals import post_save, m2m_changed
 import base64
+from requests_toolbelt.utils import dump
 from mimetypes import guess_type
 import uuid
 import json
@@ -100,7 +101,10 @@ class PostManager(models.Manager):
                 print ("RER", req)
                 # response = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('local', 'localpassword'))
                 response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
-                print()
+                data = dump.dump_all(response)
+                print("ABOEV")
+                print(data.decode('utf-8'))
+                print("ABOEV")
                 print(response.requests)
                 print()
                 # print(test_url)
