@@ -42,6 +42,8 @@ def following(request):
             user = User.objects.filter(id=followings.user2)
             if not user:
                 user = get_user(followings.user2_server,followings.user2)
+                if user is None:
+                    continue  
             else:
                 user=user.get()
             following.append(user)
@@ -65,6 +67,8 @@ def followers(request):
             user = User.objects.filter(id=follower.user1)
             if not user:
                 user = get_user(follower.user1_server,follower.user1)
+                if user is None:
+                    continue
             else:
                 user=user.get()
             followers.append(user)
@@ -97,6 +101,8 @@ def friends(request):
                         user=user.get()
                     else:
                         user = get_user(follow.user2_server,follow.user2)
+                        if user None:
+                            continue
                     friends.add(user)
             elif ((follow.user2==uid) & (follow.user1 not in friends)):
                 recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
@@ -207,6 +213,8 @@ def friend_requests(request):
         user = User.objects.filter(id = reqs.requestor)
         if not user:
             user = get_user(reqs.requestor_server, reqs.requestor)
+            if user is None:
+                continue
         else:
             user = user[0]
         host = strip_host(user.host)
@@ -228,7 +236,9 @@ def get_user(server, id):
     try:
         node = Node.objects.filter(host = server)[0]
         print (node.username, node.password)
-    
+    except:
+        print("Couldn't find nodel object through filter")
+        return None
     server = server+"/"
     build_request = server+'service/author/'+str(id)
     print (build_request)
@@ -240,7 +250,7 @@ def get_user(server, id):
         response = r.json()
     except:
         print("That user does not exist")
-        return
+        return None
     user.username = response['displayName']
     user.id = response['id']
     user.host = server
