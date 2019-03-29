@@ -101,7 +101,7 @@ def friends(request):
                         user=user.get()
                     else:
                         user = get_user(follow.user2_server,follow.user2)
-                        if user None:
+                        if user is None:
                             continue
                     friends.add(user)
             elif ((follow.user2==uid) & (follow.user1 not in friends)):
