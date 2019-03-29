@@ -128,7 +128,7 @@ function switchButton(data, button) {
 
 //     }
 //   })
-}
+//}
 function replaceUnfollowButton(data) {
 
   let followerID = data["followerID"];
@@ -259,7 +259,7 @@ function addFromOtherNode(data){
     crossDomain: true,
     beforeSend: function(xhr){
       xhr.setRequestHeader('Authorization'),'Basic ' +nodeUsername+":"+nodePassword;
-    }
+    },
     success: function(){
       console.log("Successfully sent Request to Other Server");
     },
