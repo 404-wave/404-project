@@ -333,11 +333,16 @@ class CommentAPIView(generics.GenericAPIView):
 
         if 'post_id' in self.kwargs.keys():
             post_id = self.kwargs['post_id']
+
+            try: Post.objects.get(id=post_id)
+            except: return Response(status=status.HTTP_404_NOT_FOUND)
+
             try:
                 queryset = Post.objects.filter_user_visible_posts_by_user_id(
                     user_id=requestor_id, server_only=server_only).filter(id=post_id)[0].comments
             except:
                 Response(status=status.HTTP_404_NOT_FOUND)
+
         else:
             print("When GETing comments, the post ID was not found in the URL.")
             return Response(status=status.HTTP_400_BAD_REQUEST)
