@@ -215,7 +215,7 @@ def get_user(parameters):
 	except:
 		print("That user does not exist")
 		return
-	response = 'displayName': 'Jackson2',
+	response = {'displayName': 'Jackson2',
  'github': 'https://github.com/Zhipeng-Chang/',
  'host': 'https://myblog-cool.herokuapp.com/',
  'id': '902f61fd-9513-49cf-9722-17d40230976d',
