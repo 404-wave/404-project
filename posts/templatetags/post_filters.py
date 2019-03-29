@@ -16,9 +16,14 @@ def get_author_name(value1):
 @register.filter(name='get_author_id')
 def get_author_id(value1):
     if (isinstance(value1, dict)):
-        host = re.sub('^https?:\/\/', '', value1['author']['id'])
+        id = value1['author']['id']
+        id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)'
+        re_result = re.search(id_regex, id)
+        id = re_result.group(2)
+        host = value1['author']['host']
+        host = re.sub('^https?:\/\/', '', host)
         host = re.sub('\/', '', host)
-        return (host)
+        return (host+id)
     else:
         id = User.objects.filter(username=value1.user)[0].id
         return id
