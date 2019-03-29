@@ -93,6 +93,42 @@ function switchButton(data, button) {
     button.id = text_val;
 }
 
+// function checkOtherNodes(user,requestorID,requestorServer){
+//   let path = '/friends';
+//   $.ajax({
+//     url: path,
+//     success:  function(data){
+//       removeUnfollows(data,requestorID,requestorServer);
+//     },
+//     error: function(xhr,status,error){
+//       console.log("Error: ",error, status);
+//     }
+//   })
+// }
+
+// function removeUnfollows(data,follower,server){
+
+//   // let authorFriends = new Set();
+//   // for (let userobj in data){
+//   //   let id = data[userobj]["pk"];
+//   //   authorFriends.add(id);
+//   // }
+  
+//   authorFriends = Array.from(authorFriends);
+//   let path = standardizeUrl(server)+"service/author"+follower;
+//   $.ajax({
+//     url:path,
+//     type:"GET",
+//     success: function(response){
+//       let content = JSON.parse(repsonse);
+//       let friendList = content['authors'];
+//       for (let i=0; i<authorFriends.length;i++){
+//         if ()
+//       }
+
+//     }
+//   })
+}
 function replaceUnfollowButton(data) {
 
   let followerID = data["followerID"];
@@ -177,7 +213,7 @@ function addFromOtherNode(data){
   let hostUrl = data['followerServer'];
   hostUrl = standardizeUrl(hostUrl);
   
-  let nodeList = data['nodes'];
+  let nodeList = data['nodes']; 
   let userPassObj = findNodeUserAndPass(nodeList,serverUrl);
   const nodeUsername = userPassObj['username'];
   const nodePassword = userPassObj['password'];
@@ -192,10 +228,10 @@ function addFromOtherNode(data){
   let path = serverUrl+"service/friendrequest/";
   path = path.replace(/\s+/g, "");
 
-  const request_user_url = hostUrl+followerID;
-  const req_profile_url = hostUrl+"home/profile/"+followerID;
-  const recip_user_url = serverUrl+followeeID;
-  const recip_profile_url = serverUrl+"home/profile/"+followeeID;
+  const request_user_url = hostUrl+"author/"+followerID;
+  const req_profile_url = hostUrl+"author/"+followerID;
+  const recip_user_url = serverUrl+"author/"+followeeID;
+  const recip_profile_url = serverUrl+"author/"+followeeID;
   let payload = {
     "query":"friendrequest",
     "author": {
@@ -220,8 +256,10 @@ function addFromOtherNode(data){
     data:JSON.stringify(payload),
     dataType: "json",
     contentType: "application/json",
-    username: nodeUsername,
-    password: nodePassword,
+    crossDomain: true,
+    beforeSend: function(xhr){
+      xhr.setRequestHeader('Authorization'),'Basic ' +nodeUsername+":"+nodePassword;
+    }
     success: function(){
       console.log("Successfully sent Request to Other Server");
     },

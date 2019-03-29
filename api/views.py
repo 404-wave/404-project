@@ -102,7 +102,6 @@ class UserAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
 
-
         if 'author_id' in kwargs.keys():
             author_id = self.kwargs['author_id']
             try:
