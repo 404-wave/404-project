@@ -193,9 +193,17 @@ def posts_detail(request, id):
             #print(r)
             #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
             #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
-            success = json.loads(r.content)['success']
-            if success == True:
-                break
+            #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
+            #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
+            try:
+                success = json.loads(r.content)['success']
+                if success == True:
+                    break
+            except:
+                success = json.loads(r.content)
+                if isinstance(success, str):
+                    print(success)
+                    break
         #change this to go back to post detail?
         #POST OBJECT.get_detail_absolute_url
         #instance.get.....
