@@ -95,10 +95,12 @@ class PostManager(models.Manager):
                     'X-UUID': str(user.id)
                 }
                 print("This is my: ", user.id)
+                print ("URL", url)
                 # response = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('local', 'localpassword'))
                 response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
-                print()
+                print()	
                 print(response)
+
                 print()
                 # print(test_url)
                 print(url)
@@ -108,7 +110,6 @@ class PostManager(models.Manager):
                     responselist = response.json()
                     print("CONTENT:")
                     #print(response.content)
-                    print()
 
                     #if servers are bad and don't include the author server we do
                     for item in responselist["posts"]:
@@ -117,13 +118,14 @@ class PostManager(models.Manager):
                             item['author']['host'] = node.host
                     # if responselist["posts"][0]["author"]["host"] == '':
                     #     responselist["posts"][0]["author"]["host"] = node.host
+                    
                     posts_from_servers.extend(responselist["posts"])
+            
             except Exception as e:
                 print(e)
                 print(e)
                 print(e)
                 pass
-
 
             #print(response.json())
             #posts_from_servers.extend(response.json())
