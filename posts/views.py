@@ -160,7 +160,7 @@ def posts_detail(request, id):
                         "github": current_user.github
                     },
                     "comment": content_data,
-                    "content_type": "text/plain",
+                    "contentType": "text/plain",
                     "published": str(datetime.now().isoformat()),
                     "id": str(uuid.uuid4())
                 }
