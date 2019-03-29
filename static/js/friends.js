@@ -56,7 +56,7 @@ function change_follow(followerID,followerUser,followerHost,
   if (e.id != "Follow"){
     url_val = "unfollow/";
   }
-
+  let csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
   $.ajax({
     url: url_val,
     data: {      
@@ -69,7 +69,7 @@ function change_follow(followerID,followerUser,followerHost,
     },
     success: function (data) {
       if (followerHost != followeeHost && e.id == "Follow"){
-        addFromOtherNode(data);
+        addFromOtherNode(data,csrfToken);
       }
       switchButton(data, e);
       //eplaceUnfollowButton(data);
@@ -204,7 +204,7 @@ function closeDropDown(){
   }
 }
 
-function addFromOtherNode(data){
+function addFromOtherNode(data,csrf){
   
   const followerID = data['followerID'];
   const followeeID = data['followeeID'];
@@ -258,7 +258,8 @@ function addFromOtherNode(data){
     username: nodeUsername,
     password: nodePassword,
     contentType: "application/json",
-    headers: {"Authorization":"Basic "+nodeUsername+":"+nodePassword},
+    headers: {"Authorization":"Basic "+nodeUsername+":"+nodePassword,
+                "Csrf-Token":csrf},
     success: function(){
       console.log("Successfully sent Request to Other Server");
     },

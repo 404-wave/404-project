@@ -54,9 +54,6 @@
   {% if friend_requests|length > 0%}
     <script>displayNotifications('{{ friend_requests|length }}');</script>
     <script>closeDropDown();</script>
-    <!--% for reqs in friend_requests %}
-      <script>checkOtherNodes('{{ request.user.id }}','{{ reqs.id }}', '{{ reqs.host }}')</script>
-    {% endfor %}-->
   {% endif %}
   {% endblock %}
 
