@@ -277,7 +277,7 @@ function addFromOtherNode(data){
       "Authorization": "Basic "+nodeUsername+":"+nodePassword
     }
   };
-  fetch(url,metaData)
+  fetch(path,metaData)
   .then(body=>body.json())
   .catch(error=>console.log("error",error));
 
