@@ -106,14 +106,14 @@ class PostManager(models.Manager):
                 print(response.status_code)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
-                    print("CONTENT:")
-                    print(response.content)
-                    print()
-                    print()
-                    print(responselist["posts"][1]["content"])
-                    print(responselist["posts"][0]["content"])
-                    print()
-                    print()
+                    # print("CONTENT:")
+                    # print(response.content)
+                    # print()
+                    # print()
+                    # print(responselist["posts"][1]["content"])
+                    # print(responselist["posts"][0]["content"])
+                    # print()
+                    # print()
                     #if servers are bad and don't include the author server we do
                     for item in responselist["posts"]:
                         if (item['author']['host'] == ''):
