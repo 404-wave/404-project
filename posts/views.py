@@ -118,6 +118,8 @@ def posts_detail(request, id):
         content_data = comment_form.cleaned_data.get("content")
         parent_obj = None
 
+        #91bd180b-3ccc-4ec7-a079-829869bfad44
+
         # This is an example of a hardcoded POST request
         # build_endpoint = "https://cmput404-wave.herokuapp.com/service/posts/3f46f9c3-256f-441c-899e-928b095df627/comments/"
         # headers = {
@@ -209,7 +211,7 @@ def posts_detail(request, id):
 
     if isinstance(instance, dict):
         comments = instance['comments']
-        print(comments)
+        #print(comments)
     else:
         comments = instance.comments
 
