@@ -255,6 +255,8 @@ function addFromOtherNode(data){
     type:"POST",
     data:JSON.stringify(payload),
     dataType: "json",
+    username: nodeUsername,
+    password: nodePassword,
     contentType: "application/json",
     headers: {"Authorization":"Basic "+nodeUsername+":"+nodePassword},
     success: function(){
