@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Q
+from django.utils import timezone
 
 from rest_framework import pagination, generics, views, status, mixins
 from rest_framework.response import Response
@@ -17,7 +17,6 @@ from posts.models import Post
 
 from friends.views import follows
 
-import datetime
 import requests
 import socket
 import uuid
@@ -197,6 +196,13 @@ class PostAPIView(generics.GenericAPIView):
         #     "unlisted":false
 		# }
 
+    # Since we only host posts made from our server, POSTing a post requires
+    # that the author is also a user on our server, otherwise a 404 will be
+    # thrown. Since the accessible_users is a ManyToManyField that relies on
+    # our user table, this means only users from our server can see PRIVATE
+    # posts when they are first made here. If someone supplies an ID for a user
+    # that can see the private post but that user isn't on our server, we will
+    # just ignore it.
     def post(self, request, *args, **kwargs):
 
         if not request.user.is_authenticated:
@@ -205,29 +211,41 @@ class PostAPIView(generics.GenericAPIView):
         try:
             data = request.data
             author_id = uuid.UUID(data['author']['id'].split("/")[-1])
-            content = data['content']
-            content_type = "text/plain"
+            privacy = self.resolve_privacy(data['visibility'])
             visible_to = data['visibleTo']
             unlisted = data['unlisted']
-            privacy = data['visbility']
+            content_type = "text/plain"
+            content = data['content']
             if privacy is None:
-                Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            Response(status=status.HTTP_400_BAD_REQUEST)
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            post = Post(user=author_id, content=content, publish=datetime.now(),
+            user = User.objects.get(id=author_id)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            post = Post(user=user, content=content, publish=timezone.now(),
                 privacy=privacy, unlisted=unlisted)
-            for author in visible_to:
-                id = uuid.UUID(author.split("/")[-1])
-                post.accessible_users.add(id)
+
             post.save()
+
+            # Only set visible users to those on our server
+            if privacy == Post.PRIVATE:
+                for author in visible_to:
+                    if not User.objects.filter(id=author).count() == 0:
+                        id = uuid.UUID(author.split("/")[-1])
+                        post.accessible_users.add(id)
+
+            post.accessible_users.add(author_id)
+            #post.save()
 
         except Exception as e:
             print(e)
-            # TODO: Change the status code
-            return Response(status=status.HTTP_504_GATEWAY_TIMEOUT)
-
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
         return Response(status=status.HTTP_200_OK)
 
@@ -273,7 +291,7 @@ class PostAPIView(generics.GenericAPIView):
 
         return queryset
 
-    def resolve_privacy(privacy_str):
+    def resolve_privacy(self, privacy_str):
         if privacy_str == "PUBLIC":
             return Post.PUBLIC
         elif privacy_str == "PRIVATE":
@@ -345,9 +363,6 @@ class CommentAPIView(generics.GenericAPIView):
 
         server_only = allow_server_only_posts(request)
 
-        # post_id = None
-        # author_id = None
-        # content = None
         try:
             data = request.data
             post_id = uuid.UUID(data['post'].split("/")[-1])
@@ -355,7 +370,6 @@ class CommentAPIView(generics.GenericAPIView):
             content = data['comment']['comment']
         except Exception as e:
             Response(status=status.HTTP_400_BAD_REQUEST)
-
 
         # Check that the requesting user has visibility of that post
         posts = Post.objects.filter_user_visible_posts_by_user_id(

@@ -120,6 +120,8 @@ class PostManager(models.Manager):
                     posts_from_servers.extend(responselist["posts"])
             except Exception as e:
                 print(e)
+                print(e)
+                print(e)
                 pass
 
 
