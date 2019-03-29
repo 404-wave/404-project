@@ -484,8 +484,8 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
 
-        # if not request.user.is_authenticated:
-        #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         # Retrieves JSON data
         data = request.data

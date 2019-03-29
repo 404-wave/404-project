@@ -235,7 +235,7 @@ function addFromOtherNode(data){
   const request_user_url = hostUrl+followerID;
   const req_profile_url = hostUrl+"/home/profile"+followerID;
   const recip_user_url = serverUrl+followeeID;
-  const recip_profile_url = serverUrl+"home/profile"+followeeID;
+  const recip_profile_url = serverUrl+""+followeeID;
   let payload = {
     "query":"friendrequest",
     "author": {
@@ -262,7 +262,7 @@ function addFromOtherNode(data){
     contentType: "application/json",
     headers: {"Authorization":"Basic "+nodeUsername+":"+nodePassword,
                 "x-csrftoken":csrfToken,
-                "cache-control": "no-cache"},
+                "content-type": "application/json"},
     success: function(){
       console.log("Successfully sent Request to Other Server");
     },
