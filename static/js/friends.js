@@ -167,7 +167,6 @@ function filterRequests(){
       console.log(error)
     }
   });
-
 }
 
 
@@ -234,10 +233,7 @@ function addFromOtherNode(data){
   const req_profile_url = hostUrl+"author/"+followerID;
   const recip_user_url = serverUrl+"author/"+followeeID;
   const recip_profile_url = serverUrl+"author/"+followeeID;
-  // const request_user_url = hostUrl+followerID;
-  // const req_profile_url = hostUrl+"/home/profile"+followerID;
-  // const recip_user_url = serverUrl+followeeID;
-  // const recip_profile_url = serverUrl+""+followeeID;
+
   let payload = {
     "query":"friendrequest",
     "author": {
@@ -269,24 +265,9 @@ function addFromOtherNode(data){
       console.log("Successfully sent Request to Other Server");
     },
     error: function(xhr,status,error){
-      console.log("error: ",error);
+      console.log("error: Problem sening ajax request \t",error);
     }
   });
-  // metaData= {
-  //   "method":"POST",
-  //   "credentials":"include",
-  //   "body":JSON.stringify(payload),
-  //   "mode":"cors",
-  //   "headers":{
-  //     "Content-Type":"application/json",
-  //     "x-csrftoken":csrfToken,
-  //     "Authorization": "Basic "+nodeUsername+":"+nodePassword
-  //   }
-  // };
-  // fetch(path,metaData)
-  // .then(body=>body.json())
-  // .catch(error=>console.log("error",error));
-
 }
 
 function tempAddNode(){

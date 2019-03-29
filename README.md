@@ -193,8 +193,8 @@ Response:
 {
     "query": "friends",
     "authors": [
-        "http://127.0.0.1:8000/1900e266-dd80-455b-b9dd-abf09c14116e",
-        "http://127.0.0.1:8000/88939ffa-c45d-4c10-a4f0-252ccf87740c"
+        "http://127.0.0.1:8000/author/1900e266-dd80-455b-b9dd-abf09c14116e",
+        "http://127.0.0.1:8000/author/88939ffa-c45d-4c10-a4f0-252ccf87740c"
     ],
     "friends": true
 }
@@ -206,10 +206,10 @@ Request:
 ```
 {
 	"query":"friends",
-	"author":"http://127.0.0.1:8000/1900e266-dd80-455b-b9dd-abf09c14116e",
+	"author":"http://127.0.0.1:8000/author/1900e266-dd80-455b-b9dd-abf09c14116e",
 	"authors": [
-	   "http://127.0.0.1:8000/de305d54-75b4-431b-adb2-eb6b9e546013",
-		"http://127.0.0.1:8000/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+	   "http://127.0.0.1:8000/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+		"http://127.0.0.1:8000/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
   	]
 }
 ```
@@ -218,9 +218,9 @@ Response:
 ```
 {
 	"query":"friends",
- 	"author":"http://127.0.0.1:8000/1900e266-dd80-455b-b9dd-abf09c14116e",
+ 	"author":"http://127.0.0.1:8000/author/1900e266-dd80-455b-b9dd-abf09c14116e",
 	"authors": [
-		"http://127.0.0.1:8000/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+		"http://127.0.0.1:8000/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
   	]
 }
 ```
@@ -232,16 +232,16 @@ Request:
 {
 	"query":"friendrequest",
 	"author": {
-		"id":"http://127.0.0.1:8000/1900e266-dd80-455b-b9dd-abf09c14116e",
+		"id":"http://127.0.0.1:8000/author/1900e266-dd80-455b-b9dd-abf09c14116e",
 		"host":"http://127.0.0.1:8000/",
 		"displayName":"zredfern",
-      "url":"http://127.0.0.1:8000/home/profile/1900e266-dd80-455b-b9dd-abf09c14116e",
+      "url":"http://127.0.0.1:8000/author/1900e266-dd80-455b-b9dd-abf09c14116e",
 	},
 	"friend": {
-		"id":"http://127.0.0.1:8000/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+		"id":"http://127.0.0.1:8000/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
 		"host":"http://127.0.0.1:8000/",
 		"displayName":"bpanda",
-      "url":"http://127.0.0.1:8000/home/profile/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+      "url":"http://127.0.0.1:8000/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
 
 	}
 }
