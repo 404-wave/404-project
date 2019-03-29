@@ -19,7 +19,7 @@
             {% if user.id != request.user.id %}
               <div id="followBtnContainer">
 
-                <button class = "friend_btn" id = {{button_text}} onclick="change_follow('{{ request.user.id }}','{{ request.user.username }}','{{ request.user.host }} ', '{{ user.id }}','{{user.username }}','{{ user.host }}', this)">{{button_text}}</button> 
+                <button class = "friend_btn" id = {{button_text}} onclick="change_follow('{{ request.user.id }}','{{ request.user.username }}','{{ request.user.host }} ', '{{ user.id }}','{{user.username }}','{{ user.host }}','{{ csrf_token }}', this)">{{button_text}}</button> 
 
               </div>
             {% endif %}
