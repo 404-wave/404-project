@@ -258,7 +258,7 @@ function addFromOtherNode(data){
     contentType: "application/json",
     crossDomain: true,
     beforeSend: function(xhr){
-      xhr.setRequestHeader('Authorization'),'Basic ' +nodeUsername+":"+nodePassword;
+      xhr.setRequestHeader('Authorization','Basic ' +nodeUsername+":"+nodePassword);
     },
     success: function(){
       console.log("Successfully sent Request to Other Server");
