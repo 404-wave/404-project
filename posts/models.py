@@ -120,6 +120,8 @@ class PostManager(models.Manager):
                     posts_from_servers.extend(responselist["posts"])
             except Exception as e:
                 print(e)
+                print(e)
+                print(e)
                 pass
 
 
@@ -280,8 +282,6 @@ class Post(models.Model):
     def __str__(self):
         return str(self.user.username)
 
-    def get_title(self):
-        return str(self.user.username)+" - "+str(self.timestamp)
     """
         Redirects to the specific urls.
     """
