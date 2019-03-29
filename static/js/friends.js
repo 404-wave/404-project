@@ -255,11 +255,10 @@ function addFromOtherNode(data){
     type:"POST",
     data:JSON.stringify(payload),
     dataType: "json",
-    username: nodeUsername,
-    password: nodePassword,
     contentType: "application/json",
     headers: {"Authorization":"Basic "+nodeUsername+":"+nodePassword,
-                "x-csrftoken":csrfToken},
+                "x-csrftoken":csrfToken,
+                "cache-control": "no-cache"},
     success: function(){
       console.log("Successfully sent Request to Other Server");
     },
