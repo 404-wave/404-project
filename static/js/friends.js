@@ -250,22 +250,36 @@ function addFromOtherNode(data){
 
   console.log(JSON.stringify(payload,null,2));
 
-  $.ajax({
-    url:path,
-    type:"POST",
-    data:JSON.stringify(payload),
-    dataType: "json",
-    contentType: "application/json",
-    headers: {"Authorization":"Basic "+nodeUsername+":"+nodePassword,
-                "x-csrftoken":csrfToken,
-                "cache-control": "no-cache"},
-    success: function(){
-      console.log("Successfully sent Request to Other Server");
-    },
-    error: function(xhr,status,error){
-      console.log("error: ",error);
+  // $.ajax({
+  //   url:path,
+  //   type:"POST",
+  //   data:JSON.stringify(payload),
+  //   dataType: "json",
+  //   contentType: "application/json",
+  //   headers: {"Authorization":"Basic "+nodeUsername+":"+nodePassword,
+  //               "x-csrftoken":csrfToken,
+  //               "cache-control": "no-cache"},
+  //   success: function(){
+  //     console.log("Successfully sent Request to Other Server");
+  //   },
+  //   error: function(xhr,status,error){
+  //     console.log("error: ",error);
+  //   }
+  // });
+  metaData= {
+    "method":"POST",
+    "credentials":"same-origin",
+    "body":JSON.stringify(payload),
+    "mode":"cors",
+    "headers":{
+      "Content-Type":"application/json",
+      "x-csrftoken":csrfToken,
+      "Authorization": "Basic "+nodeUsername+":"+nodePassword
     }
-  });
+  };
+  fetch(url,metaData)
+  .then(body=>body.json())
+  .catch(error=>console.log("error",error));
 
 }
 
