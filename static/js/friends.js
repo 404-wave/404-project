@@ -268,7 +268,7 @@ function addFromOtherNode(data){
   // });
   metaData= {
     "method":"POST",
-    "credentials":"same-origin",
+    "credentials":"include",
     "body":JSON.stringify(payload),
     "mode":"cors",
     "headers":{
