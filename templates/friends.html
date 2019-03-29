@@ -42,6 +42,7 @@
               <button class ="friend_btn" onclick="filterFriends('following', this)">Following</button>
               <button class ="friend_btn" onclick="filterFriends('followers', this)">Followers</button>
               <button class ="friend_btn" onclick="filterFriends('friends', this)">Friends</button>
+              <button class ="friend_btn" onclick="tempAddNode()">Add User from Other Node</button>
             </div>
       
             <div id="friendContainer">
@@ -50,8 +51,10 @@
 </div>
   {% endif %} 
   <!--Load local JS-->
-  <script>displayNotifications('{{ friend_requests|length }}');</script>
-  <script>closeDropDown();</script>
+  {% if friend_requests|length > 0%}
+    <script>displayNotifications('{{ friend_requests|length }}');</script>
+    <script>closeDropDown();</script>
+  {% endif %}
   {% endblock %}
 
     

@@ -1,10 +1,16 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 from django.utils import timezone
 
 from rest_framework import pagination, generics, views, status, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import JSONParser
 
+import socket
+import requests
+import uuid
+import json
 from .serializers import UserSerializer, PostSerializer, CommentSerializer, UserFriendSerializer
 from .serializers import UserFriendSerializer
 
@@ -99,9 +105,6 @@ class UserAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
 
-        if not request.user.is_authenticated:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         if 'author_id' in kwargs.keys():
             author_id = self.kwargs['author_id']
             try:
@@ -111,9 +114,26 @@ class UserAPIView(generics.GenericAPIView):
         else:
             queryset = User.objects.filter(is_active=True)
 
-        followers = User.objects.filter(follower__user2=author_id, is_active=True)
-        following = User.objects.filter(followee__user1=author_id, is_active=True)
-        friends = following & followers
+        uid = author_id
+        user_Q = Q()
+        follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+        
+        if len(follow_obj) != 0:
+            for follow in follow_obj:
+                if follow.user1==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user2)
+                elif follow.user2==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user1)
+            if len(user_Q) != 0:
+                friends = User.objects.filter(user_Q)
+            else:
+                friends = User.objects.none()
+        else:
+            friends = User.objects.none()
 
         serializer = UserSerializer(queryset, many=False, context={'friends':friends})
         return Response(serializer.data)
@@ -411,6 +431,7 @@ class FriendAPIView(generics.GenericAPIView):
 
     queryset = Follow.objects.all()
     serializer_class = UserFriendSerializer
+    parser_classes = (JSONParser,)
 
     def get(self, request, *args, **kwargs):
 
@@ -422,9 +443,33 @@ class FriendAPIView(generics.GenericAPIView):
 
             friends = ""
             try:
-                followers = User.objects.filter(follower__user2=author_id, is_active=True)
-                following = User.objects.filter(followee__user1=author_id, is_active=True)
-                friends = following & followers
+                
+                #followers = User.objects.filter(follower__user2=author_id, is_active=True)
+                # following = User.objects.filter(followee__user1=author_id, is_active=True)
+                # friends = following & followers
+
+                uid = author_id
+                user_Q = Q()
+                follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+
+                if len(follow_obj) != 0:
+                    for follow in follow_obj:
+                        if follow.user1==uid:
+                            recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                            if len(recip_object) != 0:
+                                user_Q = user_Q | Q(id=follow.user2)
+                        elif follow.user2==uid:
+                            recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                            if len(recip_object) != 0:
+                                user_Q = user_Q | Q(id=follow.user1)
+                    if len(user_Q) != 0:
+                        friends = User.objects.filter(user_Q)
+                    else:
+                        friends = User.objects.none()
+                else:
+                    friends = User.objects.none()
+                
+                
             except:
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -439,38 +484,20 @@ class FriendAPIView(generics.GenericAPIView):
             author_id1 = self.kwargs['author_id1']
             author_id2 = self.kwargs['author_id2']
 
-            friend_list = ""
-            try:
-                followers = User.objects.filter(
-                    follower__user2=author_id1, is_active=True)
-                following = User.objects.filter(
-                    followee__user1=author_id1, is_active=True)
-                friend_list = following & followers
-            except:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+            #TODO Check if they actually exist in other servers
+            a1_follows_a2 = follows(author_id1,author_id2)
+            a2_follows_a1 = follows(author_id2,author_id1)
 
-            friends = False
-            for friend in friend_list:
-                if str(friend.id) == str(author_id2):
-                    friends = True
-                    break
-
-            # Whether there is friendship or not, we need some author data
-            # TODO: What if one of the author's is on a different server? Then
-            # we would need to make a GET request for some data to other nodes.
-            author1 = User
-            author2 = User
-            try:
-                author1 = User.objects.get(id=author_id1)
-                author2 = User.objects.get(id=author_id2)
-            except:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+            if a1_follows_a2 & a2_follows_a1:
+                friends = True
+            else:
+                friends = False
 
             response = {
                 "query":"friends",
                 "authors":[
-                    str(author1.host) + str(author1.id),
-                    str(author2.host) + str(author2.id)
+                    str(author1.host) +"/author/"+ str(author1.id),
+                    str(author2.host) +"/author/"+ str(author2.id)
                 ],
                 "friends": friends
             }
@@ -494,9 +521,29 @@ class FriendAPIView(generics.GenericAPIView):
             Response(status=status.HTTP_400_BAD_REQUEST)
 
         author_id = author.split("/")[-1]
-        followers = User.objects.filter(follower__user2=author_id, is_active=True)
-        following = User.objects.filter(followee__user1=author_id, is_active=True)
-        friends = following & followers
+        # followers = User.objects.filter(follower__user2=author_id, is_active=True)
+        # following = User.objects.filter(followee__user1=author_id, is_active=True)
+        # friends = following & followers
+        uid = author_id
+        user_Q = Q()
+        follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+
+        if len(follow_obj) != 0:
+            for follow in follow_obj:
+                if follow.user1==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user2)
+                elif follow.user2==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user1)
+            if len(user_Q) != 0:
+                friends = User.objects.filter(user_Q)
+            else:
+                friends = User.objects.none()
+        else:
+            friends = User.objects.none()
 
         friend_list = list()
         for potential_friend in authors:
@@ -519,6 +566,8 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
     queryset = FriendRequest.objects.all()
     serializer_class = UserFriendSerializer
+    parser_classes = (JSONParser,)
+    
 
     def post(self, request, *args, **kwargs):
 
@@ -527,42 +576,74 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
         # Retrieves JSON data
         data = request.data
+        
+        author_id = None
+        friend_id = None
+        author_host = None
+        friend_host = None
+
         try:
             author_id = data['author']['id'].split("/")[-1]
             friend_id = data['friend']['id'].split("/")[-1]
+            author_host = data['author']['host']
+            friend_host = data['friend']['host']
+
         except:
             # If the JSON was not what we wanted, send a 400
-            Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        following = User.objects.none()
+        print(author_id)
+        print(friend_id)
+        print(author_host)
+        print(friend_host)
+        
         try:
-            followers = User.objects.filter(follower__user2=author_id, is_active=True)
-            following = User.objects.filter(followee__user1=author_id, is_active=True)
-            friends = following & followers
+            # followers = User.objects.filter(follower__user2=author_id, is_active=True)
+            # following = User.objects.filter(followee__user1=author_id, is_active=True)
+            # friends = following & followers
+
+             following_user_Q = Q()
+             following_obj = Follow.objects.filter(user1=author_id,is_active=True)
+        
+             for fr in following_obj:
+                 following_user_Q = following_user_Q | Q(id= fr.user2)
+             following = User.objects.filter(following_user_Q)
+
         except:
-            # TODO: What is the correct status code here?
-            Response(status=status.HTTP_200_OK)
-
+            print("No follow objects. Continuing ")
+            
         already_following = False
-        for followee in following:
-            if str(friend_id) == str(followee.id):
-                already_following = True
-
+        if (len(following) != 0):
+            for followee in following:
+                if str(friend_id) == str(followee.id):
+                    already_following = True
+    
         # If user1 is already following user2, then a request must have previously been made
+       
         if not already_following:
+
             try:
-                user1 = User.objects.get(pk=author_id)
-                user2 = User.objects.get(pk=friend_id)
-                Follow.objects.create(user1=user1, user2=user2)
-
-                # Query to see if the person they want to follow is already following requestor
-                exists_in_table = FriendRequest.objects.filter(requestor=user2,recipient=user1)
-
-                if (len(exists_in_table) == 0) & (follows(user2,user1) == False):
-                    FriendRequest.objects.create(requestor= user1,recipient= user2)
-                elif len(exists_in_table) != 0:
-                    exists_in_table.delete()
-
+                print(author_id)
+                print(author_host)
+                print(friend_id)
+                print(friend_host)
+                Follow.objects.create(user1=author_id, user1_server =author_host, user2=friend_id, user2_server = friend_host)
             except:
-                Response(status=status.HTTP_200_OK)
+                print(" Couldn't create object")
+                return Response(status=status.HTTP_409_CONFLICT)
+            print("Created object")
+                
+            # Query to see if the person they want to follow is already following requestor
+            exists_in_table = FriendRequest.objects.filter(requestor=friend_id,recipient=author_id)
+            if (len(exists_in_table) == 0) & (follows(friend_id,author_id) == False):
+                try:
+                    print("Trying to make FR")
+                    FriendRequest.objects.create(requestor= author_id, requestor_server = author_host, recipient= friend_id, recipient_server = friend_host)
+                except:
+                    print("Couldn't make FR")
+                    return Response(status=status.HTTP_409_CONFLICT)
+            elif len(exists_in_table) != 0:
+                exists_in_table.delete()
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
