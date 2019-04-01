@@ -466,21 +466,18 @@ class FriendAPIView(generics.GenericAPIView):
 
             author_id1 = None
             author_id2 = None
-            author1_server = NodeSetting.objects.all().get()
+            author1_server = standardize_urL(NodeSetting.objects.all().get())
             author2_server = None
             try:
                 author_id1 = self.kwargs['author_id1']
-                print("created author1")
                 author_id2 = self.kwargs['author_id2']
-                print("created author2")
-                author2_server = self.kwargs['hostname']
-                print("created server2")
                 author2_server = standardize_url(author2_server)
-                print("standardized server2")
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
               
-
+            a1_follows_a2 = follows(author_id1,author_id2)
+            a2_follows_a1 = follows(author_id2,author_id1)
+            
             if a1_follows_a2 & a2_follows_a1:
                 friends = True
             else:
