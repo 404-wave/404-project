@@ -73,7 +73,7 @@ function change_follow(followerID,followerUser,followerHost,
       console.log("FOLLOWER HOST :")
       console.log(followerHost);
       console.log("FOLLOWEE HOST: ")
-      console.elog(followeeHost);
+      console.log(followeeHost);
       if (followerHost != followeeHost && e.id == "Follow"){
         addFromOtherNode(data);
       }
