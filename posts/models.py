@@ -177,7 +177,7 @@ class PostManager(models.Manager):
             friends = User.objects.none()
 
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
-
+        print ("FREIND IN", friends)
         self.get_other_server_posts(user, friends)
         print (user.host)
   
@@ -393,6 +393,7 @@ class PostManager(models.Manager):
     def get_other_server_posts(self, user, friends):
         id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)'
         ##full list of foaf and friends
+        print ("FRIENDS", friends)
         friends_foaf = self.find_foaf(user, friends)
         posts = []
         print ("FOAF", friends_foaf)
