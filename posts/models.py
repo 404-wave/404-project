@@ -331,6 +331,7 @@ class PostManager(models.Manager):
         foaf =set()
         friend_list = []
         for friend in list(friends):
+            print ("FRIEND", friend)
             friend_list.append(friend.host+'/'+str(friend.id))
             foaf.add(friend.host+'/'+str(friend.id))
         headers = {'Accept':'application/json',
