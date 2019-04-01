@@ -466,7 +466,7 @@ class FriendAPIView(generics.GenericAPIView):
 
             author_id1 = None
             author_id2 = None
-            author1_server = standardize_urL(NodeSetting.objects.all().get())
+            author1_server = standardize_url(NodeSetting.objects.all().get())
             author2_server = None
             try:
                 author_id1 = self.kwargs['author_id1']
