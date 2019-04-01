@@ -473,7 +473,7 @@ class FriendAPIView(generics.GenericAPIView):
                 print("created author1")
                 author_id2 = self.kwargs['author_id2']
                 print("created author2")
-                author2_server = self.kwards['hostname']
+                author2_server = self.kwargs['hostname']
                 print("created server2")
                 author2_server = standardize_url(author2_server)
                 print("standardized server2")

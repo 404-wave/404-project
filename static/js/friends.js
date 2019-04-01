@@ -110,7 +110,7 @@ function checkChanges(localUser,localUserServer,requestor,requestorServer){
         removeFromNotifs(localUser,requestor);
       }
     },
-    error: function(xhr,sat){
+    error: function(xhr,status,error){
       console.log("Error: ",error, status);
     }
   });
