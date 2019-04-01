@@ -114,7 +114,7 @@ function checkChanges(localUser,localUserServer,requestor,requestorServer){
       console.log("Error: ",error, status);
     }
   });
-  checkFromOtherNode(localUser,requestor,requestorServer,localUserFollowedBack);
+  checkFromOtherNode(localUser,requestor,requestorServer);
 }
 
 function removeFromNotifs(localUser,foreignUser){
