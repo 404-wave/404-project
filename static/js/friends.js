@@ -70,7 +70,8 @@ function change_follow(followerID,followerUser,followerHost,
       'followerserver':followerHost,
     },
     success: function (data) {
-      if (followerHost != followeeHost && e.id == "Follow"){
+ 
+      if (standardizeUrl(followerHost) != standardizeUrl(followeeHost) && e.id == "Follow"){
         addFromOtherNode(data);
       }
       switchButton(data, e);
