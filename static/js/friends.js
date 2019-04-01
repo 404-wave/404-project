@@ -98,26 +98,23 @@ function switchButton(data, button) {
 
 function checkChanges(localUser,localUserServer,requestor,requestorServer){
   let path1 = standardizeUrl(localUserServer)+"author/"+localUser+"/friends/"+requestor;
-  setInterval(function(){
-    console.log("????");
-    $.ajax({
-      //checks if the local user followed them back
-      url: path1,
-      success: function(content){
-        console.log("Successfully retrieved if local author followed back")
-        let contents = JSON.parse(content);
-        let isFriends= contents['friends'];
-        if (isFriends){
-          removeFromNotifs(localUser,requestor);
-        }
-      },
-      error: function(xhr,status,error){
-        console.log("Error: ",error, status);
+  console.log("????");
+  $.ajax({
+    //checks if the local user followed them back
+    url: path1,
+    success: function(content){
+      console.log("Successfully retrieved if local author followed back")
+      let contents = JSON.parse(content);
+      let isFriends= contents['friends'];
+      if (isFriends){
+        removeFromNotifs(localUser,requestor);
       }
-    });
-    checkFromOtherNode(localUser,requestor,requestorServer,localUserFollowedBack);
-
-  },300000); //poll every 5 minutes
+    },
+    error: function(xhr,status,error){
+      console.log("Error: ",error, status);
+    }
+  });
+  checkFromOtherNode(localUser,requestor,requestorServer,localUserFollowedBack);
 }
 
 function removeFromNotifs(localUser,foreignUser){
