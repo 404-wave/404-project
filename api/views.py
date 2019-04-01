@@ -474,8 +474,7 @@ class FriendAPIView(generics.GenericAPIView):
                 author_id2 = self.kwargs['author_id2']
                 author2_server= self.kwargs['hostname']
                 author2_server = standardize_url(author2_server)
-                                
-
+                            
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
               
@@ -489,8 +488,8 @@ class FriendAPIView(generics.GenericAPIView):
             response = {
                 "query":"friends",
                 "authors":[
-                    author1_server +"author/"+ str(author1_id1),
-                    author2_server +"author/"+ str(author2_id2)
+                    author1_server +"author/"+ str(author_id1),
+                    author2_server +"author/"+ str(author_id2)
                 ],
                 "friends": friends
             }
