@@ -159,26 +159,37 @@ class PostManager(models.Manager):
         uid = user.id
         user_Q = Q()
         follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+        other_friends = []
+        print ("FPF", follow_obj)
         if len(follow_obj) != 0:
             for follow in follow_obj:
+                print (follow.user1, uid)
+                print (follow.user1==uid)
                 if follow.user1==uid:
+                    print ("SS", follow.user1, uid)
                     recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    print ("SSe", recip_object)
                     if len(recip_object) != 0:
-                        user_Q = user_Q | Q(id=follow.user2)
+                        if (follow.user1_server != follow.user2_server):
+                            other_friends.append([follow.user2, follow.user2_server])
+                        else:
+                            user_Q = user_Q | Q(id=follow.user2)
+                        print (user_Q, follow.user2)
                 elif follow.user2==uid:
                     recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
                     if len(recip_object) != 0:
                         user_Q = user_Q | Q(id=follow.user1)
             if len(user_Q) != 0:
                 friends = User.objects.filter(user_Q)
-            else:             
+            else:   
+                friends = []          
                 friends = User.objects.none()
         else:           
             friends = User.objects.none()
 
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
-        print ("FREIND IN", friends)
-        self.get_other_server_posts(user, friends)
+        print ("FREIND IN", other_friends)
+        self.get_other_server_posts(user, other_friends)
         print (user.host)
   
 
@@ -332,8 +343,8 @@ class PostManager(models.Manager):
         friend_list = []
         for friend in list(friends):
             print ("FRIEND", friend)
-            friend_list.append(friend.host+'/'+str(friend.id))
-            foaf.add(friend.host+'/'+str(friend.id))
+            friend_list.append(friend[1]+'/'+str(friend[0]))
+            foaf.add(friend[1]+'/'+str(friend[0]))
         headers = {'Accept':'application/json',
                 'X-UUID': str(user.id)}
         build_data = {'query': 'friends',
@@ -399,8 +410,9 @@ class PostManager(models.Manager):
         print ("FOAF", friends_foaf)
         for friend in friends_foaf:
             re_result = re.search(id_regex, friend)
-            server = re_result.group(1)
+            server = re_result.group(1)[:-1]
             friend_id = re_result.group(2)
+            print ("SERVER", server)
             ##friends is on our server
             if (server == user.host):
                 pass
@@ -409,7 +421,7 @@ class PostManager(models.Manager):
                 node = Node.objects.filter(host = server)
                 if node:
                     print ("MAKE REQUEST", node)
-                    #self.get_post_request(user.id, friend_id, node[0])
+                    self.get_post_request(str(user.id), str(friend_id), node[0])
                     ##filter out duplicate post here
                 
        
