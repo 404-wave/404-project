@@ -269,6 +269,9 @@ textarea.form-control{
 	justify-content: space-between;
 	flex-shrink: 0;
 }
+.top_row a{
+	width: 100px;
+}
 
 .settingss {
 	width: 100%;
@@ -330,6 +333,18 @@ textarea.form-control{
 	display: flex;
 	flex-direction: column;
 	height: fit-content;
+}
+
+.post_view a{
+	width: 100%;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+
+.post_view img{
+	width: 80%;
+	align-self: center;
 }
 
 
