@@ -20,6 +20,15 @@ def get_post_type(value1):
     else:
         return True
 
+@register.filter(name='get_time')
+def get_time(value1):
+    if (isinstance(value1, dict)):
+        time =  value1['published'] 
+        return (value1['published'])
+    else:
+        return value1.timestamp
+
+
 
 @register.filter(name='get_author_id')
 def get_author_id(value1):
