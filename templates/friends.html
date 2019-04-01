@@ -55,6 +55,7 @@
     <script>closeDropDown();</script>
     {% for reqs in friend_requests %}
       <script>checkChanges("{{ user.id }}","{{ user.host }}","{{ reqs.requestor.id }}","{{ reqs.requestor.host }}")</script>
+    {% endfor %}
   {% endif %}
   {% endblock %}
 
