@@ -16,6 +16,7 @@ import base64
 from mimetypes import guess_type
 import uuid
 import json
+import re
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -32,6 +33,8 @@ def image_to_b64(image_file):
 
 def upload_location(instance, filename):
     return "%s/%s" % (instance.id, filename)
+
+
 
 
 class PostManager(models.Manager):
@@ -96,7 +99,7 @@ class PostManager(models.Manager):
             Ex: /author/posts/
 
         """
-
+       
         posts_from_servers = []
         for node in Node.objects.all():
             url = node.host + "/author/posts/"
@@ -177,7 +180,9 @@ class PostManager(models.Manager):
 
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
 
-
+        self.get_other_server_posts(user, friends)
+        print (user.host)
+  
 
         # friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
         # friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
@@ -218,6 +223,10 @@ class PostManager(models.Manager):
         all_posts.extend(posts_from_servers)
 
         return all_posts
+
+
+
+
 
     def filter_user_visible_posts_by_user_id(self, user_id, server_only, *args, **kwargs):
 
@@ -268,7 +277,7 @@ class PostManager(models.Manager):
         else:
             friends = User.objects.none()
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
-
+    
 
         # friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
         # friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
@@ -316,6 +325,92 @@ class PostManager(models.Manager):
         all_posts = self.filter_user_visible_posts(user, server_only=False)
         return all_posts
 
+
+
+
+    #returns a list of foaf friends for the user from other servers
+    def find_foaf(self, user, friends):
+        foaf =set()
+        friend_list = []
+        for friend in list(friends):
+            friend_list.append(friend.host+'/'+str(friend.id))
+            foaf.add(friend.host+'/'+str(friend.id))
+        headers = {'Accept':'application/json',
+                'X-UUID': str(user.id)}
+        build_data = {'query': 'friends',
+            'author':user.host+'/'+str(user.id),
+            'authors': friend_list,}
+        print ("FRIEND QUEYRY", build_data)
+        for node in Node.objects.all():
+            build_endpoint = node.host+'/service/author/'+str(user.id)+'/friends'
+            print (build_endpoint)
+            #r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+        ##NEED TO FINISH AND RETURN LIST OF FRIENDS
+        g = {
+	"query":"friends",
+ 	"author":"https://cmput404-wave.herokuapp.com/1900e266-dd80-455b-b9dd-abf09c14116e",
+	"authors": [
+		"https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+  	    "https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",]
+        }
+        print (g['authors'])
+        for author in g['authors']:
+            foaf.add(author)
+        return foaf
+
+
+ 
+
+
+    #GET /author/{AUTHOR_ID}/posts:
+    def get_post_request(self, userid,friend, node):    
+        url = node.host + "/author/"+friend+'/posts/'
+        headers = {'Accept':'application/json',
+                'X-UUID': userid
+                }
+        try: 
+            print("This is my: ", userid)
+            print ("URL", url)
+            response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+            print(response)
+            print(response.status_code)
+            if (response.status_code > 199 and response.status_code <300):
+                responselist = response.json()
+                print("CONTENT:")
+                for item in responselist["posts"]:
+                    if (item['author']['host'] == ''):
+                        print ("ADDING HOST")
+                        item['author']['host'] = node.host
+            return responselist["posts"]
+            
+        except Exception as e:
+            print(e)
+            print(e)
+            print(e)
+            pass
+
+   ##First get friends and friends of friends
+    # service/author/{AUTHOR_ID}/friends: 
+    def get_other_server_posts(self, user, friends):
+        id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)'
+        ##full list of foaf and friends
+        friends_foaf = self.find_foaf(user, friends)
+        posts = []
+        print (friends_foaf)
+        for friend in friends_foaf:
+            re_result = re.search(id_regex, friend)
+            server = re_result.group(1)
+            friend_id = re_result.group(2)
+            ##friends is on our server
+            if (server == user.host):
+                pass
+                ##get post from our server with foaf
+            else:
+                node = Node.objects.filter(host = server)
+                if node:
+                    self.get_post_request(user.id, friend_id, node[0])
+                
+       
 
 
 class Post(models.Model):
