@@ -104,7 +104,7 @@ function checkChanges(localUser,localUserServer,requestor,requestorServer){
     url: path1,
     success: function(content){
       console.log("Successfully retrieved if local author followed back")
-      let contents = JSON.parse(content);
+      let contents = content;
       let isFriends= contents['friends'];
       if (isFriends){
         console.log("about to remove notifs")
@@ -165,7 +165,7 @@ function checkFromOtherNode(localUser,foreignUser,server){
     type:"GET",
     success: function(response){
       console.log("Successfully got foreign user following list");
-      let content = JSON.parse(response);
+      let content = response;
       let foreignUserFollowList = content['authors'];
       if (!foreignUserFollowList.includes(locaUser) ){
         removeFromNotifs(localUser,foreignUser);
