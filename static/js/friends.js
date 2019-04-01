@@ -107,6 +107,7 @@ function checkChanges(localUser,localUserServer,requestor,requestorServer){
       let contents = JSON.parse(content);
       let isFriends= contents['friends'];
       if (isFriends){
+        console.log("about to remove notifs")
         removeFromNotifs(localUser,requestor);
       }
     },
@@ -114,7 +115,7 @@ function checkChanges(localUser,localUserServer,requestor,requestorServer){
       console.log("Error: ",error, status);
     }
   });
-  checkFromOtherNode(data,localUser,requestor,requestorServer);
+  checkFromOtherNode(localUser,requestor,requestorServer);
 }
 
 function stripProtocol(server){
@@ -157,7 +158,7 @@ function changeFollowDB(localUser,foreignUser){
 }
 
 
-function checkFromOtherNode(data,localUser,foreignUser,server){
+function checkFromOtherNode(localUser,foreignUser,server){
   let path = standardizeUrl(server)+"service/author/"+foreignUser;
   $.ajax({
     url:path,
