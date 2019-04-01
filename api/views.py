@@ -495,7 +495,7 @@ class FriendAPIView(generics.GenericAPIView):
             }
             print("IS FRIENDS RESPONSE: ")
             print(response)
-            return Response(JSON.stringify(response))
+            return Response(json.dumps(response))
         else:
             print("URI doesn't exist")
             return Response(status=status.HTTP_404_NOT_FOUND)
