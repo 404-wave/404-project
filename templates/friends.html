@@ -54,7 +54,7 @@
     <script>displayNotifications('{{ friend_requests|length }}');</script>
     <script>closeDropDown();</script>
     {% for reqs in friend_requests %}
-      <script>checkChanges("{{ user.id }}","{{ user.host }}","{{ reqs.requestor }}","{{ reqs.requestor_server }}")</script>
+      <script>checkChanges("{{ user.id }}","{{ user.host }}","{{ reqs.requestor }}","{{ reqs.requestor_server }}");</script>
     {% endfor %}
   {% endif %}
   {% endblock %}

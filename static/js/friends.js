@@ -98,16 +98,16 @@ function switchButton(data, button) {
 
 function checkChanges(localUser,localUserServer,requestor,requestorServer){
   console.log("WE IN HEREEEE");
-  let path1 = standardizeUrl(localUserServer)+"/author/"+localUser+"/friends/"+requestor;
+  let path1 = standardizeUrl(localUserServer)+"author/"+localUser+"/friends/"+requestor;
   setInterval(function(){
     $.ajax({
       //checks if the local user followed them back
       url: path1,
       success: function(content){
+        console.log("Successfully retrieved if local author followed back")
         let contents = JSON.parse(content);
         let isFriends= contents['friends'];
         if (isFriends){
-          localUserFollowedBack = true;
           removeFromNotifs(localUser,requestor);
         }
       },
@@ -159,12 +159,16 @@ function checkFromOtherNode(data,localUser,foreignUser,server){
     url:path,
     type:"GET",
     success: function(response){
+      console.log("Successfully got foreign user following list");
       let content = JSON.parse(repsonse);
       let foreignUserFollowList = content['authors'];
       if (!foreignUserFollowList.includes(locaUser) ){
         removeFromNotifs(localUser,foreignUser);
         changeFollowDB(localUser,foreignUser);
       }
+    },
+    error: function(xhr,status,error){
+      console.log("error: " + error);
     }
   });
 }
