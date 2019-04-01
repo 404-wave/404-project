@@ -111,11 +111,11 @@ function checkChanges(localUser,localUserServer,requestor,requestorServer){
           removeFromNotifs(localUser,requestor);
         }
       },
-      error: function(xhr,sat){
+      error: function(xhr,status,error){
         console.log("Error: ",error, status);
       }
     });
-    checkFromOtherNode(data,localUser,requestor,requestorServer,localUserFollowedBack);
+    checkFromOtherNode(localUser,requestor,requestorServer,localUserFollowedBack);
 
   },300000); //poll every 5 minutes
 }
@@ -153,7 +153,7 @@ function changeFollowDB(localUser,foreignUser){
 }
 
 
-function checkFromOtherNode(data,localUser,foreignUser,server){
+function checkFromOtherNode(localUser,foreignUser,server){
   let path = standardizeUrl(server)+"service/author/"+foreignUser;
   $.ajax({
     url:path,
