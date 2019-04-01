@@ -391,6 +391,7 @@ class PostManager(models.Manager):
                     if (item['author']['host'] == ''):
                         print ("ADDING HOST")
                         item['author']['host'] = node.host
+            print (responselist)
             return responselist["posts"]
             
         except Exception as e:
