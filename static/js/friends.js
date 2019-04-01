@@ -159,7 +159,7 @@ function changeFollowDB(localUser,foreignUser){
 
 
 function checkFromOtherNode(localUser,foreignUser,server){
-  let path = standardizeUrl(server)+"service/author/"+foreignUser;
+  let path = standardizeUrl(server)+"service/author/"+foreignUser+"/friends";
   $.ajax({
     url:path,
     type:"GET",
