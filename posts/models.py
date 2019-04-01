@@ -140,8 +140,6 @@ class PostManager(models.Manager):
             
             except Exception as e:
                 print(e)
-                print(e)
-                print(e)
                 pass
 
             #print(response.json())
@@ -346,16 +344,16 @@ class PostManager(models.Manager):
             print (build_endpoint)
             #r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
         ##NEED TO FINISH AND RETURN LIST OF FRIENDS
-        g = {
-	"query":"friends",
- 	"author":"https://cmput404-wave.herokuapp.com/1900e266-dd80-455b-b9dd-abf09c14116e",
-	"authors": [
-		"https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",
-  	    "https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",]
-        }
-        print (g['authors'])
-        for author in g['authors']:
-            foaf.add(author)
+        #g = {
+	#"query":"friends",
+ 	#"author":"https://cmput404-wave.herokuapp.com/1900e266-dd80-455b-b9dd-abf09c14116e",
+	#"authors": [
+		#"https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+  	   # "https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",]
+       # }
+       # print (g['authors'])
+        #for author in g['authors']:
+        #    foaf.add(author)
         return foaf
 
 
@@ -396,7 +394,7 @@ class PostManager(models.Manager):
         ##full list of foaf and friends
         friends_foaf = self.find_foaf(user, friends)
         posts = []
-        print (friends_foaf)
+        print ("FOAF", friends_foaf)
         for friend in friends_foaf:
             re_result = re.search(id_regex, friend)
             server = re_result.group(1)
@@ -408,7 +406,9 @@ class PostManager(models.Manager):
             else:
                 node = Node.objects.filter(host = server)
                 if node:
-                    self.get_post_request(user.id, friend_id, node[0])
+                    print ("MAKE REQUEST", node)
+                    #self.get_post_request(user.id, friend_id, node[0])
+                    ##filter out duplicate post here
                 
        
 
