@@ -305,7 +305,7 @@ def friends(request):
 
 	##Friend Requests##
 		#Query to see if any pending friend requests
-	friend_requests = FriendRequest.objects.filter(recipient=user.id)
+	friend_requests = list(FriendRequest.objects.filter(recipient=user.id))
 
 	
 	context = {
