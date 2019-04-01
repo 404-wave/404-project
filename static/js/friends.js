@@ -95,42 +95,78 @@ function switchButton(data, button) {
     button.id = text_val;
 }
 
-// function checkOtherNodes(user,requestorID,requestorServer){
-//   let path = '/friends';
-//   $.ajax({
-//     url: path,
-//     success:  function(data){
-//       removeUnfollows(data,requestorID,requestorServer);
-//     },
-//     error: function(xhr,status,error){
-//       console.log("Error: ",error, status);
-//     }
-//   })
-// }
+function checkChanges(localUser,localUserServer,requestor,requestorServer){
+  let path1 = standardizeUrl(localUserServer)+"/author/"+localUser+"/friends/"+requestor;
+  setInterval(function(){
+    $.ajax({
+      //checks if the local user followed them back
+      url: path1,
+      success: function(content){
+        let contents = JSON.parse(content);
+        let isFriends= contents['friends'];
+        if (isFriends){
+          localUserFollowedBack = true;
+          removeFromNotifs(localUser,requestor);
+        }
+      },
+      error: function(xhr,sat){
+        console.log("Error: ",error, status);
+      }
+    });
+    checkFromOtherNode(data,localUser,requestor,requestorServer,localUserFollowedBack);
 
-// function removeUnfollows(data,follower,server){
+  },300000); //poll every 5 minutes
+}
 
-//   // let authorFriends = new Set();
-//   // for (let userobj in data){
-//   //   let id = data[userobj]["pk"];
-//   //   authorFriends.add(id);
-//   // }
-  
-//   authorFriends = Array.from(authorFriends);
-//   let path = standardizeUrl(server)+"service/author"+follower;
-//   $.ajax({
-//     url:path,
-//     type:"GET",
-//     success: function(response){
-//       let content = JSON.parse(repsonse);
-//       let friendList = content['authors'];
-//       for (let i=0; i<authorFriends.length;i++){
-//         if ()
-//       }
+function removeFromNotifs(localUser,foreignUser){
+  let path = '/change_requests';
+  $.ajax({
+    url:path,
+    type:"POST",
+    data: {'local':localUser,'foreign':foreignUser,'follows':"false"},
+    dataType:"json",
+    success: function(data){
+      console.log("Succesfully removed user from FRs");
+    },
+    error: function(xhr,status,error){
+      console.log("error: ", error, status,xhr);
+    }
+  });
+}
 
-//     }
-//   })
-//}
+function changeFollowDB(localUser,foreignUser){
+  let path = '/change_requests';
+  $.ajax({
+    url:path,
+    type:"POST",
+    data: {'local':localUser,'foreign':foreignUser,'follows':"delete"},
+    dataType:"json",
+    success: function(data){
+      console.log("Succesfully changed Follow DB");
+    },
+    error: function(xhr,status,error){
+      console.log("error: ", error, status,xhr);
+    }
+  });
+}
+
+
+function checkFromOtherNode(data,localUser,foreignUser,server){
+  let path = standardizeUrl(server)+"service/author/"+foreignUser;
+  $.ajax({
+    url:path,
+    type:"GET",
+    success: function(response){
+      let content = JSON.parse(repsonse);
+      let foreignUserFollowList = content['authors'];
+      if (!foreignUserFollowList.includes(locaUser) ){
+        removeFromNotifs(localUser,foreignUser);
+        changeFollowDB(localUser,foreignUser);
+      }
+    }
+  });
+}
+
 function replaceUnfollowButton(data) {
 
   let followerID = data["followerID"];

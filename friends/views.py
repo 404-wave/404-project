@@ -221,6 +221,19 @@ def friend_requests(request):
         data2["posts"].append({'id':str(user.id), 'username':user.username, 'host': host})
     return HttpResponse(json.dumps(data2), content_type='application/json')
 
+def change_ModelDatabase(request):
+    data = request.data['posts']
+    localUserID = data['local']
+    foreignUserID = data['foreign']
+    follows_too = data['follows']
+
+    FriendRequest.objects.filter(recipient=localUserID,requestor=foreignUserID).delete()
+
+    if(follows_too == 'delete'):
+        Follow.objects.filter(user1=foreignUserID,user2=localUserID).delete()
+       
+    return HttpResponse()
+
 def strip_host(host):
     re_result = re.search("(^https?:\/\/)(.*)", host)
     if (re_result):
