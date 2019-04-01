@@ -56,7 +56,7 @@ def posts_detail(request, id):
         # This should work if we have an endpoint to get a specific post
         #       eg: /posts/{POST_ID}/
         # instance is a dictionary and if yes, then comments should be instance[‘comments’]
-
+        success = False
         for node in Node.objects.all():
 
             url = node.host + "/posts/{0}".format(str(id))
