@@ -180,7 +180,9 @@ function populateRequests(data){
   for (var x = 0; x < data['posts'].length; ++x) {
     let id = data['posts'][x]['id'];
     let host = data['posts'][x]['host'];
+    host = host.replace('/', '')
     let username = data['posts'][x]['username'];
+
     let div = `<div><a href=\"../profile/${host}${id}\">${username}</a></div>`;
     $("#dropdown").append(div)
   }
@@ -311,7 +313,7 @@ function standardizeUrl(url){
   if(serverUrl.endsWith("/") == false){
      serverUrl = serverUrl + "/";
   }
-  if(serverUrl.indexOf("https://") === -1){ 
+  if(serverUrl.search(/https?:\/\//g) === -1){ 
     serverUrl = "https://"+serverUrl;
   }
   return serverUrl;
