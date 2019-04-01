@@ -140,6 +140,7 @@ def posts_detail(request, id):
         # r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str('local'), str('localpassword')))
 
         for node in Node.objects.all():
+            success = False
             #build_endpoint = str(node.host) + "/service/posts/" + "3f46f9c3-256f-441c-899e-928b095df627" + "/comments/"
             #print(build_endpoint)
             build_endpoint = str(node.host) + "/service/posts/" + str(post_id) + "/comments/"
