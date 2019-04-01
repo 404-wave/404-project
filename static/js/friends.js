@@ -66,8 +66,8 @@ function change_follow(followerID,followerUser,followerHost,
       followeeID: followeeID,
       followerUser: followerUser,
       followeeUser: followeeUser,
-      'followeeserver': followeeHost,
-      'followerserver':followerHost,
+      'followeeserver': standardizeUrl(followeeHost),
+      'followerserver':standardizeUrl(followerHost),
     },
     success: function (data) {
  
@@ -97,8 +97,8 @@ function switchButton(data, button) {
 }
 
 function checkChanges(localUser,localUserServer,requestor,requestorServer){
-  let path1 = standardizeUrl(localUserServer)+"author/"+localUser+"/friends/"+requestor;
-  console.log("????");
+  console.log("WE IN HEREEEE");
+  let path1 = standardizeUrl(localUserServer)+"author/"+localUser+"/friends/"+stripProtocol(standardizeUrl(requestorServer))+requestor;
   $.ajax({
     //checks if the local user followed them back
     url: path1,
@@ -110,13 +110,20 @@ function checkChanges(localUser,localUserServer,requestor,requestorServer){
         removeFromNotifs(localUser,requestor);
       }
     },
-    error: function(xhr,status,error){
+    error: function(xhr,sat){
       console.log("Error: ",error, status);
     }
   });
-  checkFromOtherNode(localUser,requestor,requestorServer);
+  checkFromOtherNode(data,localUser,requestor,requestorServer);
 }
 
+function stripProtocol(server){
+  let newServer = server;
+  if (server.startsWith("https://")){
+    newServer = server.replace(/^https?\:\/\//i, "");
+  }
+  return newServer;
+}
 function removeFromNotifs(localUser,foreignUser){
   let path = '/change_requests';
   $.ajax({
@@ -150,7 +157,7 @@ function changeFollowDB(localUser,foreignUser){
 }
 
 
-function checkFromOtherNode(localUser,foreignUser,server){
+function checkFromOtherNode(data,localUser,foreignUser,server){
   let path = standardizeUrl(server)+"service/author/"+foreignUser;
   $.ajax({
     url:path,
