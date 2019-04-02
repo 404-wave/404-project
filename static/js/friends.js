@@ -246,6 +246,9 @@ function populateRequests(data){
   for (var x = 0; x < data['posts'].length; ++x) {
     let id = data['posts'][x]['id'];
     let host = data['posts'][x]['host'];
+    if (host.endsWith('/')){
+      host = host.slice(0,-1);
+    }
     let username = data['posts'][x]['username'];
     let div = `<div><a href=\"../profile/${host}${id}\">${username}</a></div>`;
     $("#dropdown").append(div)
