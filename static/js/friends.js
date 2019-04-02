@@ -185,11 +185,11 @@ function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePasswo
       let foreignUserFollowList = content['authors'];
       console.log(foreignUserFollowList);
       console.log(localUser);
-      // if (!foreignUserFollowList.includes(localUser) ){
-      //   console.log("Foreign unfollow. Removing from dB")
-      //   removeFromNotifs(localUser,foreignUser);
-      //   changeFollowDB(localUser,foreignUser);
-      // }
+      if (!foreignUserFollowList.includes(localUser) ){
+         console.log("Foreign unfollow. Removing from dB")
+         removeFromNotifs(localUser,foreignUser);
+         changeFollowDB(localUser,foreignUser);
+       }
     },
     error: function(xhr,status,error){
       console.log("error: " + error);
@@ -246,6 +246,9 @@ function populateRequests(data){
   for (var x = 0; x < data['posts'].length; ++x) {
     let id = data['posts'][x]['id'];
     let host = data['posts'][x]['host'];
+    if (host.endsWith('/')){
+      host = host.slice(0,-1);
+    }
     let username = data['posts'][x]['username'];
     let div = `<div><a href=\"../profile/${host}${id}\">${username}</a></div>`;
     $("#dropdown").append(div)
