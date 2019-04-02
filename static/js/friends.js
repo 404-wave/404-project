@@ -284,8 +284,6 @@ function addFromOtherNode(data){
 
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser'];
-  headers: {"Authorization":"Basic "+btoa(nodeUsername+":"+ nodePassword),
-  "x-csrftoken":csrfToken,
   let path = serverUrl+"service/friendrequest/";
   path = path.replace(/\s+/g, "");
 
