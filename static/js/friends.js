@@ -142,7 +142,7 @@ function removeFromNotifs(localUser,foreignUser){
   $.ajax({
     url:path,
     type:"POST",
-    data: {'local':localUser,'foreign':foreignUser,'follows':"false",
+    headers: {'local':localUser,'foreign':foreignUser,'follows':"false",
     "x-csrftoken":csrfToken},
     dataType:"json",
     success: function(data){
@@ -161,7 +161,7 @@ function changeFollowDB(localUser,foreignUser){
   $.ajax({
     url:path,
     type:"POST",
-    data: {'local':localUser,'foreign':foreignUser,'follows':"delete",
+    headers: {'local':localUser,'foreign':foreignUser,'follows':"delete",
     "x-csrftoken":csrfToken},
     dataType:"json",
     success: function(data){
