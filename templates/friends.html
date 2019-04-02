@@ -20,7 +20,7 @@
 
    <!-- Javascript-->
   <script src="{% static 'js/friends.js' %}"></script>
-  <script>var csrfToken = '{{ csrf_token }}'</script>
+  
 
 
 {% endblock %}
@@ -51,6 +51,7 @@
 </div>
   {% endif %} 
   <!--Load local JS-->
+  <script>var csrfToken = '{{ csrf_token }}'</script>
   {% if friend_requests|length > 0%}
     <script>displayNotifications('{{ friend_requests|length }}');</script>
     <script>closeDropDown();</script>
