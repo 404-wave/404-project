@@ -171,7 +171,7 @@ function changeFollowDB(localUser,foreignUser){
 function checkChanges(localUser,localUserServer,nodeList){
     console.log("WE IN HEREEEE");
     let path1 = standardizeUrl(localUserServer)+"/service/author/"+localUser+"/friends/";
-    let localFriends = None;
+    let localFriends;
     $.ajax({
       //checks if the local user followed them back
       url: path1,
