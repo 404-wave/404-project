@@ -185,11 +185,11 @@ function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePasswo
       let foreignUserFollowList = content['authors'];
       console.log(foreignUserFollowList);
       console.log(localUser);
-      if (!foreignUserFollowList.includes(localUser) ){
-        console.log("Foreign unfollow. Removing from dB")
-        removeFromNotifs(localUser,foreignUser);
-        changeFollowDB(localUser,foreignUser);
-      }
+      // if (!foreignUserFollowList.includes(localUser) ){
+      //   console.log("Foreign unfollow. Removing from dB")
+      //   removeFromNotifs(localUser,foreignUser);
+      //   changeFollowDB(localUser,foreignUser);
+      // }
     },
     error: function(xhr,status,error){
       console.log("error: " + error);
