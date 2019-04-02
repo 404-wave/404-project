@@ -109,10 +109,15 @@ function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePasswo
       success: function(response){
         console.log("Successfully got foreign user following list");
         let content = response;
-        let foreignUserFollowList = content['authors'];
-        console.log(foreignUserFollowList);
+        let foreignList = content['authors'];
+        let foreignFriends = [];
+        foreignList.forEach((url)=>{
+          let friend = url.split("/").pop();
+          foreignFriends.push(friend);
+        });
+        console.log(foreignFriends);
         console.log(localUser);
-        if (!foreignUserFollowList.includes(localUser) ){
+        if ( foreignFriends && !foreignFriends.includes(localUser) ){
            console.log("Foreign unfollow. Removing from dB");
            changeFollowDB(localUser,foreignUser);
          }
