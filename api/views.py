@@ -461,7 +461,9 @@ class FriendAPIView(generics.GenericAPIView):
                 
                 
             except:
-                traceback.print_exc
+                print("WTF")
+                traceback.print_exc()
+
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
             friend_list = list()
