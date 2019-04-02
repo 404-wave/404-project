@@ -137,13 +137,13 @@ function stripProtocol(server){
 }
 function removeFromNotifs(localUser,foreignUser){
   let path = 'change_ModelDatabase/';
-  console.log("CSRFTOKEN:  ");
-  console.log(csrfToken);
+
   $.ajax({
     url:path,
     type:"POST",
-    headers: {'local':localUser,'foreign':foreignUser,'follows':"false",
-    "x-csrftoken":csrfToken},
+    data: {'local':localUser,'foreign':foreignUser,'follows':"false",
+    },
+    headers:{"x-csrftoken":csrfToken},
     dataType:"json",
     success: function(data){
       console.log("Succesfully removed user from FRs");
@@ -156,13 +156,12 @@ function removeFromNotifs(localUser,foreignUser){
 
 function changeFollowDB(localUser,foreignUser){
   let path = 'change_ModelDatabase/';
-  console.log("CSRFTOKEN:  ");
-  console.log(csrfToken);
+
   $.ajax({
     url:path,
     type:"POST",
-    headers: {'local':localUser,'foreign':foreignUser,'follows':"delete",
-    "x-csrftoken":csrfToken},
+    data: {'local':localUser,'foreign':foreignUser,'follows':"delete"},
+    headers: {"x-csrftoken":csrfToken},
     dataType:"json",
     success: function(data){
       console.log("Succesfully changed Follow DB");
