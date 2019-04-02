@@ -190,13 +190,13 @@ def home(request):
 					streamlist.append(message)
 		
 		nodeList = getNodeList()
-		print(nodeList)
+		
 
 		context = {
 			"object_list": streamlist,
 			"user": user,
 			"form": form,
-			"nodeList": nodeList,
+			"nodeList": json.dumps(nodeList),
 
 		}
 	if instance and instance.unlisted is True:
