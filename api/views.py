@@ -21,7 +21,7 @@ from users.models import User, Node, NodeSetting
 from comments.models import Comment
 from posts.models import Post
 
-from friends.views import follows,standardize_url
+from friends.views import follows,standardize_url,get_user
 
 import requests
 import socket
@@ -461,7 +461,7 @@ class FriendAPIView(generics.GenericAPIView):
                 
                 
             except:
-                print("WTF")
+                
                 traceback.print_exc()
 
                 return Response(status=status.HTTP_404_NOT_FOUND)
