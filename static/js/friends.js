@@ -287,7 +287,8 @@ function standardizeUrl(url){
 }
 
 function findNodeUserAndPass(nodeList,server){
-  for(let node in nodeList){
+  for(let i=0;i<nodeList;i++){
+    node=nodeList[i];
     let stand_node = standardizeUrl(node);
     if (stand_node == server){
       let data = {
