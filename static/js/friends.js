@@ -136,7 +136,7 @@ function stripProtocol(server){
   return newServer;
 }
 function removeFromNotifs(localUser,foreignUser){
-  let path = '/change_requests';
+  let path = '/change_ModelDatabase';
   $.ajax({
     url:path,
     type:"POST",
@@ -283,7 +283,7 @@ function addFromOtherNode(data){
   console.log(nodePassword);
 
   const followerUsername = data['followerUser'];
-  const followeeUsername = data['followeeUser'];
+  const followeeUsername = data['followeeUser']; 
   let path = serverUrl+"service/friendrequest/";
   path = path.replace(/\s+/g, "");
 
