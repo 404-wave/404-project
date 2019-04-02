@@ -191,7 +191,7 @@ function checkChanges(localUser,localUserServer,nodeList){
               console.log(hostname);
               if (hostname != standardizeUrl(localUserServer)){
                 let friendID = url.pop();
-                let userPassObj = findNodeUserAndPass(nodeList,hostname);
+                let userPassObj = findNodeUserAndPass(JSON.parse(nodeList),hostname);
                 let nodeUsername = userPassObj['username'];
                 let nodePassword = userPassObj['password'];
                 console.log(hostname);
