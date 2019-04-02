@@ -115,8 +115,6 @@ function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePasswo
           let friend = url.split("/").pop();
           foreignFriends.push(friend);
         });
-        console.log(foreignFriends);
-        console.log(localUser);
         if ( foreignFriends && !foreignFriends.includes(localUser) ){
            console.log("Foreign unfollow. Removing from dB");
            changeFollowDB(localUser,foreignUser);
@@ -174,7 +172,7 @@ function changeFollowDB(localUser,foreignUser){
 }
 
 function checkChanges(localUser,localUserServer,nodeList){
-    console.log("WE IN HEREEEE");
+
     let path1 = standardizeUrl(localUserServer)+"service/author/"+localUser+"/friends/";
     let localFriends;
     $.ajax({
@@ -182,34 +180,21 @@ function checkChanges(localUser,localUserServer,nodeList){
       url: path1,
       success: function(content){
         console.log("Successfully retrieved if local author friend list")
-        localFriends= content['authors'];
-        console.log("LOCAL FRIENDS OBJECT: ");
-        console.log(localFriends);
         if (localFriends){
             for(let i=0;i<localFriends.length;i++){
               let friend = localFriends[i];
-              console.log("FRIEND LOCAL: ")
-              console.log(friend);
               let url = friend.split("/");
-              console.log(url);
+
               let hostname = standardizeUrl(url[2]);
-              console.log(hostname);
-              console.log(nodeList);
               if (hostname != standardizeUrl(localUserServer)){
                 let friendID = url.pop();
                 let userPassObj = findNodeUserAndPass(JSON.parse(nodeList),hostname);
                 let nodeUsername = userPassObj['username'];
                 let nodePassword = userPassObj['password'];
-                console.log(hostname);
-                console.log(friendID);
-                console.log(nodeUsername);
-                console.log(nodePassword);
                 checkFromOtherNode(localUser,friendID,hostname,nodeUsername,nodePassword);
-
               }
             }
         }
-
       },
       error: function(xhr,status,error){
         console.log("Error: ",error, status);
