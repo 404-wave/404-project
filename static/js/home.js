@@ -178,6 +178,8 @@ function checkChanges(localUser,localUserServer,nodeList){
       success: function(content){
         console.log("Successfully retrieved if local author friend list")
         localFriends= content['authors'];
+        console.log("LOCAL FRIENDS OBJECT: ");
+        console.log(localFriends);
         if (localFriends){
             for (friend in localFriends){
               console.log("FRIEND LOCAL: ")
