@@ -152,7 +152,7 @@ function removeFromNotifs(localUser,foreignUser){
 }
 
 function changeFollowDB(localUser,foreignUser){
-  let path = '/change_requests';
+  let path = 'change_ModelDataBase/';
   $.ajax({
     url:path,
     type:"POST",
