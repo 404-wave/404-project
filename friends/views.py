@@ -232,10 +232,10 @@ def friend_requests(request):
     return HttpResponse(json.dumps(data2), content_type='application/json')
 
 def change_ModelDatabase(request):
-    data = request.data['posts']
-    localUserID = data['local']
-    foreignUserID = data['foreign']
-    follows_too = data['follows']
+    
+    localUserID = request.POST.get('local')
+    foreignUserID = request.POST.get('foreign')
+    follows_too = request.POST.get('follows')
 
     FriendRequest.objects.filter(recipient=localUserID,requestor=foreignUserID).delete()
 
