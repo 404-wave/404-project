@@ -173,8 +173,7 @@ function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePasswo
   $.ajax({
     url:path,
     type:"GET",
-    headers: {"Authorization":"Basic "+btoa(nodeUsername+":"+ nodePassword),
-                "x-csrftoken":csrfToken},
+    headers: {"Authorization":"Basic "+btoa(nodeUsername+":"+ nodePassword)},
     success: function(response){
       console.log("Successfully got foreign user following list");
       let content = response;
