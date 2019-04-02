@@ -115,6 +115,8 @@ function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePasswo
           let friend = url.split("/").pop();
           foreignFriends.push(friend);
         });
+        console.log(foreignFriends);
+        console.log(localUser);
         if ( foreignFriends && !foreignFriends.includes(localUser) ){
            console.log("Foreign unfollow. Removing from dB");
            changeFollowDB(localUser,foreignUser);
@@ -179,22 +181,27 @@ function checkChanges(localUser,localUserServer,nodeList){
       //checks if the local user followed them back
       url: path1,
       success: function(content){
-        console.log("Successfully retrieved if local author friend list")
+        localFriends= content['authors'];
+
         if (localFriends){
             for(let i=0;i<localFriends.length;i++){
               let friend = localFriends[i];
-              let url = friend.split("/");
 
+              let url = friend.split("/");
               let hostname = standardizeUrl(url[2]);
+
               if (hostname != standardizeUrl(localUserServer)){
                 let friendID = url.pop();
                 let userPassObj = findNodeUserAndPass(JSON.parse(nodeList),hostname);
                 let nodeUsername = userPassObj['username'];
                 let nodePassword = userPassObj['password'];
+
                 checkFromOtherNode(localUser,friendID,hostname,nodeUsername,nodePassword);
+
               }
             }
         }
+
       },
       error: function(xhr,status,error){
         console.log("Error: ",error, status);
