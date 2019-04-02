@@ -432,25 +432,31 @@ class FriendAPIView(generics.GenericAPIView):
                 # friends = following & followers
 
                 uid = author_id
-                user_Q = Q()
                 follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+                friends= set()
 
-                if len(follow_obj) != 0:
+                if follow_obj:
                     for follow in follow_obj:
-                        if follow.user1==uid:
+                        if ((follow.user1==uid) & (follow.user2 not in friends)):
                             recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                            if len(recip_object) != 0:
-                                user_Q = user_Q | Q(id=follow.user2)
-                        elif follow.user2==uid:
+                            if recip_object:
+                                user = User.objects.filter(id=follow.user2)
+                                if user:    
+                                    user=user.get()
+                                else:
+                                    user = get_user(follow.user2_server,follow.user2)
+                                    if user is None:
+                                        continue
+                                friends.add(user)
+                        elif ((follow.user2==uid) & (follow.user1 not in friends)):
                             recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                            if len(recip_object) != 0:
-                                user_Q = user_Q | Q(id=follow.user1)
-                    if len(user_Q) != 0:
-                        friends = User.objects.filter(user_Q)
-                    else:
-                        friends = User.objects.none()
-                else:
-                    friends = User.objects.none()
+                            if recip_object:
+                                user= User.objects.filter(id=follow.user1)
+                                if user:
+                                    user=user.get()
+                                else:
+                                    user= get_user(follow.user1_server,follow.user1)
+                                friends.add(user)
                 
                 
             except:
@@ -458,10 +464,12 @@ class FriendAPIView(generics.GenericAPIView):
 
             friend_list = list()
             for friend in friends:
-                friend_list.append(str(friend.id))
+                url = standardize_url(friend.host) + "service/author/"+str(friend.id)
+                friend_list.append(url)
+
 
             return Response({"query": "friends", "authors": friend_list})
-
+            
         if 'author_id1' in self.kwargs.keys() and 'author_id2' in self.kwargs.keys():
 
             author_id1 = None
