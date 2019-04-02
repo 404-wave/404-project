@@ -132,5 +132,5 @@
   {% endif %}
   <!-- Local JS -->
   <script>var csrfToken = '{{ csrf_token }}'</script>
-  <script>checkChanges('{{ user.id }}','{{ user.host }}','{{ nodeList }}');</script> 
+  <script>checkChanges('{{ user.id }}','{{ user.host }}',"{{ nodeList }}");</script> 
   {% endblock %}
