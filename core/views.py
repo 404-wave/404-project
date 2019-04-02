@@ -190,6 +190,7 @@ def home(request):
 					streamlist.append(message)
 		
 		nodeList = getNodeList()
+		print(nodeList)
 
 		context = {
 			"object_list": streamlist,
