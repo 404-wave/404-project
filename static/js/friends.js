@@ -141,7 +141,7 @@ function removeFromNotifs(localUser,foreignUser){
     url:path,
     type:"POST",
     data: {'local':localUser,'foreign':foreignUser,'follows':"false",
-    "x-csrftoken":csrfToken},
+    "x-csrftoken":getCookie("csrftoken")},
     dataType:"json",
     success: function(data){
       console.log("Succesfully removed user from FRs");
@@ -158,7 +158,7 @@ function changeFollowDB(localUser,foreignUser){
     url:path,
     type:"POST",
     data: {'local':localUser,'foreign':foreignUser,'follows':"delete",
-    "x-csrftoken":csrfToken},
+    "x-csrftoken":getCookie("csrftoken")},
     dataType:"json",
     success: function(data){
       console.log("Succesfully changed Follow DB");
