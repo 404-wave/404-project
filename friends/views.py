@@ -163,7 +163,7 @@ def follow(request):
     return HttpResponse(json.dumps(data), content_type="application/json")
     #return HttpResponse()
 
-def getNodeList():
+def getNodeList(request):
     nodes = Node.objects.all()
     nodeList = dict()
     for node in nodes:
@@ -173,7 +173,7 @@ def getNodeList():
             'password':node.password,
         }
     return nodeList
-    
+
 def unfollow(request):
 
     if not request.user.is_authenticated:
