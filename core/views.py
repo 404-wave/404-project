@@ -209,7 +209,7 @@ def getNodeList():
             'username':node.username,
             'password':node.password,
         }
-    return HttpResponse(json.dumps(nodeList),content_type="application/json")
+    return nodeList
 
 def get_user(parameters):
 	user = User()
