@@ -186,6 +186,7 @@ function checkChanges(localUser,localUserServer,nodeList){
               console.log("FRIEND LOCAL: ")
               console.log(friend);
               let url = friend.split("/");
+              console.log(url);
               let hostname = standardizeUrl(url[0]);
               if (hostname != standardizeUrl(localUserServer)){
                 let friendID = url.pop();
