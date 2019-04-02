@@ -186,16 +186,30 @@ def home(request):
 
 				if is_oldest:
 					streamlist.append(message)
+		
+		nodeList = getNodeList()
 
 		context = {
 			"object_list": streamlist,
 			"user": user,
 			"form": form,
+			"nodeList": nodeList,
+
 		}
 	if instance and instance.unlisted is True:
 		context["unlisted_instance"] = instance
 	return render(request, "home.html", context)
 
+def getNodeList():
+    nodes = Node.objects.all()
+    nodeList = dict()
+    for node in nodes:
+        nodeList[node.host]= {
+            'sharing':node.sharing,
+            'username':node.username,
+            'password':node.password,
+        }
+    return HttpResponse(json.dumps(nodeList),content_type="application/json")
 
 def get_user(parameters):
 	user = User()
