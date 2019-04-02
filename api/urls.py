@@ -10,7 +10,7 @@ urlpatterns = [
     path('author/<uuid:author_id>/', UserAPIView.as_view()),
     path('posts/<uuid:post_id>/comments/', CommentAPIView.as_view()),
     path('author/<uuid:author_id1>/friends/<hostname>/<uuid:author_id2>/',FriendAPIView.as_view()),
-    path('author/<uuid:author_id>/friends/', FriendAPIView.as_view()),
+    path('author/<uuid:author_id>/friends', FriendAPIView.as_view()),
     path('friendrequest/', FriendRequestAPIView.as_view()),
     path('author/<uuid:author_id>/posts/', PostAPIView.as_view()),
     path('posts/<uuid:post_id>/', PostAPIView.as_view()),

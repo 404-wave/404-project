@@ -99,6 +99,7 @@ function switchButton(data, button) {
 function checkChanges(localUser,localUserServer,requestor,requestorServer){
   console.log("WE IN HEREEEE");
   let path1 = standardizeUrl(localUserServer)+"author/"+localUser+"/friends/"+stripProtocol(standardizeUrl(requestorServer))+requestor;
+  let path2 = '/getNodeList';
   $.ajax({
     //checks if the local user followed them back
     url: path1,
@@ -115,7 +116,16 @@ function checkChanges(localUser,localUserServer,requestor,requestorServer){
       console.log("Error: ",error, status);
     }
   });
-  checkFromOtherNode(localUser,requestor,requestorServer);
+  $.ajax({
+    url:path2,
+    success: function(data){
+      let content = findNodeUserAndPass(data,requestorServer);
+      let nodeUser = content['username'];
+      let nodePass = content['password'];
+      checkFromOtherNode(localUser,requestor,requestorServer,nodeUser,nodePass);
+    }
+
+  })
 }
 
 function stripProtocol(server){
@@ -158,11 +168,13 @@ function changeFollowDB(localUser,foreignUser){
 }
 
 
-function checkFromOtherNode(localUser,foreignUser,server){
+function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePassword){
   let path = standardizeUrl(server)+"service/author/"+foreignUser+"/friends";
   $.ajax({
     url:path,
     type:"GET",
+    headers: {"Authorization":"Basic "+btoa(nodeUsername+":"+ nodePassword),
+                "x-csrftoken":csrfToken},
     success: function(response){
       console.log("Successfully got foreign user following list");
       let content = response;
@@ -272,7 +284,8 @@ function addFromOtherNode(data){
 
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser'];
-
+  headers: {"Authorization":"Basic "+btoa(nodeUsername+":"+ nodePassword),
+  "x-csrftoken":csrfToken,
   let path = serverUrl+"service/friendrequest/";
   path = path.replace(/\s+/g, "");
 
