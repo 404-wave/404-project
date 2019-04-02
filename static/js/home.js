@@ -177,7 +177,7 @@ function checkChanges(localUser,localUserServer,nodeList){
       url: path1,
       success: function(content){
         console.log("Successfully retrieved if local author friend list")
-        localFriends= contents['authors'];
+        localFriends= content['authors'];
         if (localFriends){
             for (friend in localFriends){
               console.log("FRIEND LOCAL: ")
