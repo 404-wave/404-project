@@ -211,7 +211,7 @@ def getNodeList():
             'username':node.username,
             'password':node.password,
         }
-    return json.dumps(nodeList)
+    return nodeList
 
 def get_user(parameters):
 	user = User()
