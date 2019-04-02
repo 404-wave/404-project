@@ -99,7 +99,7 @@ function switchButton(data, button) {
 function checkChanges(localUser,localUserServer,requestor,requestorServer){
   console.log("WE IN HEREEEE");
   let path1 = standardizeUrl(localUserServer)+"author/"+localUser+"/friends/"+stripProtocol(standardizeUrl(requestorServer))+requestor;
-  let path2 = '/getNodeList';
+  let path2 = 'getNodeList/';
   $.ajax({
     //checks if the local user followed them back
     url: path1,
@@ -136,7 +136,7 @@ function stripProtocol(server){
   return newServer;
 }
 function removeFromNotifs(localUser,foreignUser){
-  let path = '/change_ModelDatabase';
+  let path = 'change_ModelDatabase/';
   $.ajax({
     url:path,
     type:"POST",
