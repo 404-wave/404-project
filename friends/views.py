@@ -242,7 +242,7 @@ def change_ModelDatabase(request):
     if(follows_too == 'delete'):
         Follow.objects.filter(user1=foreignUserID,user2=localUserID).delete()
        
-    return HttpResponse()
+    return HttpResponse(status=204)
 
 def strip_host(host):
     re_result = re.search("(^https?:\/\/)(.*)", host)
