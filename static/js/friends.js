@@ -169,7 +169,7 @@ function changeFollowDB(localUser,foreignUser){
 
 
 function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePassword){
-  let path = standardizeUrl(server)+"service/author/"+foreignUser+"/friends";
+  let path = standardizeUrl(server)+"service/author/"+foreignUser+"/friends/";
   $.ajax({
     url:path,
     type:"GET",
@@ -179,6 +179,7 @@ function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePasswo
       let content = response;
       let foreignUserFollowList = content['authors'];
       if (!foreignUserFollowList.includes(localUser) ){
+        console.log("Foreign unfollow. Removing from dB")
         removeFromNotifs(localUser,foreignUser);
         changeFollowDB(localUser,foreignUser);
       }
