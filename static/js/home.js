@@ -181,7 +181,7 @@ function checkChanges(localUser,localUserServer,nodeList){
         console.log("LOCAL FRIENDS OBJECT: ");
         console.log(localFriends);
         if (localFriends){
-            for (friend in localFriends){
+            for(let friend in localFriends){
               console.log("FRIEND LOCAL: ")
               console.log(friend);
               let url = friend.split("/");
