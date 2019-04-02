@@ -156,7 +156,7 @@ function stripProtocol(server){
 }
 
 function changeFollowDB(localUser,foreignUser){
-    let path = 'change_ModelDatabase/';
+    let path = 'friends/change_ModelDatabase/';
   
     $.ajax({
       url:path,
