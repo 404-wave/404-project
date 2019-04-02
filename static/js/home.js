@@ -195,7 +195,7 @@ function checkChanges(localUser,localUserServer,nodeList){
                 console.log(friendID);
                 console.log(nodeUsername);
                 console.log(nodePassword);
-                checkFromOtherNode(localuser,friendID,hostname,nodeUsername,nodePassword);
+                checkFromOtherNode(localUser,friendID,hostname,nodeUsername,nodePassword);
 
               }
             }
