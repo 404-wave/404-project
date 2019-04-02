@@ -172,7 +172,7 @@ def getNodeList(request):
             'username':node.username,
             'password':node.password,
         }
-    return nodeList
+    return HttpResponse(json.dumps(nodeList),content_type="application/json")
 
 def unfollow(request):
 
