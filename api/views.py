@@ -26,6 +26,7 @@ from friends.views import follows,standardize_url
 import requests
 import socket
 import uuid
+import traceback
 
 
 # Checks if we have enabled sharing posts with other servers
@@ -460,6 +461,7 @@ class FriendAPIView(generics.GenericAPIView):
                 
                 
             except:
+                traceback.print_exc
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
             friend_list = list()
@@ -469,7 +471,7 @@ class FriendAPIView(generics.GenericAPIView):
 
 
             return Response({"query": "friends", "authors": friend_list})
-            
+
         if 'author_id1' in self.kwargs.keys() and 'author_id2' in self.kwargs.keys():
 
             author_id1 = None
