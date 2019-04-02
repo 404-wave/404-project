@@ -13,6 +13,7 @@ import requests
 import base64
 import pytz
 import re
+import json
 
 from .forms import ProfileChangeForm as changeForm
 from friends.models import FriendRequest
@@ -20,6 +21,7 @@ from friends.views import follows
 from posts.forms import PostForm
 from posts.models import Post
 from users.models import User, Node
+
 
 
 # TODO: use the REST API once it is established
@@ -209,7 +211,7 @@ def getNodeList():
             'username':node.username,
             'password':node.password,
         }
-    return nodeList
+    return json.dumps(nodeList)
 
 def get_user(parameters):
 	user = User()
