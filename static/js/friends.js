@@ -183,6 +183,8 @@ function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePasswo
       console.log("Successfully got foreign user following list");
       let content = response;
       let foreignUserFollowList = content['authors'];
+      console.log(foreignUserFollowList);
+      console.log(localUser);
       if (!foreignUserFollowList.includes(localUser) ){
         console.log("Foreign unfollow. Removing from dB")
         removeFromNotifs(localUser,foreignUser);
