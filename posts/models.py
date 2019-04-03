@@ -7,11 +7,18 @@ from django.urls import reverse
 from comments.models import Comment
 from friends.models import Follow
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.fields.related import ManyToManyField, ForeignKey
+from django.db.models.fields import UUIDField, DateTimeField
 from users.models import User
 from users.models import Node
 from django.dispatch import receiver
 from django.db.models.signals import post_save, m2m_changed
 from django.db.models import Q
+from django.forms.models import model_to_dict
+import json
+import datetime
+from django.core.serializers.json import DjangoJSONEncoder
+
 import base64
 from mimetypes import guess_type
 import uuid
@@ -207,14 +214,21 @@ class PostManager(models.Manager):
 
 
         all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
+        print ("ALL POST", type(all_posts.values()))
+        k = all_posts[0].to_dict_object()
 
+        print (k)
         """
             If unlisted is passed as True, the function will remove unlisted posts from the list.
             If it is passed as False, then it will not remove the unlisted posts.
         """
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
+
         all_posts = list(all_posts.order_by('-timestamp'))
+        all_posts = [item.to_dict_object() for item in all_posts]
+        for item in all_posts:
+            print (type(item))
         all_posts.extend(posts_from_servers)
 
         return all_posts
@@ -398,6 +412,20 @@ class Post(models.Model):
 
     def encodeImage(self, image):
         pass
+
+    def to_dict_object(self):
+        opts = self._meta
+        data = {}
+        data['content']= self.content
+        data['author'] =self.user.to_dict_object_post()
+        data['published'] = str(self.publish)
+        data['timestamp'] = str(self.timestamp)
+        data['id']= str(self.id)
+        data['visibility'] = self.Privacy[self.privacy]
+        data['visibleto']  = list(self.accessible_users.values_list('pk', flat=True))
+        data['contentType'] = self.content_type
+
+        return data
 
     @property
     def comments(self):
