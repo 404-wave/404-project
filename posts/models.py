@@ -50,21 +50,11 @@ class PostManager(models.Manager):
     """
     def convert_to_date(self,elem):
         new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
-        print (new_dt)
-        #new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%d %H:%M:%S.%f')
+        new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f')    
         return new_dt
 
-        pass
     def sort_posts(self, list_post):
-        #sorted(list_post, key=lambda x: datetime.datetime.strptime(list_post[x]['published'], '%m-%Y'))
-       #sorted(list_post, key=list_post[])
-       for item in list_post:
-           print (item)
-           print (item['published'])
-           self.convert_to_date(item)
-
-           print()
-            
+       list_post.sort(key = lambda date: self.convert_to_date(date), reverse=True) 
 
 
     def all(self, *args, **kwargs):
