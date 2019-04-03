@@ -6,6 +6,7 @@ from django.conf import settings
 from django.urls import reverse
 from comments.models import Comment
 from friends.models import Follow
+from django.utils.dateparse import parse_datetime
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.db.models.fields import UUIDField, DateTimeField
@@ -16,6 +17,7 @@ from django.db.models.signals import post_save, m2m_changed
 from django.db.models import Q
 from django.forms.models import model_to_dict
 import json
+import re
 import datetime
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -46,6 +48,25 @@ class PostManager(models.Manager):
     """
         Functions that were made to test individual privacy setting
     """
+    def convert_to_date(self,elem):
+        new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
+        print (new_dt)
+        #new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%d %H:%M:%S.%f')
+        return new_dt
+
+        pass
+    def sort_posts(self, list_post):
+        #sorted(list_post, key=lambda x: datetime.datetime.strptime(list_post[x]['published'], '%m-%Y'))
+       #sorted(list_post, key=list_post[])
+       for item in list_post:
+           print (item)
+           print (item['published'])
+           self.convert_to_date(item)
+
+           print()
+            
+
+
     def all(self, *args, **kwargs):
         query_set = super(PostManager, self).order_by("-timestamp")
         return query_set
@@ -53,6 +74,7 @@ class PostManager(models.Manager):
     def filter_by_public(self, *args, **kwargs):
         query_set = super(PostManager, self).filter(privacy=0).order_by("-timestamp")
         return query_set
+
 
     def filter_by_friends(self, *args, **kwargs):
         # followers = User.objects.filter(follower__user2=user.id, is_active=True)
@@ -222,9 +244,11 @@ class PostManager(models.Manager):
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
 
-        all_posts = list(all_posts.order_by('-timestamp'))
+        ##all_posts = list(all_posts.order_by('-timestamp'))
         all_posts = [item.to_dict_object() for item in all_posts]
         all_posts.extend(posts_from_servers)
+        self.sort_posts(all_posts)
+        print(type(all_posts[0]['published']))
 
         return all_posts
 
@@ -413,7 +437,7 @@ class Post(models.Model):
         data = {}
         data['content']= self.content
         data['author'] =self.user.to_dict_object_post()
-        data['published'] = str(self.publish)
+        data['published'] = self.publish.isoformat()
         data['timestamp'] = str(self.timestamp)
         data['id']= str(self.id)
         data['visibility'] = self.Privacy[self.privacy]

@@ -122,7 +122,7 @@ class PostSerializer(serializers.ModelSerializer):
         return obj.content_type
 
     def _published(self, obj):
-        return obj.publish
+        return obj.publish.isoformat()
 
     def _visibility(self, obj):
         return Post.Privacy[obj.privacy][1]
