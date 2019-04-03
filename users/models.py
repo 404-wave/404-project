@@ -18,6 +18,16 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+    def to_dict_object_post(self):
+        opts = self._meta
+        data = {}
+        data['id'] = str(self.id)
+        data['host'] = self.host
+        data['displayName'] = self.username
+        data['github'] = self.github
+        return data
+
+
 
 class Node(models.Model):
 

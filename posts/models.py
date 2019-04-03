@@ -214,10 +214,7 @@ class PostManager(models.Manager):
 
 
         all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
-        print ("ALL POST", type(all_posts.values()))
-        k = all_posts[0].to_dict_object()
 
-        print (k)
         """
             If unlisted is passed as True, the function will remove unlisted posts from the list.
             If it is passed as False, then it will not remove the unlisted posts.
@@ -227,8 +224,6 @@ class PostManager(models.Manager):
 
         all_posts = list(all_posts.order_by('-timestamp'))
         all_posts = [item.to_dict_object() for item in all_posts]
-        for item in all_posts:
-            print (type(item))
         all_posts.extend(posts_from_servers)
 
         return all_posts
