@@ -66,8 +66,8 @@ function change_follow(followerID,followerUser,followerHost,
       followeeID: followeeID,
       followerUser: followerUser,
       followeeUser: followeeUser,
-      'followeeserver': followeeHost,
-      'followerserver':followerHost,
+      'followeeserver': standardizeUrl(followeeHost),
+      'followerserver':standardizeUrl(followerHost),
     },
     success: function (data) {
  
@@ -96,42 +96,8 @@ function switchButton(data, button) {
     button.id = text_val;
 }
 
-// function checkOtherNodes(user,requestorID,requestorServer){
-//   let path = '/friends';
-//   $.ajax({
-//     url: path,
-//     success:  function(data){
-//       removeUnfollows(data,requestorID,requestorServer);
-//     },
-//     error: function(xhr,status,error){
-//       console.log("Error: ",error, status);
-//     }
-//   })
-// }
 
-// function removeUnfollows(data,follower,server){
 
-//   // let authorFriends = new Set();
-//   // for (let userobj in data){
-//   //   let id = data[userobj]["pk"];
-//   //   authorFriends.add(id);
-//   // }
-  
-//   authorFriends = Array.from(authorFriends);
-//   let path = standardizeUrl(server)+"service/author"+follower;
-//   $.ajax({
-//     url:path,
-//     type:"GET",
-//     success: function(response){
-//       let content = JSON.parse(repsonse);
-//       let friendList = content['authors'];
-//       for (let i=0; i<authorFriends.length;i++){
-//         if ()
-//       }
-
-//     }
-//   })
-//}
 function replaceUnfollowButton(data) {
 
   let followerID = data["followerID"];
@@ -181,7 +147,9 @@ function populateRequests(data){
   for (var x = 0; x < data['posts'].length; ++x) {
     let id = data['posts'][x]['id'];
     let host = data['posts'][x]['host'];
-    host = host.replace('/', '');
+    if (host.endsWith('/')){
+      host = host.slice(0,-1);
+    }
     let username = data['posts'][x]['username'];
     let div = `<div><a href=\"../profile/${host}${id}\">${username}</a></div>`;
     $("#dropdown").append(div)
@@ -226,8 +194,7 @@ function addFromOtherNode(data){
   console.log(nodePassword);
 
   const followerUsername = data['followerUser'];
-  const followeeUsername = data['followeeUser'];
-
+  const followeeUsername = data['followeeUser']; 
   let path = serverUrl+"service/friendrequest/";
   path = path.replace(/\s+/g, "");
 

@@ -6,12 +6,14 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.urls import reverse
+from django.core import serializers
 
 from datetime import datetime
 import requests
 import base64
 import pytz
 import re
+import json
 
 from .forms import ProfileChangeForm as changeForm
 from friends.models import FriendRequest
@@ -19,6 +21,7 @@ from friends.views import follows
 from posts.forms import PostForm
 from posts.models import Post
 from users.models import User, Node
+
 
 
 # TODO: use the REST API once it is established
@@ -185,16 +188,31 @@ def home(request):
 
 				if is_oldest:
 					streamlist.append(message)
+		
+		nodeList = getNodeList()
+		
 
 		context = {
 			"object_list": streamlist,
 			"user": user,
 			"form": form,
+			"nodeList": json.dumps(nodeList),
+
 		}
 	if instance and instance.unlisted is True:
 		context["unlisted_instance"] = instance
 	return render(request, "home.html", context)
 
+def getNodeList():
+    nodes = Node.objects.all()
+    nodeList = dict()
+    for node in nodes:
+        nodeList[node.host]= {
+            'sharing':node.sharing,
+            'username':node.username,
+            'password':node.password,
+        }
+    return nodeList
 
 def get_user(parameters):
 	user = User()
@@ -304,7 +322,7 @@ def friends(request):
 
 	##Friend Requests##
 		#Query to see if any pending friend requests
-	friend_requests = FriendRequest.objects.filter(recipient=user.id)
+	friend_requests = list(FriendRequest.objects.filter(recipient=user.id))
 
 	
 	context = {

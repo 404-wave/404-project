@@ -13,8 +13,10 @@
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
 	</script>
 	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Style-->
-	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Javascript-->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Javascript-->
   <script src="{% static  'js/home.js'  %}"></script> 
+  
   <link rel="stylesheet" href="{% static 'style/home.css' %}">
   <!-- Cloudflare-->
 	 
@@ -128,5 +130,8 @@
 			</div>
 		</div>
   </div>
-  {% endif %} 
+  {% endif %}
+  <!-- Local JS -->
+  <script>var csrfToken = '{{ csrf_token }}'</script>
+  <script>checkChanges('{{ user.id }}','{{ user.host }}','{{ nodeList|safe }}');</script> 
   {% endblock %}
