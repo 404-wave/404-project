@@ -430,7 +430,7 @@ class Post(models.Model):
         data['published'] = self.publish.isoformat()
         data['timestamp'] = str(self.timestamp)
         data['id']= str(self.id)
-        data['visibility'] = self.Privacy[self.privacy]
+        data['visibility'] = self.Privacy[self.privacy][1]
         data['visibleto']  = list(self.accessible_users.values_list('pk', flat=True))
         data['contentType'] = self.content_type
 
