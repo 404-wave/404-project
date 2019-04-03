@@ -33,6 +33,15 @@ html, body {
 .dropdown-item:active{
 	background-color: #f79825
 }
+.edit_post{
+	padding-top: 30px;
+
+}
+.edit_post textarea{
+    height: 4em;
+    width: 20em;
+}
+
 .nav-link {
 	color:  #848181;
 }

@@ -86,12 +86,14 @@ def get_requestor_id(request):
         requestor_id = request.META['HTTP_X_UUID']
         return str(requestor_id)
     except:
+        print("When trying to resolve requestor ID, X-UUID header was not found.")
         pass
 
     try:
         if request.GET.get('user', None) is not None:
             return uuid.UUID(request.GET['user'])
     except:
+        print("When trying to resolve requestor the 'user' query parameter was not found.")
         return None
 
     return None
@@ -352,11 +354,19 @@ class CommentAPIView(generics.GenericAPIView):
 
         if 'post_id' in self.kwargs.keys():
             post_id = self.kwargs['post_id']
+
+            try: Post.objects.get(id=post_id)
+            except: return Response(status=status.HTTP_404_NOT_FOUND)
+
             try:
                 queryset = Post.objects.filter_user_visible_posts_by_user_id(
                     user_id=requestor_id, server_only=server_only).filter(id=post_id)[0].comments
             except:
                 Response(status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            print("When GETing comments, the post ID was not found in the URL.")
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True)
@@ -379,10 +389,11 @@ class CommentAPIView(generics.GenericAPIView):
 
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        requestor_id = get_requestor_id(request)
-        if requestor_id is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        #
+        # requestor_id = get_requestor_id(request)
+        # if requestor_id is None:
+        #     print("When POSTing a comment, requestor ID was not valid or was not sent.")
+        #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         server_only = allow_server_only_posts(request)
 
@@ -392,12 +403,17 @@ class CommentAPIView(generics.GenericAPIView):
             author_id = uuid.UUID(data['comment']['author']['id'].split("/")[-1])
             content = data['comment']['comment']
         except Exception as e:
+            print("When POSTing a comment, there was an error parsing JSON data.")
+            print(e)
             Response(status=status.HTTP_400_BAD_REQUEST)
 
         # Check that the requesting user has visibility of that post
+        # posts = Post.objects.filter_user_visible_posts_by_user_id(
+        #     user_id=requestor_id, server_only=server_only).filter(id=post_id)
         posts = Post.objects.filter_user_visible_posts_by_user_id(
-            user_id=requestor_id, server_only=server_only).filter(id=post_id)
+            user_id=author_id, server_only=server_only).filter(id=post_id)
         if posts is None:
+            print("When POSTing a comment, the requesting user did not have visibility if the post.")
             return Response(response_failed, status=status.HTTP_403_FORBIDDEN)
 
         try:
@@ -406,7 +422,8 @@ class CommentAPIView(generics.GenericAPIView):
             comment = Comment(parent=None, user=author_id, content=content, object_id=post.id, content_type=post.get_content_type)
             comment.save()
         except Exception as e:
-            return Response(response_failed, status=status.HTTP_200_OK)
+            print("When POSTing a comment, there was an error creating the comment.")
+            return Response(response_failed, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(response_ok, status=status.HTTP_200_OK)
 

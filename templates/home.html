@@ -25,8 +25,9 @@
 	 window.onload = function(){
 	   setTabs();
      setEmptyMessage();
-     auto_text()
+     auto_text();
      private();
+     file_listener();
 	 }
   </script> 
   {% endblock %} 
@@ -97,7 +98,7 @@
 							<div class="author_edit">
              
                 <a class="author" href="{% url 'profile' value=obj|get_author_id %}">{{ obj|get_author_name }}</a>
-                <p class="post_date">{{ obj.timestamp }}</p>
+                <p class="post_date">{{ obj|get_time }}</p>
 							</div>
 						</div>
 						<p class="privacy"> {{ obj|get_privacy}}</p>

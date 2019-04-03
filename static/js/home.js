@@ -68,6 +68,14 @@ function auto_text(){
     $("#id_privacy").change(function(){
         private();
        })}
+
+
+function file_listener(){
+    $('#id_image').on('click', function(){
+        $('.settingss').show();
+    })
+}
+
       
 function isActive(e){
     var text = e.value;

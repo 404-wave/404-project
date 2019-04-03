@@ -253,11 +253,11 @@ class PostManager(models.Manager):
         follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
         if len(follow_obj) != 0:
             for follow in follow_obj:
-                if follow.user1==uid:
+                if str(follow.user1)==uid:
                     recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
                     if len(recip_object) != 0:
                         user_Q = user_Q | Q(id=follow.user2)
-                elif follow.user2==uid:
+                elif str(follow.user2)==uid:
                     recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
                     if len(recip_object) != 0:
                         user_Q = user_Q | Q(id=follow.user1)

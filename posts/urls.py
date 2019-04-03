@@ -32,6 +32,6 @@ urlpatterns = [
     #url(r'(?P<id>\d+)/edit/$', views.posts_update, name='posts-update'),
     path('<uuid:id>/edit/', views.posts_update, name='posts-update'),
     #url(r'(?P<id>\d+)/delete/$', views.posts_delete, name='posts-delete'),
-    path('<uuid:id>/delete/', views.posts_update, name='posts-delete'),
+    path('<uuid:id>/delete/', views.posts_delete, name='posts-delete'),
     #url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], protected_serve, {'document_root': settings.MEDIA_ROOT}),
 ]
