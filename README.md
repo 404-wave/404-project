@@ -181,7 +181,10 @@ Response:
 {
     "query": "friends",
     "authors": [
-        "88939ffa-c45d-4c10-a4f0-252ccf87740c"
+        "http://127.0.0.1:8000/service/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+        "http://127.0.0.1:3000/service/author/8e8b3k23-xx2s-dd2f-z3x1-1231df8i340c",
+        ...
+        
     ]
 }
 ```
