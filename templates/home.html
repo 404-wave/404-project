@@ -105,11 +105,12 @@
 							<p>{{ obj.content | linebreaks }}</p>
           </div>
           <div class = "view_more">
-          {% if obj.user == request.user %}
+          {% if  obj|get_user:request.user.id %}
           <div class="dropdown">
+              {{  obj|get_edit }}
             <input alt="edit" aria-expanded="false" aria-haspopup="true" class="edit_button" data-toggle="dropdown" id="dropdownMenu2" src="{% static  'images/pencil.png'  %}" type="image" width="25px">
             <div aria-labelledby="dropdownMenu2" class="dropdown-menu">
-              <a class="dropdown-item" href="{{  obj.get_edit_absolute_url  }}">Edit</a> <a class="dropdown-item" href="{{  obj.get_delete_absolute_url  }}">Delete</a>
+              <a class="dropdown-item" href="{{  obj|get_edit }}">Edit</a> <a class="dropdown-item" href="{{  obj|get_delete }}">Delete</a>
             </div>
           </div>
           {% endif %}

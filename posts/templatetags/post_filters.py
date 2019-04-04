@@ -1,5 +1,6 @@
 from django import template
 from users.models import User
+from posts.models import Post
 import re
 from datetime import datetime
 
@@ -70,11 +71,37 @@ def get_comment_author(value1):
     except:
         return 'foreign user'
 
+@register.filter(name='get_user')
+def get_user(value, args):
+    if (value['author']['id'] == str(args)):
+        return True
+    else:
+        return False
+
 
 @register.filter(name='get_comment_content')
 def get_comment_content(value1):
-    # print(value1)
     if (isinstance(value1, dict)):
         return (value1['comment'])
     else:
         return value1.content
+
+
+@register.filter(name="get_edit")
+def get_edit(value):
+    post = Post()
+    user = User()
+    user.id = value['author']['id']
+    post.id = value['id']
+    post.user = user
+    return post.get_edit_absolute_url()
+
+@register.filter(name="get_delete")
+def get_delete(value):
+    post = Post()
+    user = User()
+    user.id = value['author']['id']
+    post.id = value['id']
+    post.user = user
+    return post.get_delete_absolute_url()
+
