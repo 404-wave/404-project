@@ -117,12 +117,12 @@ function setMarkdown2(){
 function setStreamMarkdown(){
     var markdown = $('.markdown');
     for (let value of markdown) { 
-        setMarkdown(value.children); 
+        setMarkdown(value.children[0]); 
 }}
 
 function setMarkdown(elem){
     var converter = new showdown.Converter(),
-    text = elem[0].innerHTML;
+    text = elem.innerHTML;
     html = converter.makeHtml(text);
     elem.innerHTML = html;
 }
