@@ -74,54 +74,109 @@ But, when you want to add foreign nodes to _get info from_, you just add them to
 
 ## API
 
-Below there is a list of which endpoints are currently working. Additonally, there is a section of TODOs if something has not yet been implemented. Right now, it doesn't really matter if the the "id" of authors has a prepended host, since the host usually comes with the request or request body anyways.
+Below there is a list of which endpoints are currently working. For posts and comments, it is required to send a header with the requesting user's UUID in the following format: ```X-UUID: {UUID}```. This is required to resolve the privacy concerns of various posts. That is, to determine whether the requesting user can or cannot view the post(s) in question.
 
 Note: Pagination works for any endpoint endpoint related to posts or comments.
 
 ### Posts
 
-GET service/author/posts: returns all posts visible to the currently authenticated user.
+**GET /author/posts**: returns all posts *visible to the currently authenticated user*.
 
-GET service/posts: returns all publicly available posts.
+**GET /posts**: returns all publicly available posts.
 
-GET service/author/{AUTHOR_ID}/posts: returns all posts from AUTHOR_ID that are visible to the currently authenticated user.
+**GET /author/{AUTHOR_ID}/posts**: returns all posts from AUTHOR_ID that are *visible to the currently authenticated user*.
 
-GET service/posts/{POST_ID}: returns a single post if it is visible to the currently authenticated user.
+**GET /posts/{POST_ID}**: returns a single post *if it is visible to the currently authenticated user*.
 
 An example response:
 ```
 {
     "query": "posts",
-    "count": 4,
-    "size": 1,
-    "next": "http://127.0.0.1:8000/service/author/1900e266-dd80-455b-b9dd-abf09c14116e/posts?page=4&size=1",
-    "previous": "http://127.0.0.1:8000/service/author/1900e266-dd80-455b-b9dd-abf09c14116e/posts?page=2&size=1",
+    "count": 1,
+    "size": 50,
+    "next": null,
+    "previous": null,
     "posts": [
         {
-            "id": 2,
-            "user": "1900e266-dd80-455b-b9dd-abf09c14116e",
+            "id": "3f46f9c3-256f-441c-899e-928b095df627",
+            "user": "54cfdb16-7de4-4ce0-ac7a-68d6e4d90c76",
             "contentType": "text/plain",
-            "published": "2019-03-15T15:22:21.421428Z",
-            "content": "This should be a private post from zach that no one should see.",
+            "categories": [],
+            "description": "Text post",
+            "published": "2019-03-28T02:13:27.833710Z",
+            "title": "zredfern - Mar 28, 2019, at 02:13 AM",
+            "content": "A public post by Zach.",
             "author": {
-                "id": "http://127.0.0.1:8000/1900e266-dd80-455b-b9dd-abf09c14116e",
-                "host": "http://127.0.0.1:8000/",
+                "id": "54cfdb16-7de4-4ce0-ac7a-68d6e4d90c76",
+                "host": "https://cmput404-wave.herokuapp.com/",
                 "displayName": "zredfern",
-                "url": "http://127.0.0.1:8000/home/profile/1900e266-dd80-455b-b9dd-abf09c14116",
-                "github": "Z-Red"
+                "url": "https://cmput404-wave.herokuapp.com/author/54cfdb16-7de4-4ce0-ac7a-68d6e4d90c76",
+                "github": ""
             },
-            "comments": [],
-            "visibility": "PRIVATE",
-            "visible_to": [],
-            "unlisted": false
+            "comments": [
+                {
+                    "author": {
+                        "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+                        "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+                        "host": "https://cmput404-wave.herokuapp.com",
+                        "displayName": "waveAdmin",
+                        "github": ""
+                    },
+                    "comment": "Hello zach -- from admin.",
+                    "published": "2019-03-28T19:45:28.545575Z",
+                    "id": "5c7a0c2f-2163-48f3-995e-16d5642bf9a5"
+                },
+                {
+                    "author": {
+                        "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+                        "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+                        "host": "https://cmput404-wave.herokuapp.com",
+                        "displayName": "waveAdmin",
+                        "github": ""
+                    },
+                    "comment": "A POSTed comment for Zach by the Admin.",
+                    "published": "2019-03-28T19:49:25.440094Z",
+                    "id": "6840c410-7e4a-4c04-9a70-be7440c77100"
+                },
+                {
+                    "author": {
+                        "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+                        "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+                        "host": "https://cmput404-wave.herokuapp.com",
+                        "displayName": "waveAdmin",
+                        "github": ""
+                    },
+                    "comment": "Hi This is allison",
+                    "published": "2019-03-29T16:37:50.323741Z",
+                    "id": "99a7dc64-19c3-42a7-929c-bf7860c0a647"
+                }
+            ],
+            "visibility": "PUBLIC",
+            "visibleTo": [],
+            "unlisted": false,
+            "source": "https://cmput404-wave.herokuapp.com/posts/3f46f9c3-256f-441c-899e-928b095df627/",
+            "origin": "https://cmput404-wave.herokuapp.com/posts/3f46f9c3-256f-441c-899e-928b095df627/"
         }
     ]
 }
 ```
 
-##### TODO...
 
-POST service/posts/{POST_ID}: insert a new post.
+**POST service/posts/{POST_ID}**: insert a new post.
+
+An example of what to POST (this is all that we require):
+```
+{
+	"contentType":"text/plain",
+	"content":"Here is some POSTed post content. Neat-o!",
+	"author":{ "id":"http://127.0.0.1:8000/author/4a47a810-4b00-4c59-8ec3-e0d4ac0b74fc"},
+	"visibility":"PRIVATE",
+	"visibleTo":["0a38f43f-0467-48a4-ba28-d9ae3a4a88b5"],
+    	"unlisted":false
+}
+```
+
+##### TODO...
 
 PUT service/posts/{POST_ID}: update an existing post.
 
@@ -133,44 +188,50 @@ Response:
 ```
 {
     "query": "comments",
-    "count": 2,
+    "count": 1,
     "size": 50,
     "next": null,
     "previous": null,
     "comments": [
         {
             "author": {
-                "id": "http://127.0.0.1:8000/e114cd5f-6efb-41d6-a220-24be52eeb139",
-                "url": "http://127.0.0.1:8000/home/profile/e114cd5f-6efb-41d6-a220-24be52eeb139",
-                "host": "http://127.0.0.1:8000/",
-                "displayName": "tred",
+                "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+                "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+                "host": "https://cmput404-wave.herokuapp.com",
+                "displayName": "waveAdmin",
                 "github": ""
             },
-            "comment": "Great public post Zach! Ha ha lol rofl",
-            "contentType": "text/plain",
-            "published": "2019-03-15T15:35:09.863373Z",
-            "id": 1
+            "comment": "a comment",
+            "published": "2019-03-28T21:41:15.965975Z",
+            "id": "11085ac2-25a6-4ef3-8b2e-ade3f1e02eed"
         },
-        {
-            "author": {
-                "id": "http://127.0.0.1:8000/1900e266-dd80-455b-b9dd-abf09c14116e",
-                "url": "http://127.0.0.1:8000/home/profile/1900e266-dd80-455b-b9dd-abf09c14116",
-                "host": "http://127.0.0.1:8000/",
-                "displayName": "zredfern",
-                "github": "Z-Red"
-            },
-            "comment": "Thank you, Mother.",
-            "contentType": "text/plain",
-            "published": "2019-03-15T15:37:54.384661Z",
-            "id": 2
-        }
     ]
 }
 ```
 
 ##### TODO...
 
-POST service/posts/{POST_ID}/comments: add a new comment to an existing post.
+**POST service/posts/{POST_ID}/comments**: add a new comment to an existing post.
+
+Example of what to POST:
+```
+{
+    "query": "addComment",
+    "post": "3f46f9c3-256f-441c-899e-928b095df627",
+    "comment": {
+        "author": {
+            "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+            "host": "https://cmput404-wave.herokuapp.com/",
+            "url": "https://cmput404-wave.herokuapp.com/service/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+            "github": ""
+        },
+        "comment": "A POSTed comment for Zach by the Admin.",
+        "content_type": "text/plain",
+        "published": "2019-03-27T21:44:20.004517",
+        "id": "42e37403-ca6b-4733-9af6-33c02fd58797"
+    }
+}
+```
 
 ### Friendship
 
@@ -184,7 +245,6 @@ Response:
         "http://127.0.0.1:8000/service/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
         "http://127.0.0.1:3000/service/author/8e8b3k23-xx2s-dd2f-z3x1-1231df8i340c",
         ...
-        
     ]
 }
 ```
@@ -205,7 +265,7 @@ Response:
 
 **POST service/author/{AUTHOR_ID}/friends**: accepts a list of authors and returns a list of authors that are friends of AUTHOR_ID.
 
-Request:
+Example request:
 ```
 {
 	"query":"friends",
@@ -217,20 +277,21 @@ Request:
 }
 ```
 
-Response:
+Example response:
 ```
 {
 	"query":"friends",
  	"author":"http://127.0.0.1:8000/author/1900e266-dd80-455b-b9dd-abf09c14116e",
 	"authors": [
 		"http://127.0.0.1:8000/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+
   	]
 }
 ```
 
 **POST service/friendrequest**: accepts two authors and creates a friend request if they are not already friends.
 
-Request:
+Example request:
 ```
 {
 	"query":"friendrequest",
@@ -254,25 +315,25 @@ Request:
 
 **GET service/author/{AUTHOR_ID}**: returns the profile associated with AUTHOR_ID.
 
-Response:
+Example response:
 ```
 {
-    "id": "http://127.0.0.1:8000/1900e266-dd80-455b-b9dd-abf09c14116e",
-    "host": "http://127.0.0.1:8000/",
-    "displayName": "zredfern",
-    "url": "http://127.0.0.1:8000/home/profile/1900e266-dd80-455b-b9dd-abf09c14116",
+    "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+    "host": "https://cmput404-wave.herokuapp.com",
+    "displayName": "waveAdmin",
+    "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
     "friends": [
-        {
-            "id": "http://127.0.0.1:8000/88939ffa-c45d-4c10-a4f0-252ccf87740c",
-            "host": "http://127.0.0.1:8000/",
+    	{
+            "id": "https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+            "host": "https://cmput404-wave.herokuapp.com",
             "displayName": "bpanda",
-            "url": "http://127.0.0.1:8000/home/profile/88939ffa-c45d-4c10-a4f0-252ccf87740c"
+            "url": "https://cmput404-wave.herokuapp.com/author/88939ffa-c45d-4c10-a4f0-252ccf87740c"
         }
     ],
-    "github": "Z-Red",
-    "firstName": "Zach",
-    "lastName": "Redfern",
-    "email": "zachredfern@hotmail.com",
-    "bio": "Just a regular d00d."
+    "github": "",
+    "firstName": "Wave",
+    "lastName": "Admin",
+    "email": "waveadmin@gmail.com",
+    "bio": "newnew"
 }
 ```
