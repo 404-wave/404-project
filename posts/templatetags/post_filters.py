@@ -1,6 +1,7 @@
 from django import template
 from users.models import User
 import re
+from datetime import datetime
 
 register = template.Library()
 
@@ -8,7 +9,7 @@ register = template.Library()
 @register.filter(name='get_author_name')
 def get_author_name(value1):
     if (isinstance(value1, dict)):
-        return (value1['author']['displayName'])
+        return (value1['author']['displayName'])+ ' from '+value1['author']['host']
     else:
         return value1.user
 
@@ -23,10 +24,12 @@ def get_post_type(value1):
 @register.filter(name='get_time')
 def get_time(value1):
     if (isinstance(value1, dict)):
-        time =  value1['published'] 
-        return (value1['published'])
+        time =  re.sub(r'.[0-9]{2}:[0-9]{2}$','',value1['published']) 
+        time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%f')  
+        return datetime.strftime(time, '%b %d %Y %I:%M%p')
     else:
         return value1.timestamp
+
 
 
 
