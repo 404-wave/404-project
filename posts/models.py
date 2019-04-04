@@ -43,6 +43,8 @@ def upload_location(instance, filename):
     return "%s/%s" % (instance.id, filename)
 
 
+
+
 class PostManager(models.Manager):
 
     """
@@ -238,7 +240,6 @@ class PostManager(models.Manager):
         all_posts = [item.to_dict_object() for item in all_posts]
         all_posts.extend(posts_from_servers)
         self.sort_posts(all_posts)
-        print(type(all_posts[0]['published']))
 
         return all_posts
 
@@ -339,6 +340,17 @@ class PostManager(models.Manager):
         all_posts = self.filter_user_visible_posts(user, server_only=False)
         return all_posts
 
+class Accessible_Users(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    post_id =models.UUIDField(default=uuid.uuid4, editable=False)
+    userid = models.UUIDField(default=uuid.uuid4)
+    host = models.CharField(max_length=100)
+
+
+
+
+
+
 
 
 class Post(models.Model):
@@ -390,6 +402,7 @@ class Post(models.Model):
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     privacy = models.IntegerField(choices=Privacy, default=PUBLIC)
     unlisted = models.BooleanField(default=False)
+    #accessible_users = models.ForeignKey()
     accessible_users =  models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="accessible_posts", blank=True)
     objects = PostManager()
 
