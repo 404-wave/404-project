@@ -108,3 +108,21 @@ function setEmptyMessage() {
     }
 }
 
+function setMarkdown2(){
+    var converter = new showdown.Converter(),
+    text = $('textarea')[0].value
+    html = converter.makeHtml(text);
+    elem.innerHTML = html;
+}
+function setStreamMarkdown(){
+    var markdown = $('.markdown');
+    for (let value of markdown) { 
+        setMarkdown(value.children); 
+}}
+
+function setMarkdown(elem){
+    var converter = new showdown.Converter(),
+    text = elem[0].innerHTML;
+    html = converter.makeHtml(text);
+    elem.innerHTML = html;
+}

@@ -241,8 +241,6 @@ class PostManager(models.Manager):
         """
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
-
-        ##all_posts = list(all_posts.order_by('-timestamp'))
         all_posts = [item.to_dict_object() for item in all_posts]
         all_posts.extend(posts_from_servers)
         self.sort_posts(all_posts)

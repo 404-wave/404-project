@@ -105,3 +105,10 @@ def get_delete(value):
     post.user = user
     return post.get_delete_absolute_url()
 
+
+@register.filter(name="markdown")
+def markdown(value):
+    if (value['contentType'] == "text/markdown"):
+        return 'markdown '
+
+
