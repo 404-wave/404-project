@@ -497,10 +497,11 @@ class Post(models.Model):
 def create_base64_str(sender, instance=None, created=False, **kwargs):
     if instance.image and created:
         image_type, encoded_string = image_to_b64(instance.image)
-        instance.content = encoded_string
-        instance.data_uri = "data:" + image_type + ";base64," + encoded_string
+        instance.content = "data:" + image_type + ";base64," + encoded_string
+        instance.content_type = image_type + ";base64"
+        #instance.data_uri = "data:" + image_type + ";base64," + encoded_string
         instance.is_image = True
         #make it unlisted here
-        instance.unlisted = True
+        #instance.unlisted = True
         instance.image.delete()
         instance.save()

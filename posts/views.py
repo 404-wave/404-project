@@ -257,11 +257,12 @@ def image_to_b64(image_file):
 def create_base64_str(sender, instance=None, created=False, **kwargs):
     if instance.image and created:
         image_type, encoded_string = image_to_b64(instance.image)
-        instance.content = encoded_string
-        instance.data_uri = "data:" + image_type + ";base64," + encoded_string
+        instance.content = "data:" + image_type + ";base64," + encoded_string
+        instance.contentType = image_type + ";base64"
+        #instance.data_uri = "data:" + image_type + ";base64," + encoded_string
         instance.is_image = True
         # make it unlisted here
-        instance.unlisted = True
+        #instance.unlisted = True
         instance.image.delete()
         instance.save()
 
@@ -304,7 +305,7 @@ def posts_update(request, id=None):
             instance.data_uri = "data:" + image_type + ";base64," + encoded_string
             instance.is_image = True
             # make it unlisted here
-            instance.unlisted = True
+            #instance.unlisted = True
             instance.image.delete()
         instance.save()
         return HttpResponseRedirect(instance.get_detail_absolute_url())
