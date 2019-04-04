@@ -51,8 +51,15 @@ class PostManager(models.Manager):
         Functions that were made to test individual privacy setting
     """
     def convert_to_date(self,elem):
+        
         new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
-        new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f')    
+        try:
+            new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f') 
+        except:
+            try:
+                new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f')
+            except:
+                return 'no date'
         return new_dt
 
     def sort_posts(self, list_post):
