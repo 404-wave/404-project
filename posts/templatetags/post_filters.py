@@ -64,11 +64,8 @@ def get_comment_author(value1):
     # print(value1)
     try:
         if (isinstance(value1, dict)):
-            print (value1)
             return (value1['author']['displayName'])
         else:
-            print (value1)
-            print (value1.displayName)
             return value1.user
     except:
         return 'foreign user'
