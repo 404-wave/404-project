@@ -12,7 +12,7 @@
 	 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.8.0/showdown.min.js"></script>
 	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Style-->
 	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Javascript-->
   <script src="{% static  'js/home.js'  %}"></script> 
@@ -103,10 +103,17 @@
 							</div>
 						</div>
 						<p class="privacy"> {{ obj|get_privacy}}</p>
-					</div>
-					<div class="{{ obj|markdown }} post_content">
-							{{ obj.content | linebreaks }}
           </div>
+          {% if obj|markdown %}
+					  <div class="markdown post_content">
+              <pre>{{obj.content}}</pre>
+            </div>
+          {% else %}
+          <div class="{{ obj|markdown }} post_content">
+							{{ obj.content | linebreaks }}
+            </div>
+          {% endif %}
+
           <div class = "view_more">
           {% if  obj|get_user:request.user.id %}
           <div class="dropdown">

@@ -109,7 +109,7 @@ function setEmptyMessage() {
 }
 
 function setMarkdown2(){
-    var converter = new showdown.Converter(),
+    var converter = new showdown.Converter({'strikethrough': 'true'});
     text = $('textarea')[0].value
     html = converter.makeHtml(text);
     elem.innerHTML = html;
@@ -121,7 +121,10 @@ function setStreamMarkdown(){
 }}
 
 function setMarkdown(elem){
-    var converter = new showdown.Converter(),
+    var converter = new showdown.Converter({'strikethrough': 'true', 
+    'simplifiedAutoLink': 'true',
+'simpleLineBreaks': 'true'});
+    converter.setFlavor('github');
     text = elem.innerHTML;
     html = converter.makeHtml(text);
     elem.innerHTML = html;

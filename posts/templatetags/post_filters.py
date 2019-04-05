@@ -108,11 +108,14 @@ def get_delete(value):
 
 @register.filter(name="markdown")
 def markdown(value):
+    content = 'bob'
     if (isinstance(value, dict)):
+        print (value)
         content  = value['contentType']
     else:
         content = value.content_type
     if ("markdown" in content):
-            return 'markdown '
+           return True
+    return False
 
 
