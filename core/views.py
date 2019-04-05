@@ -1,23 +1,27 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseForbidden, HttpResponseNotFound
+from requests.auth import HTTPBasicAuth
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.urls import reverse
+from django.core import serializers
 
 from datetime import datetime
 import requests
 import base64
 import pytz
 import re
+import json
 
 from .forms import ProfileChangeForm as changeForm
 from friends.models import FriendRequest
 from friends.views import follows
 from posts.forms import PostForm
 from posts.models import Post
-from users.models import User
+from users.models import User, Node
+
 
 
 # TODO: use the REST API once it is established
@@ -55,7 +59,6 @@ def home(request):
 		query = request.GET.get("query")
 		if query:
 			streamlist = streamlist.filter(content__icontains=query)
-
 		print("Stream list len: ", len(streamlist))
 		print("Stream list: ", streamlist)
 
@@ -133,8 +136,8 @@ def home(request):
 		if query:
 			streamlist = streamlist.filter(content__icontains=query)
 
-		print("Stream list len: ", len(streamlist))
-		print("Stream list: ", streamlist)
+		#print("Stream list len: ", len(streamlist))
+		#print("Stream list: ", streamlist)
 
 		#Cast QuerySet to list for Github
 		streamlist = list(streamlist)
@@ -185,63 +188,101 @@ def home(request):
 
 				if is_oldest:
 					streamlist.append(message)
+		
+		nodeList = getNodeList()
+		
 
 		context = {
 			"object_list": streamlist,
 			"user": user,
 			"form": form,
+			"nodeList": json.dumps(nodeList),
+
 		}
 	if instance and instance.unlisted is True:
 		context["unlisted_instance"] = instance
 	return render(request, "home.html", context)
 
+def getNodeList():
+    nodes = Node.objects.all()
+    nodeList = dict()
+    for node in nodes:
+        nodeList[node.host]= {
+            'sharing':node.sharing,
+            'username':node.username,
+            'password':node.password,
+        }
+    return nodeList
 
 def get_user(parameters):
 	user = User()
-
 	id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)'	
 	re_result = re.search(id_regex, parameters)
-	service = re_result.group(1)
+	server = re_result.group(1)
 	profile_id = re_result.group(2)
-	print ("IN PROFILE", service)
-	print ("IN PROFILE", profile_id)
-	build_request = 'https://' + service+ '/service/author/'+profile_id
+	##double check id is not our server id
+	server_user = User.objects.filter(id = profile_id)
+	if server_user:
+		return server_user[0]
+	build_request = 'https://'+server+'/service/author/'+profile_id
+	node = Node.objects.filter(host = 'https://'+server)[0]
+	r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
 	try:
-		r=requests.get(build_request)
+		r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
 		response = r.json()
 	except:
-		return HttpResponseNotFound("That user does not exist")
-	user.bio = response['bio']
+		print("That user does not exist")
+		return
 	user.username = response['displayName']
-	user.first_name = response['firstName']
-	user.last_name = response['lastName']
-	user.email = response['email']
 	user.id = response['id']
-	user.host = service
-	user.friends = response['friends']
+	user.host = server
+
+
+	user.bio = optional_attributes(user.bio, response, 'bio')
+	user.first_name = optional_attributes(user.first_name, response, 'firstname')
+	user.last_name = optional_attributes(user.last_name, response, 'lastname')
+	user.email = optional_attributes(user.email, response, 'email')
+
 	return user
+
+
+def optional_attributes(field, response, attr):
+	try:
+		field = response[attr]
+		return field
+	except:
+		return ''
+
 
 
 
 login_required(login_url='/login')
 def profile(request, value=None, pk=None):
+	if value == "edit":
+		return edit_profile(request)
 
 	if not request.user.is_authenticated:
 		return HttpResponseForbidden()
 	user = User()
 	# If no value, then we know we are looking at 'my_profile'
+	print (pk, value, request)
 	if value is None:
 		pk = pk if pk is not None else request.user.id
 		user = User.objects.get(pk=pk)
 	else:
 		user = get_user(value)
-
+	print ("SDSD")
+	print (user)
 	button_text = "Unfollow"
 	if request.user.id is not user.id:
 		following = follows(request.user.id, user.id)
 		if (following == False):
 			button_text = "Follow"
-	return render(request, 'profile.html', {'user': user, 'following': following, 'button_text': button_text}) 
+	context = {'user':user,
+				'following':following,
+				'button_text':button_text,
+	}
+	return render(request, 'profile.html', context) 
 
 
 @login_required(login_url='/login')
@@ -281,7 +322,9 @@ def friends(request):
 
 	##Friend Requests##
 		#Query to see if any pending friend requests
-	friend_requests = FriendRequest.objects.filter(recipient=user)
+	friend_requests = list(FriendRequest.objects.filter(recipient=user.id))
+
+	
 	context = {
 		'user':user,
 		'friend_requests': friend_requests,

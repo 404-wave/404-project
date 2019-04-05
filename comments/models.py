@@ -35,11 +35,11 @@ class Comment(models.Model):
     content = models.TextField()
     published = models.DateTimeField(auto_now_add=True)
     object_id = models.CharField(max_length=36)
-    
+
     objects = CommentManager()
 
     def __str__(self):
-        return str(self.user.username)
+        return str(self.id)
 
     class Meta:
         ordering = ['published']

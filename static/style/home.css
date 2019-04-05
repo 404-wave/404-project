@@ -205,10 +205,10 @@ position:absolute;
 	width: 75%;
 	align-items: center;
 	display: flex;	
-    flex-direction: column;
+  flex-direction: column;
 }
 
-
+ 
    .tabs {
 	overflow: hidden;
 	margin: 0;

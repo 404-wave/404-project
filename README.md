@@ -242,7 +242,9 @@ Response:
 {
     "query": "friends",
     "authors": [
-        "https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c"
+        "http://127.0.0.1:8000/service/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+        "http://127.0.0.1:3000/service/author/8e8b3k23-xx2s-dd2f-z3x1-1231df8i340c",
+        ...
     ]
 }
 ```
@@ -254,8 +256,8 @@ Response:
 {
     "query": "friends",
     "authors": [
-        "https://cmput404-wave.herokuapp.com/1900e266-dd80-455b-b9dd-abf09c14116e",
-        "https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c"
+        "http://127.0.0.1:8000/author/1900e266-dd80-455b-b9dd-abf09c14116e",
+        "http://127.0.0.1:8000/author/88939ffa-c45d-4c10-a4f0-252ccf87740c"
     ],
     "friends": true
 }
@@ -267,10 +269,10 @@ Example request:
 ```
 {
 	"query":"friends",
-	"author":"https://cmput404-wave.herokuapp.com/1900e266-dd80-455b-b9dd-abf09c14116e",
+	"author":"http://127.0.0.1:8000/author/1900e266-dd80-455b-b9dd-abf09c14116e",
 	"authors": [
-	   	"https://cmput404-wave.herokuapp.com/de305d54-75b4-431b-adb2-eb6b9e546013",
-		"https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+	   "http://127.0.0.1:8000/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+		"http://127.0.0.1:8000/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
   	]
 }
 ```
@@ -279,9 +281,10 @@ Example response:
 ```
 {
 	"query":"friends",
- 	"author":"https://cmput404-wave.herokuapp.com/1900e266-dd80-455b-b9dd-abf09c14116e",
+ 	"author":"http://127.0.0.1:8000/author/1900e266-dd80-455b-b9dd-abf09c14116e",
 	"authors": [
-		"https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+		"http://127.0.0.1:8000/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+
   	]
 }
 ```
@@ -293,16 +296,16 @@ Example request:
 {
 	"query":"friendrequest",
 	"author": {
-		"id":"https://cmput404-wave.herokuapp.com/1900e266-dd80-455b-b9dd-abf09c14116e",
-		"host":"https://cmput404-wave.herokuapp.com/",
+		"id":"http://127.0.0.1:8000/author/1900e266-dd80-455b-b9dd-abf09c14116e",
+		"host":"http://127.0.0.1:8000/",
 		"displayName":"zredfern",
-      		"url":"https://cmput404-wave.herokuapp.com/author/1900e266-dd80-455b-b9dd-abf09c14116e",
+      "url":"http://127.0.0.1:8000/author/1900e266-dd80-455b-b9dd-abf09c14116e",
 	},
 	"friend": {
-		"id":"https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",
-		"host":"https://cmput404-wave.herokuapp.com/",
+		"id":"http://127.0.0.1:8000/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+		"host":"http://127.0.0.1:8000/",
 		"displayName":"bpanda",
-      		"url":"https://cmput404-wave.herokuapp.com/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+      "url":"http://127.0.0.1:8000/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
 
 	}
 }

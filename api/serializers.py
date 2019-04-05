@@ -5,7 +5,7 @@ from users.models import User, Node, NodeSetting
 from posts.models import Post
 
 import requests
-
+from requests.auth import HTTPBasicAuth
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -57,10 +57,10 @@ class PostSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField('_comments')
     published = serializers.SerializerMethodField('_published')
     visibility = serializers.SerializerMethodField('_visibility')
-    visible_to = serializers.SerializerMethodField('_visible_to')
+    visibleTo = serializers.SerializerMethodField('_visible_to')
     categories = serializers.SerializerMethodField('_categories')
     description = serializers.SerializerMethodField('_description')
-
+    title = serializers.SerializerMethodField('_title')
     source = serializers.SerializerMethodField('_source')
     origin = serializers.SerializerMethodField('_origin')
 
@@ -69,8 +69,8 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'user', 'contentType', 'categories', 'description',
-                  'published', 'content', 'author', 'comments', 'visibility',
-                  'visible_to', 'unlisted', 'source', 'origin')
+                  'published', 'title', 'content', 'author', 'comments', 'visibility',
+                  'visibleTo', 'unlisted', 'source', 'origin')
 
     # TODO
     def _source(self, obj):
@@ -111,13 +111,18 @@ class PostSerializer(serializers.ModelSerializer):
         return list()
 
     def _description(self, obj):
-        return ""
+        if obj.is_image:
+            return "Image post"
+        return "Text post"
+
+    def _title(self, obj):
+        return str(obj.title)
 
     def _content_type(self, obj):
         return obj.content_type
 
     def _published(self, obj):
-        return obj.publish
+        return obj.publish.isoformat()
 
     def _visibility(self, obj):
         return Post.Privacy[obj.privacy][1]
@@ -155,7 +160,7 @@ class PostAuthorSerializer(serializers.ModelSerializer):
         return obj.username
 
     def _id(self, obj):
-        return str(obj.host) + str(obj.id)
+        return str(obj.id)
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -175,8 +180,8 @@ class CommentSerializer(serializers.ModelSerializer):
         except:
             found = False
             for node in Node.objects.all():
-                url = node.host + "/service/author/" + str(obj.user)
-                r = requests.get(url)
+                url = node.host + "/author/" + str(obj.user) + "/"
+                r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
                 if (r.status_code == 200):
                     try:
                         json = r.json()
@@ -187,6 +192,7 @@ class CommentSerializer(serializers.ModelSerializer):
                         id = json['id']
                         author = User(host=host, id=id, github=github, url=url, username=username)
                         found = True
+                        break
                     except:
                         # TODO: What to do when the host of the author sends bad data?
                         return dict()
@@ -201,7 +207,7 @@ class CommentSerializer(serializers.ModelSerializer):
         return serialized_author.data
 
     def _published(self, obj):
-        return obj.timestamp
+        return obj.published
 
     def _comment(self, obj):
         return obj.content
@@ -211,6 +217,7 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
 
     displayName = serializers.SerializerMethodField('_username')
     id = serializers.SerializerMethodField('_id')
+    # url = serializers.SerializerMethodField('_url')
 
     class Meta:
         model = User
@@ -219,5 +226,8 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
     def _username(self, obj):
         return obj.username
 
+    # def _url(self, obj):
+    #     return
+
     def _id(self, obj):
-        return str(obj.host) + str(obj.id)
+        return str(obj.id)

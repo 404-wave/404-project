@@ -20,6 +20,7 @@
 
    <!-- Javascript-->
   <script src="{% static 'js/friends.js' %}"></script>
+  
 
 
 {% endblock %}
@@ -36,22 +37,24 @@
     </div>
     {% endif %}
     <!-- Friends List -->
-    <div>
+    <div id = "friendWrapper">
             <div id="friendBtnContainer">
               <button class ="friend_btn" onclick="filterFriends('find', this)">Find</button>
               <button class ="friend_btn" onclick="filterFriends('following', this)">Following</button>
               <button class ="friend_btn" onclick="filterFriends('followers', this)">Followers</button>
               <button class ="friend_btn" onclick="filterFriends('friends', this)">Friends</button>
             </div>
-      
+      "
             <div id="friendContainer">
             </div>
           </div>
 </div>
   {% endif %} 
   <!--Load local JS-->
-  <script>displayNotifications('{{ friend_requests|length }}');</script>
-  <script>closeDropDown();</script>
+  {% if friend_requests|length > 0%}
+    <script>displayNotifications('{{ friend_requests|length }}');</script>
+    <script>closeDropDown();</script>
+  {% endif %}
   {% endblock %}
 
     
