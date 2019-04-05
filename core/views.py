@@ -206,8 +206,11 @@ def home(request):
 
 # api was ambigous on what service is so we try both
 def try_api_service(server, profile_id):
+	print ("server", server)
+	print ("profiledi", profile_id)
 	node = Node.objects.filter(host = 'https://'+server)
 	if (not node):
+		print ("HTTP ERROR")
 		raise Http404
 	else:
 		node = node[0]
