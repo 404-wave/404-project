@@ -344,14 +344,6 @@ class PostManager(models.Manager):
         all_posts = self.filter_user_visible_posts(user, server_only=False)
         return all_posts
 
-class Accessible_Users(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    post_id =models.UUIDField(default=uuid.uuid4, editable=False)
-    userid = models.UUIDField(default=uuid.uuid4)
-    host = models.CharField(max_length=100)
-
-
-
 
 
 
