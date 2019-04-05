@@ -128,6 +128,7 @@ function setMarkdown(elem){
     text = elem.innerHTML;
     html = converter.makeHtml(text);
     elem.innerHTML = html;
+}
 function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePassword){
     let path = standardizeUrl(server)+"service/author/"+foreignUser+"/friends/";
     $.ajax({
