@@ -208,19 +208,19 @@ def home(request):
 def try_api_service(server, profile_id):
 	print ("server", server)
 	print ("profiledi", profile_id)
-	node = Node.objects.filter(host = 'https://'+server)
+	node = Node.objects.filter(host__contains = server)
 	if (not node):
 		print ("HTTP ERROR")
 		raise Http404
 	else:
 		node = node[0]
 	try: 
-		build_request = 'https://'+server+'/service/author/'+profile_id
+		build_request = node.host+'/service/author/'+profile_id
 		r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
 		response = r.json()
 	except:
 		try:
-			build_request = 'https://'+server+'/author/'+profile_id
+			build_request = node.host+'/author/'+profile_id
 			r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
 			response = r.json()
 		except:
