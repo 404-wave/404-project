@@ -62,7 +62,6 @@ def get_privacy(value1):
 
 @register.filter(name='get_comment_author')
 def get_comment_author(value1):
-    # print(value1)
     try:
         if (isinstance(value1, dict)):
             return (value1['author']['displayName'])
@@ -110,7 +109,6 @@ def get_delete(value):
 def markdown(value):
     content = 'bob'
     if (isinstance(value, dict)):
-        print (value)
         content  = value['contentType']
     else:
         content = value.content_type
