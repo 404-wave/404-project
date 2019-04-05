@@ -10,7 +10,9 @@ register = template.Library()
 @register.filter(name='get_author_name')
 def get_author_name(value1):
     if (isinstance(value1, dict)):
-        return (value1['author']['displayName'])+ ' from '+value1['author']['host']
+        print (value1)
+        print ()
+        return (value1['author']['displayName'])+ ' from '+value1['author']['host'] + 
     else:
         return value1.user
 
