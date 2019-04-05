@@ -141,7 +141,7 @@ class PostManager(models.Manager):
 
                 print()	
 
-                print(response)
+                #print(response)
 
                 print()
                 # print(test_url)
