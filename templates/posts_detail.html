@@ -1,11 +1,14 @@
 {% extends "base.html" %} {% load static %} {% block script %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"></script>
 <!-- Bootstrap-->
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
 <link
   href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
   rel="stylesheet"
+
 /><!-- Style-->
 <link
   href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -16,6 +19,11 @@
 <!-- Cloudflare-->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script>
+	 window.onload = function(){
+     setStreamMarkdown();
+	 }
+</script>
 {% endblock %} {% block content %}
 <div class="wrapper">
   <div id="postContainer">
@@ -36,6 +44,10 @@
             <a href="{{ instance.content }}">
                 <img src="{{ instance.content }}" />
             </a>
+        </div>
+        {% elif instance|markdown %}
+        <div class="markdown post_content">
+          <pre>{{instance.content}}</pre>
         </div>
         {% else %}
         <div class="post_content">

@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.urls import reverse
 from django.core import serializers
+from django.http import Http404  
 
 from datetime import datetime
 import requests
@@ -203,6 +204,27 @@ def home(request):
 		context["unlisted_instance"] = instance
 	return render(request, "home.html", context)
 
+# api was ambigous on what service is so we try both
+def try_api_service(server, profile_id):
+	node = Node.objects.filter(host = 'https://'+server)
+	if (not node):
+		raise Http404
+	else:
+		node = node[0]
+	try: 
+		build_request = 'https://'+server+'/service/author/'+profile_id
+		r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
+		response = r.json()
+	except:
+		try:
+			build_request = 'https://'+server+'/author/'+profile_id
+			r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
+			response = r.json()
+		except:
+			print("That user does not exist")
+			return False
+	return response
+
 def getNodeList():
     nodes = Node.objects.all()
     nodeList = dict()
@@ -224,26 +246,21 @@ def get_user(parameters):
 	server_user = User.objects.filter(id = profile_id)
 	if server_user:
 		return server_user[0]
-	build_request = 'https://'+server+'/service/author/'+profile_id
-	node = Node.objects.filter(host = 'https://'+server)[0]
-	r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
-	try:
-		r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
-		response = r.json()
+	response = try_api_service(server, profile_id)
+	print ("RESPONSE", response)
+	try: 
+		user.username = response['displayName']
+		user.id = response['id']
+		user.host = server
+		user.bio = optional_attributes(user.bio, response, 'bio')
+		user.first_name = optional_attributes(user.first_name, response, 'firstname')
+		user.last_name = optional_attributes(user.last_name, response, 'lastname')
+		user.email = optional_attributes(user.email, response, 'email')
+		return user
 	except:
-		print("That user does not exist")
-		return
-	user.username = response['displayName']
-	user.id = response['id']
-	user.host = server
-
-
-	user.bio = optional_attributes(user.bio, response, 'bio')
-	user.first_name = optional_attributes(user.first_name, response, 'firstname')
-	user.last_name = optional_attributes(user.last_name, response, 'lastname')
-	user.email = optional_attributes(user.email, response, 'email')
-
-	return user
+		return False
+	return False
+	
 
 
 def optional_attributes(field, response, attr):
@@ -265,14 +282,13 @@ def profile(request, value=None, pk=None):
 		return HttpResponseForbidden()
 	user = User()
 	# If no value, then we know we are looking at 'my_profile'
-	print (pk, value, request)
 	if value is None:
 		pk = pk if pk is not None else request.user.id
 		user = User.objects.get(pk=pk)
 	else:
 		user = get_user(value)
-	print ("SDSD")
-	print (user)
+	if (not user):
+		raise Http404 
 	button_text = "Unfollow"
 	if request.user.id is not user.id:
 		following = follows(request.user.id, user.id)

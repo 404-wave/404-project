@@ -241,8 +241,6 @@ class PostManager(models.Manager):
         """
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
-
-        ##all_posts = list(all_posts.order_by('-timestamp'))
         all_posts = [item.to_dict_object() for item in all_posts]
         all_posts.extend(posts_from_servers)
         self.sort_posts(all_posts)
@@ -345,14 +343,6 @@ class PostManager(models.Manager):
     def filter_server_posts(self, user, *args, **kwargs):
         all_posts = self.filter_user_visible_posts(user, server_only=False)
         return all_posts
-
-class Accessible_Users(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    post_id =models.UUIDField(default=uuid.uuid4, editable=False)
-    userid = models.UUIDField(default=uuid.uuid4)
-    host = models.CharField(max_length=100)
-
-
 
 
 
