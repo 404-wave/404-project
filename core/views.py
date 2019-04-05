@@ -253,8 +253,9 @@ def get_user(parameters):
 	print ("RESPONSE", response)
 	try: 
 		user.username = response['displayName']
-		user.id = response['id']
-		user.host = server
+		re_result = re.search(id_regex, response['id'])
+		user.id = re_result.group(2)
+		user.host = re_result.group(1)
 		user.bio = optional_attributes(user.bio, response, 'bio')
 		user.first_name = optional_attributes(user.first_name, response, 'firstname')
 		user.last_name = optional_attributes(user.last_name, response, 'lastname')
