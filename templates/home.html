@@ -103,9 +103,17 @@
 						</div>
 						<p class="privacy"> {{ obj|get_privacy}}</p>
 					</div>
+          {% if obj|is_image_post %}
+          <div>
+              <a href="{{ obj.content }}">
+                <img src="{{ obj.content }}" />
+              </a>
+          </div>
+          {% else %}
 					<div class="post_content">
 							<p>{{ obj.content | linebreaks }}</p>
           </div>
+          {% endif %}
           <div class = "view_more">
           {% if obj.user == request.user %}
           <div class="dropdown">

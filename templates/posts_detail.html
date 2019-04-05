@@ -31,14 +31,15 @@
           </div>
           <p class="privacy">{{ instance.privacy }}</p>
         </div>
-        {% if instance.is_image %}
-        <a href="{{ instance.data_uri }}">
-          <img src="{{ instance.data_uri }}" />
-        </a>
+        {% if instance|is_image_post %}
+        <div>
+            <a href="{{ instance.content }}">
+                <img src="{{ instance.content }}" />
+            </a>
+        </div>
         {% else %}
-        <br />
         <div class="post_content">
-          <p>{{ instance.content | linebreaks }}</p>
+            <p>{{ instance.content | linebreaks }}</p>
         </div>
         {% endif %}
         <div class="view_more">
