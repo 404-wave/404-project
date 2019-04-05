@@ -119,3 +119,15 @@ def markdown(value):
     return False
 
 
+@register.filter(name='is_image_post')
+def is_image_post(value1):
+    if (isinstance(value1, dict)):
+        if (value1['contentType'] == "image/jpeg;base64") or (value1['contentType'] == "image/png;base64"):
+            return True
+        else:
+            return False
+    else:
+        if (value1.content_type == "image/jpeg;base64") or (value1.content_type == "image/png;base64"):
+            return True
+        else:
+            return False

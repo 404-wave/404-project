@@ -39,21 +39,20 @@
           </div>
           <p class="privacy">{{ instance.privacy }}</p>
         </div>
-        {% if instance.is_image %}
-        <a href="{{ instance.data_uri }}">
-          <img src="{{ instance.data_uri }}" />
-        </a>
+        {% if instance|is_image_post %}
+        <div>
+            <a href="{{ instance.content }}">
+                <img src="{{ instance.content }}" />
+            </a>
+        </div>
+        {% elif instance|markdown %}
+        <div class="markdown post_content">
+          <pre>{{instance.content}}</pre>
+        </div>
         {% else %}
-        <br />
-          {% if instance|markdown %}
-          <div class="markdown post_content">
-              <pre>{{ instance.content}}</pre>
-          </div>
-          {% else %}
-          <div class="post_content">
-              {{ instance.content | linebreaks }}
-          </div>
-          {% endif %}
+        <div class="post_content">
+            <p>{{ instance.content | linebreaks }}</p>
+        </div>
         {% endif %}
         <div class="view_more">
           {% if obj.user == request.user %}
