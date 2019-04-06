@@ -153,7 +153,7 @@ def posts_detail(request, id):
    
             #build_endpoint = str(node.host) + "/service/posts/" + "3f46f9c3-256f-441c-899e-928b095df627" + "/comments/"
             #print(build_endpoint)
-        build_endpoint = str(node.host) + "/service/posts/" + str(post_id) + "/comments/"
+        build_endpoint = str(post_host.host) + "/service/posts/" + str(post_id) + "/comments/"
         headers = {
                     'Accept':'application/json',
                     'X-UUID': str(user_id)
