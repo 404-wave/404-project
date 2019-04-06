@@ -108,7 +108,13 @@
           </div>
           {% if obj|markdown %}
 					  <div class="markdown post_content">
-              <pre>{{ obj.content }}</pre>
+                {% if obj|markdown_safe %}
+                  {% autoescape off %}
+                <pre>{{obj.content}}</pre>
+                {% endautoescape %}
+                {% else %}
+                <pre>{{obj.content}}</pre>
+                {% endif %}
             </div>
           {% elif obj|is_image_post %}
             <div>

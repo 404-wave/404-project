@@ -33,7 +33,14 @@ def get_time(value1):
     else:
         return value1.timestamp
 
-
+@register.filter(name ="markdown_safe")
+def markdown_safe(value1):
+    if (markdown(value1)):
+        if ('script' in value1['content']):
+            return False
+        else: 
+            return True
+        
 
 
 @register.filter(name='get_author_id')
@@ -109,7 +116,7 @@ def get_delete(value):
 
 @register.filter(name="markdown")
 def markdown(value):
-    content = 'bob'
+    content = ''
     if (isinstance(value, dict)):
         content  = value['contentType']
     else:
