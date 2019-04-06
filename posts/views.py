@@ -180,8 +180,10 @@ def posts_detail(request, id):
             #https://www.programcreek.com/python/example/6251/requests.post
             r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str(node_host.username), str(node_host.password)))
             print("POSTing comment to host: " + str(node_host.host))
-            print (build_endpoint)
+            print ("THE BUILD", build_endpoint, build_data)
             print("Status code for comment POST: " + str(r.status_code))
+    
+
 
 
             #print(r)
