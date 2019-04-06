@@ -261,3 +261,51 @@ function findNodeUserAndPass(nodeList,server){
     }
   }
 }
+function strip_host(host){
+  reg = /\/.*\/$/gi;
+  var k = host.replace(reg, '');
+  return k;
+}
+
+function findFriends(user, e) {
+  console.log(user);
+  host = window.location.href;
+  host = strip_host(host);
+  path = host+'/author/'+user+'/friends';
+  $.ajax({
+    url: path,
+    success: function (data) {
+      populateAccessibleList(data, user);
+    },
+    error: function(xhr, status, error) {
+      console.log(error)
+    } 
+  });
+}
+
+function createCheckBox(friend, node, size){
+  string_id = "id_accessible_users_"+size;
+  node.firstElementChild.htmlFor = string_id;
+  node.firstElementChild.firstElementChild.id = string_id;
+  node.firstElementChild.firstElementChild.value = friend;
+  node.firstElementChild.textContent = friend;
+  return node;
+}
+function populateAccessibleList(data){
+  var friends = data["authors"].toString();
+  var select_parent = $('#id_accessible_users')[0];
+  var select = select_parent.children;
+  var size = select.length;
+  for (i=0; i<select.length; i++){
+    var options = select[i].firstElementChild.childNodes;
+    var id = options[0].value;
+    if (!friends.includes(id)){
+      checkbox = createCheckBox(id, select, size.toString());
+      select_parent.appendChild(checkbox);
+      size = size +1;
+    }
+    console.log(select[i]);}
+
+  console.log(data)
+
+}

@@ -47,9 +47,7 @@ def upload_location(instance, filename):
 
 class PostManager(models.Manager):
 
-    """
-        Functions that were made to test individual privacy setting
-    """
+   
     def convert_to_date(self,elem):   
         new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
         try:
@@ -105,7 +103,9 @@ class PostManager(models.Manager):
         query_set = super(PostManager, self).filter(privacy=5, user=user).order_by("-timestamp")
         return query_set
 
-
+    def find_accessible_posts(self, user):
+        posts = super(PostManager, self).filter(privacy=1).filter(accessible_users__icontains =str(user.id))
+        return posts
     """
         Filters all posts based on the privacy setting chosen.
         Posts are uniquely filtered for a users
@@ -153,6 +153,7 @@ class PostManager(models.Manager):
                     #print(response.content)
 
                     #if servers are bad and don't include the author server we do
+                    #or source
                     for item in responselist["posts"]:
                         if (item['author']['host'] == ''):
                             print ("ADDING HOST")
@@ -174,8 +175,8 @@ class PostManager(models.Manager):
 
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
         public_posts = super(PostManager, self).filter(privacy=0)
-
-        private_posts = user.accessible_posts.all()
+        #private_posts = []
+        private_posts = self.find_accessible_posts(user)
 
         # followers = User.objects.filter(follower__user2=user.id, is_active=True)
         # following = User.objects.filter(followee__user1=user.id, is_active=True)
@@ -233,7 +234,7 @@ class PostManager(models.Manager):
         server_only_posts =  super(PostManager, self).filter(privacy=4, user = user)
 
 
-        all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
+        all_posts = only_me_posts | public_posts | private_posts | friends_posts | friends_of_friends_posts | server_only_posts
 
         """
             If unlisted is passed as True, the function will remove unlisted posts from the list.
@@ -269,8 +270,9 @@ class PostManager(models.Manager):
         private_posts = Post.objects.none()
         for post in Post.objects.filter(privacy=1):
             for user in post.accessible_users.all():
-                if user.id == user_id:
-                    private_posts |= Post.objects.filter(id=post.id)
+                pass
+                #if user.id == user_id:
+                    #private_posts |= Post.objects.filter(id=post.id)
 
         # followers = User.objects.filter(follower__user2=user_id, is_active=True)
         # following = User.objects.filter(followee__user1=user_id, is_active=True)
@@ -328,7 +330,7 @@ class PostManager(models.Manager):
             server_only_posts =  super(PostManager, self).filter(privacy=4, user=user_id)
 
 
-        all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | private_posts | server_only_posts
+        all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | server_only_posts
         # all_posts = list(all_posts).extend(posts_from_servers)
 
         """
@@ -343,9 +345,6 @@ class PostManager(models.Manager):
     def filter_server_posts(self, user, *args, **kwargs):
         all_posts = self.filter_user_visible_posts(user, server_only=False)
         return all_posts
-
-
-
 
 
 
@@ -398,8 +397,8 @@ class Post(models.Model):
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     privacy = models.IntegerField(choices=Privacy, default=PUBLIC)
     unlisted = models.BooleanField(default=False)
-    #accessible_users = models.ForeignKey()
-    accessible_users =  models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="accessible_posts", blank=True)
+    accessible_users =  models.CharField(max_length=250, default=False)
+    #accessible_users =  models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="accessible_posts", blank=True)
     objects = PostManager()
 
     # Used to determine the content type of the post. Necessary for the API
@@ -440,7 +439,7 @@ class Post(models.Model):
         data['timestamp'] = str(self.timestamp)
         data['id']= str(self.id)
         data['visibility'] = self.Privacy[self.privacy][1]
-        data['visibleto']  = list(self.accessible_users.values_list('pk', flat=True))
+        data['visibleto']  = self.accessible_users
         data['contentType'] = self.content_type
 
         return data
@@ -456,6 +455,9 @@ class Post(models.Model):
         instance = self
         content_type = ContentType.objects.get_for_model(instance.__class__)
         return content_type
+
+
+
 
 #https://stackoverflow.com/questions/16041232/django-delete-filefield
 #Credit: Tony (https://stackoverflow.com/users/247441/tony)

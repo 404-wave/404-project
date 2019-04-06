@@ -261,12 +261,13 @@ class PostAPIView(generics.GenericAPIView):
 
             # Only set visible users to those on our server
             if privacy == Post.PRIVATE:
-                for author in visible_to:
-                    if not User.objects.filter(id=author).count() == 0:
-                        id = uuid.UUID(author.split("/")[-1])
-                        post.accessible_users.add(id)
+                pass
+                #for author in visible_to:
+                    #if not User.objects.filter(id=author).count() == 0:
+                       # id = uuid.UUID(author.split("/")[-1])
+                        #post.accessible_users.add(id)
 
-            post.accessible_users.add(author_id)
+            #post.accessible_users.add(author_id)
 
         except Exception as e:
             print(e)
@@ -439,6 +440,7 @@ class FriendAPIView(generics.GenericAPIView):
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+
         if 'author_id' in self.kwargs.keys():
             author_id = self.kwargs['author_id']
 
@@ -487,6 +489,7 @@ class FriendAPIView(generics.GenericAPIView):
             for friend in friends:
                 url = standardize_url(friend.host) + "service/author/"+str(friend.id)
                 friend_list.append(url)
+
 
 
             return Response({"query": "friends", "authors": friend_list})

@@ -3,6 +3,12 @@ from django.db import models
 from users.models import User
 
 
+
+class FollowManager(models.Manager):
+
+    def get_friends(self, user):
+        pass
+
 class Follow(models.Model):
     #user1 is follower , user2 is followee
     user1 = models.UUIDField()
@@ -15,6 +21,8 @@ class Follow(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    
 
 
 class FriendRequest(models.Model):
