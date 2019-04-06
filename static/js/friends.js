@@ -290,7 +290,7 @@ function findNodeUserAndPass(nodeList,server){
   for(let node in nodeList){
     let stand_node = standardizeUrl(node);
     console.log("NODE:");
-    console.log(node);
+    console.log(stand_node);
     console.log("SERVER:")
     console.log(server);
     
