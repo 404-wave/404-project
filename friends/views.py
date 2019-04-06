@@ -9,6 +9,7 @@ import os
 import re
 import requests
 import core.views
+import traceback
 from users.models import User, Node
 from friends.models import Follow, FriendRequest
 from requests.auth import HTTPBasicAuth
@@ -272,6 +273,7 @@ def get_user(server, id):
         r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
         response = r.json()
     except:
+        traceback.print_exc
         print("That user does not exist")
         return None
     user.username = response['displayName']

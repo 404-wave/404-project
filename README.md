@@ -289,7 +289,7 @@ Example response:
 }
 ```
 
-**POST service/friendrequest**: accepts two authors and creates a friend request if they are not already friends.
+**POST service/friendrequest**: accepts two authors and creates a friend request if they are not already friends. Author is the user from our server and friend is the requesting user from a foreign server.
 
 Example request:
 ```
