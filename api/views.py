@@ -605,7 +605,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
         author_host = None
         friend_host = None
         own_server = NodeSetting.objects.all().get()
-        own_server = standardize_url(own_server)
+        own_server = standardize_url(own_server.host)
 
         try:
             author_id = data['author']['id'].split("/")[-1]
