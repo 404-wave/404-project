@@ -282,7 +282,7 @@ def get_user(server, id):
 def standardize_url(server):
     server = server.replace(" ","")
     regex = https?://
-    if server.startswith(regex) is False:
+    if bool(re.match(regex,server)) is False:
         server = "https://"+server
     if server.endswith("/") is False:
         server = server+"/"
