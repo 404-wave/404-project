@@ -604,11 +604,18 @@ class FriendRequestAPIView(generics.GenericAPIView):
         friend_id = None
         author_host = None
         friend_host = None
+        own_server = NodeSetting.objects.all().get()
+        own_server = standardize_url(own_server.host)
 
         try:
             author_id = data['author']['id'].split("/")[-1]
+            if len(User.objects.filter(id=author_id)) == 0:
+                return Response(status=status.HTTP_404_NOT_FOUND)
             friend_id = data['friend']['id'].split("/")[-1]
             author_host = data['author']['host']
+
+            if(standardize_url(author_host) is not own_server):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
             friend_host = data['friend']['host']
 
         except:
