@@ -108,7 +108,7 @@
           </div>
           {% if obj|markdown %}
 					  <div class="markdown post_content">
-              <pre>{{obj.content|safe}}</pre>
+              <pre>{{ obj.content }}</pre>
             </div>
           {% elif obj|is_image_post %}
             <div>
