@@ -90,10 +90,14 @@ def posts_detail(request, id):
     print ()
     print ()
     # if instance is a dictionary, then comments should be instance[‘comments’]
-    if isinstance(instance, dict):
-        content_type = instance['contentType']
-    else:
+    # if instance is a dictionary, then comments should be instance[‘comments’]
+    if isinstance(instance, Post):
         content_type = instance.get_content_type
+       
+    else:
+        if (isinstance(instance, list)):
+            instance = instance[0]
+        content_type = instance['contentType']
 
     initial_data = {
         "content_type": content_type,
