@@ -153,7 +153,7 @@ def posts_detail(request, id):
    
             #build_endpoint = str(node.host) + "/service/posts/" + "3f46f9c3-256f-441c-899e-928b095df627" + "/comments/"
             #print(build_endpoint)
-            build_endpoint = str(node_host.host) + "/service/posts/" + str(post_id) + "/comments/"
+            build_endpoint = str(node_host.host) + "/posts/" + str(post_id) + "/comments/"
             headers = {
                     'Accept':'application/json',
                     'X-UUID': str(user_id)
@@ -161,13 +161,13 @@ def posts_detail(request, id):
             #print("build_endpoint is: " + str(build_endpoint))
             build_data = {
                 "query": "addComment",
-                "post": str(node_host.host) + "/service/posts/" + str(post_id),
+                "post": str(node_host.host) + "/posts/" + str(post_id),
                 "comment": {
                     "author":{
                         #"id": str(home_host.host) + "/service/author/" + str(user_id),
                         "id": str(user_id),
                         "host": str(home_host.host),
-                        "url": str(home_host.host) + "/service/author/" + str(user_id),
+                        "url": str(home_host.host) + "/author/" + str(user_id),
                         "github": current_user.github
                     },
                     "comment": content_data,
