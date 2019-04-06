@@ -289,6 +289,11 @@ function standardizeUrl(url){
 function findNodeUserAndPass(nodeList,server){
   for(let node in nodeList){
     let stand_node = standardizeUrl(node);
+    console.log("NODE:");
+    console.log(stand_node);
+    console.log("SERVER:")
+    console.log(server);
+    
     if (stand_node == server){
       let data = {
         'username':nodeList[node]['username'],
