@@ -90,7 +90,7 @@ def posts_detail(request, id):
     print (instance)
     print ()
     print ()
-    print (node)
+    print (post_host)
     # if instance is a dictionary, then comments should be instance[‘comments’]
     if isinstance(instance, Post):
         content_type = instance.get_content_type
