@@ -257,6 +257,7 @@ def get_user(server, id):
     print("SERECER", server)
     server = standardize_url(server)
     server = server[:-1]
+    print("SERVER",server)
     try:
         node = Node.objects.filter(host = server)[0]
         print (node.username, node.password)
