@@ -105,7 +105,8 @@ class UserAPIView(generics.GenericAPIView):
     serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
-
+        print (request)
+        print ()
         if 'author_id' in kwargs.keys():
             author_id = self.kwargs['author_id']
             try:
