@@ -294,6 +294,9 @@ textarea.form-control{
 	background-color: #fdfdfd !important;
 }
 
+.stream_post img{
+	max-width: 90%;
+}
 .stream_post, .github_post {
 	background-color: white;
 	margin-bottom: 10px;
