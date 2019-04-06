@@ -610,7 +610,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
         try:
             author_id = data['author']['id'].split("/")[-1]
             print(User.objects.filter(id=author_id))
-            if !(User.objects.filter(id=author_id)):
+            if len(User.objects.filter(id=author_id)) == 0:
                 return Response(status=status.HTTP_404_NOT_FOUND)
             friend_id = data['friend']['id'].split("/")[-1]
             author_host = data['author']['host']
