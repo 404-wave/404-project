@@ -155,7 +155,8 @@ def posts_detail(request, id):
             #print(build_endpoint)
             build_endpoint = str(node_host.host) + "/posts/" + str(post_id) + "/comments/"
             headers = {
-                    'Accept':'application/json',
+                    "Accept":"application/json",
+                    "Content-Type": "application/json",
                     'X-UUID': str(user_id)
                 }
             #print("build_endpoint is: " + str(build_endpoint))
@@ -174,8 +175,8 @@ def posts_detail(request, id):
                     
                     "comment": content_data,
                     "contentType": "text/plain",
-                    "published": str(datetime.now().isoformat()),
-                    "id": str(uuid.uuid4())
+                    #"published": str(datetime.now().isoformat()),
+                    #"id": str(uuid.uuid4())
             }
             }
             #print("build_data is: " + str(build_data))
