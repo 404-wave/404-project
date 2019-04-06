@@ -254,10 +254,9 @@ def strip_host(host):
 
 def get_user(server, id):
     user = User()
-    print("SERECER", server)
     server = standardize_url(server)
     server = server[:-1]
-    print("SERVER",server)
+    print("SERECER", server)
     try:
         node = Node.objects.filter(host = server)[0]
         print (node.username, node.password)
@@ -285,7 +284,10 @@ def get_user(server, id):
 def standardize_url(server):
     server = server.replace(" ","")
     regex = "(^https?:\/\ /)(.*)"
+<<<<<<< HEAD
     print(re.search(regex,server))
+=======
+>>>>>>> 321c091fa0fb340bb4f25a4c990faf498ad30ebb
     if re.search(regex,server) is False:
         server = "https://"+server
     if server.endswith("/") is False:
