@@ -296,15 +296,18 @@ function populateAccessibleList(data){
   var select_parent = $('#id_accessible_users')[0];
   var select = select_parent.children;
   var size = select.length;
+  var current = "";
   for (i=0; i<select.length; i++){
-    var options = select[i].firstElementChild.childNodes;
-    var id = options[0].value;
-    if (!friends.includes(id)){
-      checkbox = createCheckBox(id, select, size.toString());
-      select_parent.appendChild(checkbox);
-      size = size +1;
-    }
-    console.log(select[i]);}
+    current+=select[0].firstElementChild.childNodes[0].value;
+  }
+  for (item of data["authors"]) {
+    console.log(item);
+    if (!current.includes(item)){
+    checkbox = createCheckBox(item, select[0].cloneNode(true), size.toString());
+    select_parent.appendChild(checkbox);
+    size = size +1;
+   }
+}
 
   console.log(data)
 
