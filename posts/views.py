@@ -187,13 +187,9 @@ def posts_detail(request, id):
             #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
             #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
             #Partner group can return "Post Not Found"
-        success = False
-        try:
-            success = json.loads(r.content)['success']
-            if success == True:
-                break
-        except:
-            pass
+
+        success = json.loads(r.content)['success']
+
                 # success = json.loads(r.content)
                 # if isinstance(success, str):
                 #     print(success)
