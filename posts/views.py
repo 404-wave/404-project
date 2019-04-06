@@ -164,17 +164,19 @@ def posts_detail(request, id):
                 "post": str(node_host.host) + "/posts/" + str(post_id),
                 "comment": {
                     "author":{
-                        #"id": str(home_host.host) + "/service/author/" + str(user_id),
-                        "id": str(user_id),
+                        "id": str(home_host.host) + "/service/author/" + str(user_id),
+                        #"id": str(user_id),
                         "host": str(home_host.host),
                         "url": str(home_host.host) + "/author/" + str(user_id),
-                        "github": current_user.github
-                    },
+                        "github": "http://github.com/"+current_user.github,
+                        "displayName": current_user.username
+                        },
+                    
                     "comment": content_data,
                     "contentType": "text/plain",
                     "published": str(datetime.now().isoformat()),
                     "id": str(uuid.uuid4())
-                }
+            }
             }
             #print("build_data is: " + str(build_data))
             #https://www.programcreek.com/python/example/6251/requests.post
