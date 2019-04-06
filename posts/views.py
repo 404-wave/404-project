@@ -84,7 +84,9 @@ def posts_detail(request, id):
         if instance is None:
             print("Instance is none. Redirecting")
             return HttpResponseRedirect('/home')
-
+    print (instance)
+    print ()
+    print ()
     # if instance is a dictionary, then comments should be instance[‘comments’]
     if isinstance(instance, dict):
         content_type = instance['contentType']
