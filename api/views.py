@@ -21,11 +21,12 @@ from users.models import User, Node, NodeSetting
 from comments.models import Comment
 from posts.models import Post
 
-from friends.views import follows
+from friends.views import follows,standardize_url,get_user
 
 import requests
 import socket
 import uuid
+import traceback
 
 
 # Checks if we have enabled sharing posts with other servers
@@ -477,6 +478,9 @@ class FriendAPIView(generics.GenericAPIView):
                 
                 
             except:
+                
+                traceback.print_exc()
+
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
             friend_list = list()
@@ -489,29 +493,40 @@ class FriendAPIView(generics.GenericAPIView):
 
         if 'author_id1' in self.kwargs.keys() and 'author_id2' in self.kwargs.keys():
 
-            author_id1 = self.kwargs['author_id1']
-            author_id2 = self.kwargs['author_id2']
-
-            #TODO Check if they actually exist in other servers
+            author_id1 = None
+            author_id2 = None
+            author1_server = NodeSetting.objects.all().get()
+            author1_server = standardize_url(author1_server.host)
+            author2_server = None
+            try:
+                author_id1 = self.kwargs['author_id1']
+                author_id2 = self.kwargs['author_id2']
+                author2_server= self.kwargs['hostname']
+                author2_server = standardize_url(author2_server)
+                            
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+              
             a1_follows_a2 = follows(author_id1,author_id2)
             a2_follows_a1 = follows(author_id2,author_id1)
-
+            
             if a1_follows_a2 & a2_follows_a1:
                 friends = True
             else:
                 friends = False
-
             response = {
                 "query":"friends",
                 "authors":[
-                    str(author1.host) +"/author/"+ str(author1.id),
-                    str(author2.host) +"/author/"+ str(author2.id)
+                    author1_server +"author/"+ str(author_id1),
+                    author2_server +"author/"+ str(author_id2)
                 ],
                 "friends": friends
             }
-
+            print("IS FRIENDS RESPONSE: ")
+            print(response)
             return Response(response)
         else:
+            print("URI doesn't exist")
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, *args, **kwargs):
@@ -526,7 +541,7 @@ class FriendAPIView(generics.GenericAPIView):
             authors = data['authors']
         except:
             # If the JSON was not what we wanted, send a 400
-            Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         author_id = author.split("/")[-1]
         # followers = User.objects.filter(follower__user2=author_id, is_active=True)

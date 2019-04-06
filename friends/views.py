@@ -163,6 +163,16 @@ def follow(request):
     return HttpResponse(json.dumps(data), content_type="application/json")
     #return HttpResponse()
 
+def getNodeList(request):
+    nodes = Node.objects.all()
+    nodeList = dict()
+    for node in nodes:
+        nodeList[node.host]= {
+            'sharing':node.sharing,
+            'username':node.username,
+            'password':node.password,
+        }
+    return HttpResponse(json.dumps(nodeList),content_type="application/json")
 
 def unfollow(request):
 
@@ -220,6 +230,19 @@ def friend_requests(request):
         host = strip_host(user.host)
         data2["posts"].append({'id':str(user.id), 'username':user.username, 'host': host})
     return HttpResponse(json.dumps(data2), content_type='application/json')
+
+def change_ModelDatabase(request):
+    
+    localUserID = request.POST.get('local')
+    foreignUserID = request.POST.get('foreign')
+    follows_too = request.POST.get('follows')
+
+    FriendRequest.objects.filter(recipient=localUserID,requestor=foreignUserID).delete()
+
+    if(follows_too == 'delete'):
+        Follow.objects.filter(user1=foreignUserID,user2=localUserID).delete()
+       
+    return HttpResponse(status=204)
 
 def strip_host(host):
     re_result = re.search("(^https?:\/\/)(.*)", host)

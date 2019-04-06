@@ -6,12 +6,21 @@ from django.conf import settings
 from django.urls import reverse
 from comments.models import Comment
 from friends.models import Follow
+from django.utils.dateparse import parse_datetime
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.fields.related import ManyToManyField, ForeignKey
+from django.db.models.fields import UUIDField, DateTimeField
 from users.models import User
 from users.models import Node
 from django.dispatch import receiver
 from django.db.models.signals import post_save, m2m_changed
 from django.db.models import Q
+from django.forms.models import model_to_dict
+import json
+import re
+import datetime
+from django.core.serializers.json import DjangoJSONEncoder
+
 import base64
 from mimetypes import guess_type
 import uuid
@@ -34,11 +43,28 @@ def upload_location(instance, filename):
     return "%s/%s" % (instance.id, filename)
 
 
+
+
 class PostManager(models.Manager):
 
     """
         Functions that were made to test individual privacy setting
     """
+    def convert_to_date(self,elem):   
+        new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
+        try:
+            new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f') 
+        except:
+            try:
+                new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S')
+            except:
+                return 'no date'
+        return new_dt
+
+    def sort_posts(self, list_post):
+       list_post.sort(key = lambda date: self.convert_to_date(date), reverse=True) 
+
+
     def all(self, *args, **kwargs):
         query_set = super(PostManager, self).order_by("-timestamp")
         return query_set
@@ -46,6 +72,7 @@ class PostManager(models.Manager):
     def filter_by_public(self, *args, **kwargs):
         query_set = super(PostManager, self).filter(privacy=0).order_by("-timestamp")
         return query_set
+
 
     def filter_by_friends(self, *args, **kwargs):
         # followers = User.objects.filter(follower__user2=user.id, is_active=True)
@@ -114,7 +141,7 @@ class PostManager(models.Manager):
 
                 print()	
 
-                print(response)
+                #print(response)
 
                 print()
                 # print(test_url)
@@ -214,8 +241,9 @@ class PostManager(models.Manager):
         """
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
-        all_posts = list(all_posts.order_by('-timestamp'))
+        all_posts = [item.to_dict_object() for item in all_posts]
         all_posts.extend(posts_from_servers)
+        self.sort_posts(all_posts)
 
         return all_posts
 
@@ -318,6 +346,9 @@ class PostManager(models.Manager):
 
 
 
+
+
+
 class Post(models.Model):
 
     PUBLIC = 0
@@ -367,6 +398,7 @@ class Post(models.Model):
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     privacy = models.IntegerField(choices=Privacy, default=PUBLIC)
     unlisted = models.BooleanField(default=False)
+    #accessible_users = models.ForeignKey()
     accessible_users =  models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="accessible_posts", blank=True)
     objects = PostManager()
 
@@ -398,6 +430,20 @@ class Post(models.Model):
 
     def encodeImage(self, image):
         pass
+
+    def to_dict_object(self):
+        opts = self._meta
+        data = {}
+        data['content']= self.content
+        data['author'] =self.user.to_dict_object_post()
+        data['published'] = self.publish.isoformat()
+        data['timestamp'] = str(self.timestamp)
+        data['id']= str(self.id)
+        data['visibility'] = self.Privacy[self.privacy][1]
+        data['visibleto']  = list(self.accessible_users.values_list('pk', flat=True))
+        data['contentType'] = self.content_type
+
+        return data
 
     @property
     def comments(self):
@@ -441,10 +487,11 @@ class Post(models.Model):
 def create_base64_str(sender, instance=None, created=False, **kwargs):
     if instance.image and created:
         image_type, encoded_string = image_to_b64(instance.image)
-        instance.content = encoded_string
-        instance.data_uri = "data:" + image_type + ";base64," + encoded_string
+        instance.content = "data:" + image_type + ";base64," + encoded_string
+        instance.content_type = image_type + ";base64"
+        #instance.data_uri = "data:" + image_type + ";base64," + encoded_string
         instance.is_image = True
         #make it unlisted here
-        instance.unlisted = True
+        #instance.unlisted = True
         instance.image.delete()
         instance.save()

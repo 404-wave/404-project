@@ -108,3 +108,156 @@ function setEmptyMessage() {
     }
 }
 
+function setMarkdown2(){
+    var converter = new showdown.Converter({'strikethrough': 'true'});
+    text = $('textarea')[0].value
+    html = converter.makeHtml(text);
+    elem.innerHTML = html;
+}
+function setStreamMarkdown(){
+    var markdown = $('.markdown');
+    for (let value of markdown) { 
+        setMarkdown(value.children[0]); 
+}}
+
+function setMarkdown(elem){
+    var converter = new showdown.Converter({'strikethrough': 'true', 
+    'simplifiedAutoLink': 'true',
+'simpleLineBreaks': 'true'});
+    converter.setFlavor('github');
+    text = elem.innerHTML;
+    html = converter.makeHtml(text);
+    elem.innerHTML = html;
+}
+function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePassword){
+    let path = standardizeUrl(server)+"service/author/"+foreignUser+"/friends/";
+    $.ajax({
+      url:path,
+      type:"GET",
+      headers: {"Authorization":"Basic "+btoa(nodeUsername+":"+ nodePassword)},
+      success: function(response){
+        console.log("Successfully got foreign user following list");
+        let content = response;
+        let foreignList = content['authors'];
+        let foreignFriends = [];
+        foreignList.forEach((url)=>{
+          let friend = url.split("/").pop();
+          foreignFriends.push(friend);
+        });
+        console.log(foreignFriends);
+        console.log(localUser);
+        if ( foreignFriends && !foreignFriends.includes(localUser) ){
+           console.log("Foreign unfollow. Removing from dB");
+           changeFollowDB(localUser,foreignUser);
+         }
+      },
+      error: function(xhr,status,error){
+        console.log("error: " + error);
+      }
+    });
+  }
+
+// function removeFromNotifs(localUser,foreignUser){
+//     let path = 'change_ModelDatabase/';
+
+//     $.ajax({
+//         url:path,
+//         type:"POST",
+//         data: {'local':localUser,'foreign':foreignUser,'follows':"false",
+//         },
+//         headers:{"x-csrftoken":csrfToken},
+//         dataType:"json",
+//         success: function(data){
+//         console.log("Succesfully removed user from FRs");
+//         },
+//         error: function(xhr,status,error){
+//         console.log("error: ", error, status,xhr);
+//         }
+//     });
+// }
+
+function stripProtocol(server){
+    let newServer = server;
+    if (server.startsWith("https://")){
+      newServer = server.replace(/^https?\:\/\//i, "");
+    }
+    return newServer;
+}
+
+function changeFollowDB(localUser,foreignUser){
+    let path = 'friends/change_ModelDatabase/';
+  
+    $.ajax({
+      url:path,
+      type:"POST",
+      data: {'local':localUser,'foreign':foreignUser,'follows':"delete"},
+      headers: {"x-csrftoken":csrfToken},
+      dataType:"json",
+      success: function(data){
+        console.log("Succesfully changed Follow DB");
+      },
+      error: function(xhr,status,error){
+        console.log("error: ", error, status,xhr);
+      }
+    });
+}
+
+function checkChanges(localUser,localUserServer,nodeList){
+
+    let path1 = standardizeUrl(localUserServer)+"service/author/"+localUser+"/friends/";
+    let localFriends;
+    $.ajax({
+      //checks if the local user followed them back
+      url: path1,
+      success: function(content){
+        localFriends= content['authors'];
+
+        if (localFriends){
+            for(let i=0;i<localFriends.length;i++){
+              let friend = localFriends[i];
+
+              let url = friend.split("/");
+              let hostname = standardizeUrl(url[2]);
+
+              if (hostname != standardizeUrl(localUserServer)){
+                let friendID = url.pop();
+                let userPassObj = findNodeUserAndPass(JSON.parse(nodeList),hostname);
+                let nodeUsername = userPassObj['username'];
+                let nodePassword = userPassObj['password'];
+
+                checkFromOtherNode(localUser,friendID,hostname,nodeUsername,nodePassword);
+
+              }
+            }
+        }
+
+      },
+      error: function(xhr,status,error){
+        console.log("Error: ",error, status);
+      }
+    });
+}
+
+function standardizeUrl(url){
+  let serverUrl = url.replace(/\s+/g,"");
+  if(serverUrl.endsWith("/") == false){
+     serverUrl = serverUrl + "/";
+  }
+  if(serverUrl.indexOf("https://") === -1){ 
+    serverUrl = "https://"+serverUrl;
+  }
+  return serverUrl;
+}
+
+function findNodeUserAndPass(nodeList,server){
+  for(let node in nodeList){
+    let stand_node = standardizeUrl(node);
+    if (stand_node == server){
+      let data = {
+        'username':nodeList[node]['username'],
+        'password':nodeList[node]['password']
+      };
+      return data;
+    }
+  }
+}
