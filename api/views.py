@@ -288,13 +288,7 @@ class PostAPIView(generics.GenericAPIView):
 
             # Only set visible users to those on our server
             if privacy == Post.PRIVATE:
-                pass
-                #for author in visible_to:
-                    #if not User.objects.filter(id=author).count() == 0:
-                       # id = uuid.UUID(author.split("/")[-1])
-                        #post.accessible_users.add(id)
-
-            #post.accessible_users.add(author_id)
+                post.accessible_users = visible_to
 
         except Exception as e:
             print(e)
