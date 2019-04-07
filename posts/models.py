@@ -329,7 +329,7 @@ class PostManager(models.Manager):
             server_only_posts =  super(PostManager, self).filter(privacy=4, user=user_id)
 
 
-        all_posts = only_me_posts | public_posts | friends_posts | friends_of_friends_posts | server_only_posts
+        all_posts = only_me_posts | public_posts | private_posts | friends_posts | friends_of_friends_posts | server_only_posts
         # all_posts = list(all_posts).extend(posts_from_servers)
 
         """
