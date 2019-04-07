@@ -59,13 +59,12 @@
             </div>
             <div class="fieldWrapper_photo upload_image">
                 {{ form.image.errors }} <label for="{{ form.image.id_for_label }}"></label> {{ form.image }}
-            </div>
+            </div>             
 						<div class="settingss" style="display: none;">
 							<div class="fieldWrapper_row">
 								<div class="fieldWrapper_privacy">
-                  {{ form.privacy.errors }} <label for="{{ form.privacy.id_for_label }}"></label> {{ form.privacy}} 
-                  {{ form.accessible_users.errors }} <label for="{{ form.accessible_users.id_for_label }}"></label> {{ form.accessible_users }}
-		
+                  {{ form.privacy.errors }} <label for="{{ form.privacy.id_for_label }}"></label> {{ form.privacy}}                 
+                  {{ form.accessible_users.errors }} <label for="{{ form.accessible_users.id_for_label }}"></label> {{ form.accessible_users }}     
 							</div>
 							<div class="fieldWrapper_submit">
                 {{ form.unlisted.errors }} <label for="{{ form.unlisted.id_for_label }}">Unlisted</label> {{ form.unlisted }} 

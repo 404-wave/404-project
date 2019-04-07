@@ -120,12 +120,25 @@ position:absolute;
 	}
 .fieldWrapper_privacy *{
 	height: fit-content;
-	margin: 10px;
+	/* margin: 10px; */
 }	
 .fieldWrapper_photo {
 	margin-top: 2em;
-	
-
+}
+#id_accessible_users{
+	list-style: none;
+	  height: 100px;
+	    overflow:auto;
+}
+#id_accessible_users li{
+	padding: .5em;
+	line-height: 1em;
+}
+#id_accessible_users input[type=checkbox]{
+	margin-right: .3em;
+}
+#id_accessible_users label{
+	margin-bottom:0px;
 }
 .fieldWrapper_submit{
 	display: flex;

@@ -282,7 +282,7 @@ function findDisplayName(user,node, e) {
 }
 
 function changeDisplayName(data, node){
-  node.childNodes[0].childNodes[1].textContent = data['displayName']
+  node.childNodes[0].childNodes[1].textContent = " "+data['displayName']
 }
 
 function populateAccessibleList(){
