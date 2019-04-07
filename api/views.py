@@ -169,8 +169,9 @@ class PostAPIView(generics.GenericAPIView):
         print ("User Authenticated", request.user.is_authenticated)
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        print ("host", request.user.is_authenticated)
+
         host = get_hostname(request)
+        print ("host", request.user.is_authenticated, host)
         if host is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
