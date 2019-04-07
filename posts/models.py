@@ -104,11 +104,7 @@ class PostManager(models.Manager):
         return query_set
 
     def find_accessible_posts(self, user_id):
-        print ("ACCESSIBLEEE", user_id)
         posts = super(PostManager, self).filter(privacy=1).filter(accessible_users__icontains =str(user_id))
-        if (posts):
-            print(type(posts[0]))
-        print (type(posts))
         return posts
     """
         Filters all posts based on the privacy setting chosen.
@@ -412,7 +408,7 @@ class Post(models.Model):
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
     privacy = models.IntegerField(choices=Privacy, default=PUBLIC)
     unlisted = models.BooleanField(default=False)
-    accessible_users =  models.CharField(max_length=250, default=False)
+    accessible_users =  models.TextField(default=False)
     #accessible_users =  models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="accessible_posts", blank=True)
     objects = PostManager()
 
