@@ -212,7 +212,9 @@ def friend_requests(request):
         return HttpResponseForbidden()
     print ("REQUEST FRIEND")
     friend_reqs = FriendRequest.objects.filter(recipient=request.user.id)
+    print ("REQUEST FRIEND", friend_reqs)
     host = request.get_host()
+    print ("REQUEST FRIEND", host)
     data2 = {"posts": []}
     user_filter = Q()
     l = list()
@@ -284,7 +286,7 @@ def get_user(server, id):
 def standardize_url(server):
     server = server.replace(" ","")
     regex = "(^https?:\/\ /)(.*)"
-    http_regex = "(^http:\/\/(.*)"
+    http_regex = "^http:\/\/(.*)"
     if server.endswith("/") is False:
         server = server+"/"
     if re.search(http_regex,server) is True:
