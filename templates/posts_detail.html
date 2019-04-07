@@ -107,7 +107,7 @@
         {% for comment in comments %}
         <blockquote>
           <p>{{ comment | get_comment_content }}</p>
-          <p>
+          <p id = "comment_author" class="{{ comment | get_comment_author }}">
             by {{ comment | get_comment_author }} on {{ comment.published }}
           </p>
         </blockquote>
