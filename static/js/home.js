@@ -108,6 +108,27 @@ function setEmptyMessage() {
     }
 }
 
+function setMarkdown2(){
+    var converter = new showdown.Converter({'strikethrough': 'true'});
+    text = $('textarea')[0].value
+    html = converter.makeHtml(text);
+    elem.innerHTML = html;
+}
+function setStreamMarkdown(){
+    var markdown = $('.markdown');
+    for (let value of markdown) { 
+        setMarkdown(value.children[0]); 
+}}
+
+function setMarkdown(elem){
+    var converter = new showdown.Converter({'strikethrough': 'true', 
+    'simplifiedAutoLink': 'true',
+'simpleLineBreaks': 'true'});
+    converter.setFlavor('github');
+    text = elem.innerHTML;
+    html = converter.makeHtml(text);
+    elem.innerHTML = html;
+}
 function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePassword){
     let path = standardizeUrl(server)+"service/author/"+foreignUser+"/friends/";
     $.ajax({
@@ -220,9 +241,13 @@ function checkChanges(localUser,localUserServer,nodeList){
 function standardizeUrl(url){
   let serverUrl = url.replace(/\s+/g,"");
   if(serverUrl.endsWith("/") == false){
-     serverUrl = serverUrl + "/";
+    serverUrl = serverUrl + "/";
   }
-  if(serverUrl.indexOf("https://") === -1){ 
+  if(serverUrl.startsWith("http://")== true){
+    serverUrl = serverUrl.split("http://").pop();
+    serverUrl = "https://"+serverUrl;
+  }
+  else if(/^https?:\/\//.test(serverUrl) == false){ 
     serverUrl = "https://"+serverUrl;
   }
   return serverUrl;

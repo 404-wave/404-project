@@ -11,7 +11,8 @@
 	</script> <!-- Bootstrap-->
 	 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
-	</script>
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.8.0/showdown.min.js"></script>
 	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"><!-- Style-->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
   <!-- Javascript-->
@@ -28,6 +29,7 @@
      auto_text();
      private();
      file_listener();
+     setStreamMarkdown();
 	 }
   </script> 
   {% endblock %} 
@@ -51,6 +53,7 @@
 				<form action="" enctype="multipart/form-data" method="post" novalidate="">
 					{% csrf_token %}
 					<div class="settings">
+              {{ form.content_type.errors }} <label for="{{ form.content_type.id_for_label }}"></label> {{ form.content_type }}
 						<div class="text_Wrapper create_post">
               {{ form.content.errors }} <label for="{{ form.content.id_for_label }}"></label> 
               {{ form.content }}
@@ -102,16 +105,34 @@
 							</div>
 						</div>
 						<p class="privacy"> {{ obj|get_privacy}}</p>
-					</div>
-					<div class="post_content">
-							<p>{{ obj.content | linebreaks }}</p>
           </div>
+          {% if obj|markdown %}
+					  <div class="markdown post_content">
+                {% if obj|markdown_safe %}
+                  {% autoescape off %}
+                <pre>{{obj.content}}</pre>
+                {% endautoescape %}
+                {% else %}
+                <pre>{{obj.content}}</pre>
+                {% endif %}
+            </div>
+          {% elif obj|is_image_post %}
+            <div>
+                <a href="{{ obj.content }}">
+                  <img src="{{ obj.content }}" />
+                </a>
+            </div>
+          {% else %}
+          <div class="post_content">
+							{{ obj.content | linebreaks }}
+            </div>
+          {% endif %}
           <div class = "view_more">
-          {% if obj.user == request.user %}
+          {% if  obj|get_user:request.user.id %}
           <div class="dropdown">
             <input alt="edit" aria-expanded="false" aria-haspopup="true" class="edit_button" data-toggle="dropdown" id="dropdownMenu2" src="{% static  'images/pencil.png'  %}" type="image" width="25px">
             <div aria-labelledby="dropdownMenu2" class="dropdown-menu">
-              <a class="dropdown-item" href="{{  obj.get_edit_absolute_url  }}">Edit</a> <a class="dropdown-item" href="{{  obj.get_delete_absolute_url  }}">Delete</a>
+              <a class="dropdown-item" href="{{  obj|get_edit }}">Edit</a> <a class="dropdown-item" href="{{  obj|get_delete }}">Delete</a>
             </div>
           </div>
           {% endif %}

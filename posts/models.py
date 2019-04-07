@@ -125,6 +125,7 @@ class PostManager(models.Manager):
         """
 
         posts_from_servers = []
+        post_ids = []
         for node in Node.objects.all():
             url = node.host + "/author/posts/"
             # test_url = 'https://cmput-404-proj-test.herokuapp.com/author/posts/'
@@ -141,11 +142,12 @@ class PostManager(models.Manager):
 
                 print()	
 
-                print(response)
+                #print(response)
 
                 print()
                 # print(test_url)
                 print(url)
+           
                 print(response.status_code)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
@@ -154,6 +156,16 @@ class PostManager(models.Manager):
 
                     #if servers are bad and don't include the author server we do
                     for item in responselist["posts"]:
+                        if item['id'] in post_ids:
+                            continue
+                        post_ids.append(item['id'])
+                        print()
+                        print()
+                        print()
+                        print("These are all the processed posts. ",post_ids)
+                        print()
+                        print()
+                        print()
                         if (item['author']['host'] == ''):
                             print ("ADDING HOST")
                             item['author']['host'] = node.host
@@ -241,13 +253,22 @@ class PostManager(models.Manager):
         """
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
-
-        ##all_posts = list(all_posts.order_by('-timestamp'))
         all_posts = [item.to_dict_object() for item in all_posts]
-        all_posts.extend(posts_from_servers)
-        self.sort_posts(all_posts)
+        
 
-        return all_posts
+        filtered_posts = []
+        for post in all_posts:
+            if post['id'] not in post_ids :
+                filtered_posts.append(post)
+
+        # all_posts.extend(posts_from_servers)	      
+        # self.sort_posts(all_posts)
+        # return all_posts
+        
+        filtered_posts.extend(posts_from_servers)
+        self.sort_posts(filtered_posts)
+
+        return filtered_posts
 
     def filter_user_visible_posts_by_user_id(self, user_id, server_only, *args, **kwargs):
 
@@ -345,14 +366,6 @@ class PostManager(models.Manager):
     def filter_server_posts(self, user, *args, **kwargs):
         all_posts = self.filter_user_visible_posts(user, server_only=False)
         return all_posts
-
-class Accessible_Users(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    post_id =models.UUIDField(default=uuid.uuid4, editable=False)
-    userid = models.UUIDField(default=uuid.uuid4)
-    host = models.CharField(max_length=100)
-
-
 
 
 
@@ -497,10 +510,11 @@ class Post(models.Model):
 def create_base64_str(sender, instance=None, created=False, **kwargs):
     if instance.image and created:
         image_type, encoded_string = image_to_b64(instance.image)
-        instance.content = encoded_string
-        instance.data_uri = "data:" + image_type + ";base64," + encoded_string
+        instance.content = "data:" + image_type + ";base64," + encoded_string
+        instance.content_type = image_type + ";base64"
+        #instance.data_uri = "data:" + image_type + ";base64," + encoded_string
         instance.is_image = True
         #make it unlisted here
-        instance.unlisted = True
+        #instance.unlisted = True
         instance.image.delete()
         instance.save()

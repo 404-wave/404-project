@@ -15,6 +15,7 @@ class PostForm(forms.ModelForm):
             "content",
             "image",
             "privacy",
+            "content_type",
             "accessible_users",
             "unlisted",
             "user",
