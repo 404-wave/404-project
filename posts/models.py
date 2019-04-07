@@ -158,8 +158,6 @@ class PostManager(models.Manager):
                     for item in responselist["posts"]:
                         print("These are the duplicates from our server after a refresh", item['published']['id'])
                         if item['id'] in post_ids:
-                            # print("These are the duplicates from our server after a refresh", item['published']['id'])
-                            print("These are duplicates from other servers: ", item['id'])
                             continue
                         post_ids.append(item['id'])
                         print()
