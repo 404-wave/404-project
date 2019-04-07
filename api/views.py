@@ -23,6 +23,7 @@ from posts.models import Post
 
 from friends.views import follows,standardize_url,get_user
 
+from requests.auth import HTTPBasicAuth
 import requests
 import socket
 import uuid
@@ -45,6 +46,8 @@ def get_hostname(request):
 
 
 def sharing_posts_enabled(request):
+
+    # TODO: Need to check the host against the USERS host... user might be a node...
 
     node_settings = None
     host = get_hostname(request)
@@ -112,7 +115,7 @@ class UserAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         print (request)
-        print 
+        print
         if 'author_id' in kwargs.keys():
             author_id = self.kwargs['author_id']
             try:
@@ -125,7 +128,7 @@ class UserAPIView(generics.GenericAPIView):
         uid = author_id
         user_Q = Q()
         follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
-        
+
         if len(follow_obj) != 0:
             for follow in follow_obj:
                 if follow.user1==uid:
@@ -176,7 +179,8 @@ class PostAPIView(generics.GenericAPIView):
         print ("400 test", requestor_id)
         print ("400 test", path)
         print ("400 test", path_all_public_posts)
-        if requestor_id is None and path not in path_all_public_posts:
+
+        if requestor_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         server_only = allow_server_only_posts(request)
@@ -210,6 +214,32 @@ class PostAPIView(generics.GenericAPIView):
         elif path in path_all_public_posts:
             queryset = Post.objects.filter(privacy=Post.PUBLIC).filter(unlisted=False).order_by('timestamp')
 
+            page = self.paginate_queryset(queryset)
+            serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
+            serialized_data = serializer.data
+
+            for node in Node.objects.all():
+                url = node.host + "/posts/"
+
+                try:
+                    headers = {
+                        'Accept':'application/json',
+                        'X-UUID': str(requestor_id)
+                    }
+
+                    response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+
+                    print("Getting public posts from other servers...")
+                    print(response.status_code)
+                    if (response.status_code > 199 and response.status_code <300):
+                        responselist = response.json()
+                        serialized_data.extend(responselist["posts"])
+
+                except Exception as e:
+                    print(e)
+                    pass
+
+            return self.get_paginated_response(serialized_data)
 
         # Not a valid path
         else:
@@ -219,17 +249,6 @@ class PostAPIView(generics.GenericAPIView):
         serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
         return self.get_paginated_response(serializer.data)
 
-		# {
-		# 	"contentType":"text/plain",
-		# 	"content":"Here is some post content."
-		# 	"author":{
-		# 		"id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-		# 	},
-		# 	# visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
-		# 	"visibility":"PUBLIC",
-		# 	"visibleTo":[],
-        #     "unlisted":false
-		# }
 
     # Since we only host posts made from our server, POSTing a post requires
     # that the author is also a user on our server, otherwise a 404 will be
@@ -455,7 +474,7 @@ class FriendAPIView(generics.GenericAPIView):
 
             friends = ""
             try:
-                
+
                 #followers = User.objects.filter(follower__user2=author_id, is_active=True)
                 # following = User.objects.filter(followee__user1=author_id, is_active=True)
                 # friends = following & followers
@@ -470,7 +489,7 @@ class FriendAPIView(generics.GenericAPIView):
                             recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
                             if recip_object:
                                 user = User.objects.filter(id=follow.user2)
-                                if user:    
+                                if user:
                                     user=user.get()
                                 else:
                                     user = get_user(follow.user2_server,follow.user2)
@@ -486,10 +505,10 @@ class FriendAPIView(generics.GenericAPIView):
                                 else:
                                     user= get_user(follow.user1_server,follow.user1)
                                 friends.add(user)
-                
-                
+
+
             except:
-                
+
                 traceback.print_exc()
 
                 return Response(status=status.HTTP_404_NOT_FOUND)
@@ -515,13 +534,13 @@ class FriendAPIView(generics.GenericAPIView):
                 author_id2 = self.kwargs['author_id2']
                 author2_server= self.kwargs['hostname']
                 author2_server = standardize_url(author2_server)
-                            
+
             except:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-              
+
             a1_follows_a2 = follows(author_id1,author_id2)
             a2_follows_a1 = follows(author_id2,author_id1)
-            
+
             if a1_follows_a2 & a2_follows_a1:
                 friends = True
             else:
@@ -602,7 +621,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
     queryset = FriendRequest.objects.all()
     serializer_class = UserFriendSerializer
     parser_classes = (JSONParser,)
-    
+
 
     def post(self, request, *args, **kwargs):
 
@@ -611,7 +630,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
         # Retrieves JSON data
         data = request.data
-        
+
         author_id = None
         friend_id = None
         author_host = None
@@ -632,7 +651,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
         print(friend_id)
         print(author_host)
         print(friend_host)
-        
+
         try:
             # followers = User.objects.filter(follower__user2=author_id, is_active=True)
             # following = User.objects.filter(followee__user1=author_id, is_active=True)
@@ -640,22 +659,22 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
              following_user_Q = Q()
              following_obj = Follow.objects.filter(user1=author_id,is_active=True)
-        
+
              for fr in following_obj:
                  following_user_Q = following_user_Q | Q(id= fr.user2)
              following = User.objects.filter(following_user_Q)
 
         except:
             print("No follow objects. Continuing ")
-            
+
         already_following = False
         if (len(following) != 0):
             for followee in following:
                 if str(friend_id) == str(followee.id):
                     already_following = True
-    
+
         # If user1 is already following user2, then a request must have previously been made
-       
+
         if not already_following:
 
             try:
@@ -666,9 +685,9 @@ class FriendRequestAPIView(generics.GenericAPIView):
                 Follow.objects.create(user1=author_id, user1_server =author_host, user2=friend_id, user2_server = friend_host)
             except:
                 print(" Couldn't create object")
-                return Response(status=status.HTTP_409_CONFLICT)
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             print("Created object")
-                
+
             # Query to see if the person they want to follow is already following requestor
             exists_in_table = FriendRequest.objects.filter(requestor=friend_id,recipient=author_id)
             if (len(exists_in_table) == 0) & (follows(friend_id,author_id) == False):
@@ -677,7 +696,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
                     FriendRequest.objects.create(requestor= author_id, requestor_server = author_host, recipient= friend_id, recipient_server = friend_host)
                 except:
                     print("Couldn't make FR")
-                    return Response(status=status.HTTP_409_CONFLICT)
+                    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             elif len(exists_in_table) != 0:
                 exists_in_table.delete()
 

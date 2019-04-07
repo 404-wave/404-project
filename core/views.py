@@ -248,7 +248,6 @@ def get_user(parameters):
 	if server_user:
 		return server_user[0]
 	response = try_api_service(server, profile_id)
-	print ("RESPONE", response)
 	try: 
 		user.username = response['displayName']
 		re_result = re.search(id_regex, response['id'])
@@ -258,6 +257,7 @@ def get_user(parameters):
 		user.first_name = optional_attributes(user.first_name, response, 'firstname')
 		user.last_name = optional_attributes(user.last_name, response, 'lastname')
 		user.email = optional_attributes(user.email, response, 'email')
+
 
 		return user
 	except:

@@ -129,6 +129,7 @@ class PostManager(models.Manager):
         """
 
         posts_from_servers = []
+        post_ids = []
         for node in Node.objects.all():
             url = node.host + "/author/posts/"
             # test_url = 'https://cmput-404-proj-test.herokuapp.com/author/posts/'
@@ -150,6 +151,7 @@ class PostManager(models.Manager):
                 print()
                 # print(test_url)
                 print(url)
+           
                 print(response.status_code)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
@@ -159,6 +161,16 @@ class PostManager(models.Manager):
                     #if servers are bad and don't include the author server we do
                     #or source
                     for item in responselist["posts"]:
+                        if item['id'] in post_ids:
+                            continue
+                        post_ids.append(item['id'])
+                        print()
+                        print()
+                        print()
+                        print("These are all the processed posts. ",post_ids)
+                        print()
+                        print()
+                        print()
                         if (item['author']['host'] == ''):
                             print ("ADDING HOST")
                             item['author']['host'] = node.host
@@ -247,8 +259,12 @@ class PostManager(models.Manager):
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
         all_posts = [item.to_dict_object() for item in all_posts]
-        all_posts.extend(posts_from_servers)
-        self.sort_posts(all_posts)
+        filtered_posts = []
+        for post in all_posts:
+            if post['id'] not in post_ids :
+                filtered_posts.append(post)
+        filtered_posts.extend(posts_from_servers)
+        self.sort_posts(filtered_posts)
 
         return all_posts
 

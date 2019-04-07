@@ -47,7 +47,7 @@ function populateFriendsList(data) {
 function strip_host(host){
   reg = /https?:\/\//gi;
   var k = host.replace(reg, '');
-  k = k.replace(/\/$/gi, '')
+  k = k.replace(/\/$/gi, '');
   return k;
 }
 
@@ -195,7 +195,7 @@ function addFromOtherNode(data){
 
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser']; 
-  let path = serverUrl+"service/friendrequest/";
+  let path = serverUrl+"friendrequest/";
   path = path.replace(/\s+/g, "");
 
   const request_user_url = hostUrl+"author/"+followerID;
@@ -280,7 +280,11 @@ function standardizeUrl(url){
   if(serverUrl.endsWith("/") == false){
      serverUrl = serverUrl + "/";
   }
-  if(serverUrl.indexOf("https://") === -1){ 
+  if(serverUrl.startsWith("http://")== true){
+    serverUrl = serverUrl.split("http://").pop();
+    serverUrl = "https://"+serverUrl;
+  }
+  else if(/^https?:\/\//.test(serverUrl) == false){ 
     serverUrl = "https://"+serverUrl;
   }
   return serverUrl;
