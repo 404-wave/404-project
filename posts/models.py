@@ -254,14 +254,21 @@ class PostManager(models.Manager):
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
         all_posts = [item.to_dict_object() for item in all_posts]
+        
+
         filtered_posts = []
         for post in all_posts:
             if post['id'] not in post_ids :
                 filtered_posts.append(post)
+
+        # all_posts.extend(posts_from_servers)	      
+        # self.sort_posts(all_posts)
+        # return all_posts
+        
         filtered_posts.extend(posts_from_servers)
         self.sort_posts(filtered_posts)
 
-        return all_posts
+        return filtered_posts
 
     def filter_user_visible_posts_by_user_id(self, user_id, server_only, *args, **kwargs):
 
