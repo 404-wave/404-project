@@ -24,13 +24,10 @@ class PostForm(forms.ModelForm):
         widgets = {'accessible_users': forms.CheckboxSelectMultiple} 
     
     def __init__(self, *args, **kwargs):
-        print ("FORMSFORMS")
-        print ("FORMS", args, kwargs)
         user_details = kwargs.pop('user_details', None)
         super(PostForm, self).__init__(*args, **kwargs)
         self.fields['user'].widget = forms.HiddenInput()
         self.fields['publish'].widget = forms.HiddenInput()
-        self.choices(user_details)
         self.fields['accessible_users'] = forms.MultipleChoiceField(
                 label="question",
                 required=False,
@@ -41,14 +38,16 @@ class PostForm(forms.ModelForm):
         self.set_placeholder('content', 'What\'s on your mind?')
         self.set_form_class()
 
-    def choices(self, user_id):
-        print ("USER choice")
-        users = User.objects.all()
+    def choices(self, user_req):
+        users = User.objects.all().exclude(id=user_req.id)
         options = []
-        for user in users:
-            options.append((user.host+'/'+str(user.id),user.username))
         followManager = FollowManager()
-        friends = followManager.get_friends(user_id)
+        friends = followManager.get_friends(user_req)
+        for user in users:
+            if (user not in friends):
+                options.append((user.host+'/author/'+str(user.id),user.username))
+        friends =  ((item, item) for item in friends)
+        options = options + list(friends)
         return options
 
     #add placeholder text to fields
@@ -71,10 +70,12 @@ class PostForm(forms.ModelForm):
         username = post.user.username
         timestamp = post.timestamp.strftime("%b %-d, %Y, at %H:%M %p")
         post.title = username+" - "+timestamp
-        post.save()
-        print
+        if (post.privacy == 1):
+            if (isinstance(post.accessible_users, list)):
+                post.accessible_users = post.user.host+'/author/'+str(post.user.id)
         #post.accessible_users.add(*accessible_users)
-        #post.accessible_users.add(post.user)
+            post.accessible_users = post.accessible_users[:-1] +', \''+post.user.host+'/author/'+str(post.user.id)+'\']'
+        post.save()
         return post
 
 
@@ -91,9 +92,16 @@ class ImageForm(forms.ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
+        user_details = kwargs.pop('user_details', None)
         super().__init__(*args, **kwargs)
         self.fields['user'].widget = forms.HiddenInput()
         self.fields['publish'].widget = forms.HiddenInput()
+        self.fields['accessible_users'] = forms.MultipleChoiceField(
+            label="question",
+            required=False,
+            widget=forms.CheckboxSelectMultiple,
+            choices=self.choices(user_details)
+            ) 
 
     """
         Creates the objects for the accessible useres and then save to the form
@@ -105,7 +113,25 @@ class ImageForm(forms.ModelForm):
         username = post.user.username
         timestamp = post.timestamp.strftime("%b %-d, %Y, at %H:%M %p")
         post.title = username+" - "+timestamp
+        if (post.privacy == 1):
+            if (isinstance(post.accessible_users, list)):
+                post.accessible_users = post.user.host+'/author/'+str(post.user.id)
+            post.accessible_users = post.accessible_users[:-1] +', \''+post.user.host+'/author/'+str(post.user.id)+'\']'
         post.save()
-        #post.accessible_users.add(*accessible_users)
-        #post.accessible_users.add(post.user)
         return post
+
+
+    def choices(self, user_req):
+        users = User.objects.all().exclude(id=user_req.id)
+        options = []
+        followManager = FollowManager()
+        friends = followManager.get_friends(user_req)
+        for user in users:
+            if (user not in friends):
+                options.append((user.host+'/author/'+str(user.id),user.username))
+        friends =  ((item, item) for item in friends)
+        options = options + list(friends)
+        return options
+
+
+

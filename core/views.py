@@ -39,10 +39,10 @@ def home(request):
 		data = request.POST.copy()
 		data['user'] = request.user.id
 		data['publish'] = datetime.now()
-		form = PostForm(data, request.FILES or None)
+		form = PostForm(data, request.FILES or None, user_details=request.user)
 		if form.is_valid():
 			instance = form.save()
-			form = PostForm()
+			form = PostForm(user_details=request.user)
 		print(form.errors)
 		user = request.user
 
@@ -61,7 +61,7 @@ def home(request):
 		if query:
 			streamlist = streamlist.filter(content__icontains=query)
 		print("Stream list len: ", len(streamlist))
-		#print("Stream list: ", streamlist)
+		print("Stream list: ", streamlist)
 
 		#Cast QuerySet into a list for Github
 		streamlist = list(streamlist)
@@ -117,10 +117,9 @@ def home(request):
 			"form": form,
 		}
 	else:
-		user = request.user
-		form = PostForm()
-		#form = PostForm(user_details=user)
 
+		form = PostForm(user_details=request.user)
+		user = request.user
 
 
 		privacy = request.GET.get('privacy', None)
@@ -249,15 +248,18 @@ def get_user(parameters):
 	if server_user:
 		return server_user[0]
 	response = try_api_service(server, profile_id)
+	print ("RESPONE", response)
 	try: 
 		user.username = response['displayName']
 		re_result = re.search(id_regex, response['id'])
 		user.id = re_result.group(2)
-		user.host = re_result.group(1)
+		user.host = response['host']
 		user.bio = optional_attributes(user.bio, response, 'bio')
 		user.first_name = optional_attributes(user.first_name, response, 'firstname')
 		user.last_name = optional_attributes(user.last_name, response, 'lastname')
 		user.email = optional_attributes(user.email, response, 'email')
+
+		print(user.host)
 		return user
 	except:
 		return False

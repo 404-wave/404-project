@@ -284,11 +284,13 @@ def posts_update(request, id=None):
     # Give an image form if it is an image post
     if instance.is_image == False:
         form = PostForm(request.POST or None,
-                        request.FILES or None, instance=instance)
+                        request.FILES or None, instance=instance,
+                        user_details=request.user)
 
     else:
         form = ImageForm(request.POST or None,
-                         request.FILES or None, instance=instance)
+                         request.FILES or None, instance=instance,
+                         user_details=request.user)
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
