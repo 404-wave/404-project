@@ -47,7 +47,7 @@ function populateFriendsList(data) {
 function strip_host(host){
   reg = /https?:\/\//gi;
   var k = host.replace(reg, '');
-  k = k.replace(/\/$/gi, '')
+  k = k.replace(/\/$/gi, '');
   return k;
 }
 
@@ -280,7 +280,7 @@ function standardizeUrl(url){
   if(serverUrl.endsWith("/") == false){
      serverUrl = serverUrl + "/";
   }
-  if(serverUrl.indexOf("https://") === -1){ 
+  if(/^https?:\/\//.test(url) == false){ 
     serverUrl = "https://"+serverUrl;
   }
   return serverUrl;
