@@ -23,6 +23,7 @@ from posts.models import Post
 
 from friends.views import follows,standardize_url,get_user
 
+from requests.auth import HTTPBasicAuth
 import requests
 import socket
 import uuid
@@ -45,6 +46,8 @@ def get_hostname(request):
 
 
 def sharing_posts_enabled(request):
+
+    # TODO: Need to check the host against the USERS host... user might be a node...
 
     node_settings = None
     host = get_hostname(request)
