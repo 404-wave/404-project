@@ -179,8 +179,6 @@ class PostAPIView(generics.GenericAPIView):
         print ("400 test", requestor_id)
         print ("400 test", path)
         print ("400 test", path_all_public_posts)
-        # if requestor_id is None and path not in path_all_public_posts:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if requestor_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -241,9 +239,7 @@ class PostAPIView(generics.GenericAPIView):
                     print(e)
                     pass
 
-
             return self.get_paginated_response(serialized_data)
-
 
         # Not a valid path
         else:
