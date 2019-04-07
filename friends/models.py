@@ -1,39 +1,30 @@
 from django.db import models
 
 from users.models import User
+from django.db.models import Q
 
 
 
 class FollowManager(models.Manager):
 
     def get_friends(self, user):
-        uid = user
-        friends = set()
+        print("UEREEE", user.id)
+        uid = user.id
         follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+        friends = list()
 
         if follow_obj:
             for follow in follow_obj:
-                if ((follow.user1==uid) & (follow.user2 not in friends)):
-                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                    if recip_object:
-                        user = User.objects.filter(id=follow.user2)
-                        if user:    
-                            user=user.get()
-                        else:
-                            user = get_user(follow.user2_server,follow.user2)
-                            if user is None:
-                                continue
-                        friends.add(user)
-                elif ((follow.user2==uid) & (follow.user1 not in friends)):
-                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                    if recip_object:
-                        user= User.objects.filter(id=follow.user1)
-                        if user:
-                            user=user.get()
-                        else:
-                            user= get_user(follow.user1_server,follow.user1)
-                        friends.add(user)
-        return friends
+                recip_object1= Follow.objects.filter(user1=str(uid),user2=follow.user1)
+                recip_object2= Follow.objects.filter(user1=follow.user1,user2=str(uid))
+                if (recip_object1 and recip_object2):
+                    print ("HEREeee", recip_object1[0].user1, recip_object2[0].user1)
+                    if (recip_object1[0].user1 == recip_object2[0].user2 and recip_object1[0].user2 == recip_object2[0].user1):
+                        print (recip_object1[0].user1, recip_object2[0].user1)
+                        friends.append([recip_object2[0].user1,recip_object2[0].user1_server])
+        print (friends)
+        friend2 = (item[1]+'/author/'+str(item[0]) for item in friends)
+        return(list(friend2))
 
 class Follow(models.Model):
     #user1 is follower , user2 is followee
