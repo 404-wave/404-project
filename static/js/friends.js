@@ -280,7 +280,11 @@ function standardizeUrl(url){
   if(serverUrl.endsWith("/") == false){
      serverUrl = serverUrl + "/";
   }
-  if(/^https?:\/\//.test(url) == false){ 
+  if(serverUrl.startsWith("http://")== true){
+    serverUrl = serverUrl.split("http://").pop();
+    serverUrl = "https://"+serverUrl;
+  }
+  else if(/^https?:\/\//.test(serverUrl) == false){ 
     serverUrl = "https://"+serverUrl;
   }
   return serverUrl;
