@@ -232,6 +232,9 @@ class PostAPIView(generics.GenericAPIView):
 
                     response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
 
+                    print("Getting public posts from other servers...")
+                    print(resonse.status_code)
+                    print(resonse.content)
                     if (response.status_code > 199 and response.status_code <300):
                         responselist = response.json()
                         #posts_from_servers.extend(responselist["posts"])
