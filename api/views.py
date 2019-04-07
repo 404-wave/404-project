@@ -424,9 +424,12 @@ class CommentAPIView(generics.GenericAPIView):
         #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         server_only = allow_server_only_posts(request)
-
+        print ("REQUEST", request)
+        print ()
         try:
             data = request.data
+            print ()
+            print ("DATA", data)
             post_id = uuid.UUID(data['post'].split("/")[-1])
             author_id = uuid.UUID(data['comment']['author']['id'].split("/")[-1])
             content = data['comment']['comment']
