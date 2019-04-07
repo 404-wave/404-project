@@ -130,10 +130,7 @@ class PostSerializer(serializers.ModelSerializer):
     def _visible_to(self, obj):
         user_list = list()
         if obj.privacy is Post.PRIVATE:
-            #return obj.accessible_users.all()
-            for user in obj.accessible_users.all():
-                user_list.append(str(user))
-        return user_list
+            return obj.accessible_users.all()
 
     def _author(self, obj):
         # TODO: What if the author is from a different server??? FOAF!
