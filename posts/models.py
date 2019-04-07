@@ -104,6 +104,7 @@ class PostManager(models.Manager):
         return query_set
 
     def find_accessible_posts(self, user_id):
+        print ("ACCESSIBLE", user_id)
         posts = super(PostManager, self).filter(privacy=1).filter(accessible_users__icontains =user_id)
         return posts
     """
