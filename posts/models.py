@@ -107,7 +107,7 @@ class PostManager(models.Manager):
         print ("ACCESSIBLE", user_id)
         posts = Post.objects.filter(privacy=1)
         if (posts):
-            print (posts[0])
+            print (type(posts[0])
         print (type(posts))
         return posts
     """
