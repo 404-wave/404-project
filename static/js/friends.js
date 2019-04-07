@@ -280,7 +280,7 @@ function standardizeUrl(url){
   if(serverUrl.endsWith("/") == false){
      serverUrl = serverUrl + "/";
   }
-  if(/^https?:\/\//.test(url)){ 
+  if(/^https?:\/\//.test(url) == false){ 
     serverUrl = "https://"+serverUrl;
   }
   return serverUrl;
