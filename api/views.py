@@ -178,9 +178,6 @@ class PostAPIView(generics.GenericAPIView):
 
         if not sharing_posts_enabled(request):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        print ("400 test", requestor_id)
-        print ("400 test", path)
-        print ("400 test", path_all_public_posts)
 
         if requestor_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -426,19 +423,13 @@ class CommentAPIView(generics.GenericAPIView):
         #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         server_only = allow_server_only_posts(request)
-        print ("REQUEST", request)
-        print ()
         id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})'	
         try:
             data = request.data
-            print ()
-            print ("DATA", data)
             re_result = re.search(id_regex, data['post'])
             post_id = uuid.UUID(re_result.group(2))
-            print ("DATA", post_id)
             re_result = re.search(id_regex, data['comment']['author']['id'])
             author_id = uuid.UUID(re_result.group(2))
-            print ("DATA", author_id)
             content = data['comment']['comment']
         except Exception as e:
             print("When POSTing a comment, there was an error parsing JSON data.")
