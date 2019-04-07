@@ -661,7 +661,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
                 Follow.objects.create(user1=author_id, user1_server =author_host, user2=friend_id, user2_server = friend_host)
             except:
                 print(" Couldn't create object")
-                return Response(status=status.HTTP_409_CONFLICT)
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             print("Created object")
                 
             # Query to see if the person they want to follow is already following requestor
@@ -672,7 +672,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
                     FriendRequest.objects.create(requestor= author_id, requestor_server = author_host, recipient= friend_id, recipient_server = friend_host)
                 except:
                     print("Couldn't make FR")
-                    return Response(status=status.HTTP_409_CONFLICT)
+                    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             elif len(exists_in_table) != 0:
                 exists_in_table.delete()
 
