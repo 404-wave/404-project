@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import models
 
 from users.models import User
 from django.db.models import Q
@@ -23,7 +24,7 @@ class FollowManager(models.Manager):
                         print (recip_object1[0].user1, recip_object2[0].user1)
                         friends.append([recip_object2[0].user1,recip_object2[0].user1_server])
         print (friends)
-        friend2 = (item[1]+'/author/'+str(item[0]) for item in friends)
+        friend2 = (item[1]+'author/'+str(item[0]) for item in friends)
         return(list(friend2))
 
 class Follow(models.Model):
