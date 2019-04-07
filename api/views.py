@@ -220,9 +220,6 @@ class PostAPIView(generics.GenericAPIView):
             serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
             serialized_data = serializer.data
 
-            print(serialized_data)
-
-            #posts_from_servers = list()
             for node in Node.objects.all():
                 url = node.host + "/posts/"
 
@@ -238,8 +235,7 @@ class PostAPIView(generics.GenericAPIView):
                     print(response.status_code)
                     if (response.status_code > 199 and response.status_code <300):
                         responselist = response.json()
-                        serialized_data["posts"].extend(responselist["posts"])
-                        print()
+                        serialized_data.extend(responselist["posts"])
 
                 except Exception as e:
                     print(e)
