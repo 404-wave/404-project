@@ -133,6 +133,7 @@ position:absolute;
 #id_accessible_users li{
 	padding: .5em;
 	line-height: 1em;
+	width: 200px;
 }
 #id_accessible_users input[type=checkbox]{
 	margin-right: .3em;
