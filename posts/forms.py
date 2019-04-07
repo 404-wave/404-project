@@ -45,7 +45,7 @@ class PostForm(forms.ModelForm):
         friends = followManager.get_friends(user_req)
         for user in users:
             if (user not in friends):
-                options.append((user.host+'/author/'+str(user.id),user.username))
+                options.append((user.host+'author/'+str(user.id),user.username))
         friends =  ((item, item) for item in friends)
         options = options + list(friends)
         return options
@@ -74,7 +74,7 @@ class PostForm(forms.ModelForm):
             if (isinstance(post.accessible_users, list)):
                 post.accessible_users = post.user.host+'/author/'+str(post.user.id)
         #post.accessible_users.add(*accessible_users)
-            post.accessible_users = post.accessible_users[:-1] +', \''+post.user.host+'/author/'+str(post.user.id)+'\']'
+            post.accessible_users = post.accessible_users[:-1] +', \''+post.user.host+'author/'+str(post.user.id)+'\']'
         post.save()
         return post
 
@@ -115,8 +115,8 @@ class ImageForm(forms.ModelForm):
         post.title = username+" - "+timestamp
         if (post.privacy == 1):
             if (isinstance(post.accessible_users, list)):
-                post.accessible_users = post.user.host+'/author/'+str(post.user.id)
-            post.accessible_users = post.accessible_users[:-1] +', \''+post.user.host+'/author/'+str(post.user.id)+'\']'
+                post.accessible_users = post.user.host+'author/'+str(post.user.id)
+            post.accessible_users = post.accessible_users[:-1] +', \''+post.user.host+'author/'+str(post.user.id)+'\']'
         post.save()
         return post
 
@@ -128,7 +128,7 @@ class ImageForm(forms.ModelForm):
         friends = followManager.get_friends(user_req)
         for user in users:
             if (user not in friends):
-                options.append((user.host+'/author/'+str(user.id),user.username))
+                options.append((user.host+'author/'+str(user.id),user.username))
         friends =  ((item, item) for item in friends)
         options = options + list(friends)
         return options
