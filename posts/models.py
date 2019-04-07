@@ -156,7 +156,7 @@ class PostManager(models.Manager):
 
                     #if servers are bad and don't include the author server we do
                     for item in responselist["posts"]:
-                        if item['id'] in post_ids:
+                        if item['id'] in post_ids or item['author']['id'] in post_ids:
                             continue
                         post_ids.append(item['id'])
                         print()
@@ -256,7 +256,7 @@ class PostManager(models.Manager):
         all_posts = [item.to_dict_object() for item in all_posts]
         filtered_posts = []
         for post in all_posts:
-            if post['id'] not in post_ids:
+            if post['id'] not in post_ids :
                 filtered_posts.append(post)
         filtered_posts.extend(posts_from_servers)
         self.sort_posts(filtered_posts)
