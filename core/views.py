@@ -117,9 +117,10 @@ def home(request):
 			"form": form,
 		}
 	else:
-
-		form = PostForm()
 		user = request.user
+		form = PostForm()
+		#form = PostForm(user_details=user)
+
 
 
 		privacy = request.GET.get('privacy', None)

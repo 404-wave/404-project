@@ -275,7 +275,7 @@ function findFriends(user, e) {
   $.ajax({
     url: path,
     success: function (data) {
-      populateAccessibleList(data, user);
+      populateAccessibleList(data);
     },
     error: function(xhr, status, error) {
       console.log(error)
@@ -288,7 +288,7 @@ function createCheckBox(friend, node, size){
   node.firstElementChild.htmlFor = string_id;
   node.firstElementChild.firstElementChild.id = string_id;
   node.firstElementChild.firstElementChild.value = friend;
-  node.firstElementChild.textContent = friend;
+  node.firstElementChild.childNodes[1].textContent = friend;
   return node;
 }
 function populateAccessibleList(data){

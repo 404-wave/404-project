@@ -6,7 +6,7 @@ import os
 
 from .models import Post 
 from users.models import User
-
+from friends.models import FollowManager
 class PostForm(forms.ModelForm):
 
     class Meta:
@@ -24,24 +24,31 @@ class PostForm(forms.ModelForm):
         widgets = {'accessible_users': forms.CheckboxSelectMultiple} 
     
     def __init__(self, *args, **kwargs):
+        print ("FORMSFORMS")
+        print ("FORMS", args, kwargs)
+        user_details = kwargs.pop('user_details', None)
         super(PostForm, self).__init__(*args, **kwargs)
         self.fields['user'].widget = forms.HiddenInput()
         self.fields['publish'].widget = forms.HiddenInput()
-        self.choices()
+        self.choices(user_details)
         self.fields['accessible_users'] = forms.MultipleChoiceField(
                 label="question",
+                required=False,
                 widget=forms.CheckboxSelectMultiple,
-                choices=self.choices()
+                choices=self.choices(user_details)
                 ) 
 
         self.set_placeholder('content', 'What\'s on your mind?')
         self.set_form_class()
 
-    def choices(self):
+    def choices(self, user_id):
+        print ("USER choice")
         users = User.objects.all()
         options = []
         for user in users:
             options.append((user.host+'/'+str(user.id),user.username))
+        followManager = FollowManager()
+        friends = followManager.get_friends(user_id)
         return options
 
     #add placeholder text to fields
