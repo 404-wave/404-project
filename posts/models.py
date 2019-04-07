@@ -156,7 +156,6 @@ class PostManager(models.Manager):
 
                     #if servers are bad and don't include the author server we do
                     for item in responselist["posts"]:
-                        print("These are the duplicates from our server after a refresh", item['published']['id'])
                         if item['id'] in post_ids:
                             continue
                         post_ids.append(item['id'])
