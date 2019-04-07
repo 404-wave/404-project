@@ -126,6 +126,7 @@ class PostManager(models.Manager):
 
         posts_from_servers = []
         post_ids = []
+        current_domain = 'https://cmput404-wave.herokuapp.com/'
         for node in Node.objects.all():
             url = node.host + "/author/posts/"
             # test_url = 'https://cmput-404-proj-test.herokuapp.com/author/posts/'
@@ -156,7 +157,7 @@ class PostManager(models.Manager):
 
                     #if servers are bad and don't include the author server we do
                     for item in responselist["posts"]:
-                        if item['id'] in post_ids:
+                        if item['id'] in post_ids or item['origin'] == current_domain:
                             continue
                         post_ids.append(item['id'])
                         print()
