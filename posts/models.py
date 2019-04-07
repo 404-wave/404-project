@@ -105,7 +105,9 @@ class PostManager(models.Manager):
 
     def find_accessible_posts(self, user_id):
         print ("ACCESSIBLE", user_id)
-        posts = super(PostManager, self).filter(privacy=1).filter(accessible_users__icontains =user_id)
+        posts = super(PostManager, self).filter(privacy=1)
+        print (posts)
+        print (type(posts))
         return posts
     """
         Filters all posts based on the privacy setting chosen.
