@@ -83,11 +83,17 @@ def allow_server_only_posts(request):
 def get_requestor_id(request):
 
     try:
+        print ("trying X_UUID")
         requestor_id = request.META['HTTP_X_UUID']
         return str(requestor_id)
     except:
-        print("When trying to resolve requestor ID, X-UUID header was not found.")
-        pass
+        try:
+            print ("X-Request-User-ID")
+            requestor_id = request.META['X-Request-User-ID']
+            return str(requestor_id)
+        except:
+            print("When trying to resolve requestor ID, X-UUID header was not found.")
+            pass
 
     try:
         if request.GET.get('user', None) is not None:
@@ -105,7 +111,8 @@ class UserAPIView(generics.GenericAPIView):
     serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
-
+        print (request)
+        print 
         if 'author_id' in kwargs.keys():
             author_id = self.kwargs['author_id']
             try:
@@ -156,17 +163,19 @@ class PostAPIView(generics.GenericAPIView):
         path_all_public_posts = ['/service/posts/', '/api/posts/', '/posts/']
         path_all_user_visible_posts =['/service/author/posts/',
             '/api/author/posts/', '/author/posts/']
-
+        print ("User Authenticated", request.user.is_authenticated)
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-
+        print ("host", request.user.is_authenticated)
         host = get_hostname(request)
         if host is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         if not sharing_posts_enabled(request):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-
+        print ("400 test", requestor_id)
+        print ("400 test", path)
+        print ("400 test", path_all_public_posts)
         if requestor_id is None and path not in path_all_public_posts:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

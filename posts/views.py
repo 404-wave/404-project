@@ -35,6 +35,7 @@ def posts_detail(request, id):
     user_posts = Post.objects.filter_user_visible_posts(
         request.user, remove_unlisted=False)
     ids = []
+    node_host = None
     current_id_found = False
     for post in user_posts:
         if isinstance(post, dict):
@@ -79,17 +80,24 @@ def posts_detail(request, id):
                 instance = response.json()
                 print("Response from server")
                 instance = catch_bad_api(instance)
+                node_host = node
 
 
         if instance is None:
             print("Instance is none. Redirecting")
             return HttpResponseRedirect('/home')
-
+    print (instance)
+    print ()
+    print ()
     # if instance is a dictionary, then comments should be instance[‘comments’]
-    if isinstance(instance, dict):
-        content_type = instance['contentType']
-    else:
+    # if instance is a dictionary, then comments should be instance[‘comments’]
+    if isinstance(instance, Post):
         content_type = instance.get_content_type
+       
+    else:
+        if (isinstance(instance, list)):
+            instance = instance[0]
+        content_type = instance['contentType']
 
     initial_data = {
         "content_type": content_type,
@@ -109,6 +117,7 @@ def posts_detail(request, id):
     home_host = NodeSetting.objects.all()[0]
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
+    print ("werwer", comment_form.is_valid())
     if comment_form.is_valid():
         comment_type = comment_form.cleaned_data.get("content_type")
         obj_id = comment_form.cleaned_data.get("object_id")
@@ -139,61 +148,58 @@ def posts_detail(request, id):
         # }
         # r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str('local'), str('localpassword')))
         success = False
-        for node in Node.objects.all():
+        if (node_host):
+
    
             #build_endpoint = str(node.host) + "/service/posts/" + "3f46f9c3-256f-441c-899e-928b095df627" + "/comments/"
             #print(build_endpoint)
-            build_endpoint = str(node.host) + "/service/posts/" + str(post_id) + "/comments/"
+            build_endpoint = str(node_host.host) + "/posts/" + str(post_id) + "/comments/"
             headers = {
-                    'Accept':'application/json',
+                    "Accept":"application/json",
+                    "Content-Type": "application/json",
                     'X-UUID': str(user_id)
                 }
             #print("build_endpoint is: " + str(build_endpoint))
             build_data = {
                 "query": "addComment",
-                "post": str(node.host) + "/service/posts/" + str(post_id),
+                "post": str(node_host.host) + "/posts/" + str(post_id),
                 "comment": {
                     "author":{
-                        #"id": str(home_host.host) + "/service/author/" + str(user_id),
-                        "id": str(user_id),
+                        "id": str(home_host.host) + "/service/author/" + str(user_id),
+                        #"id": str(user_id),
                         "host": str(home_host.host),
-                        "url": str(home_host.host) + "/service/author/" + str(user_id),
-                        "github": current_user.github
-                    },
+                        "url": str(home_host.host) + "/author/" + str(user_id),
+                        "github": "http://github.com/"+current_user.github,
+                        "displayName": current_user.username
+                        },
+                    
                     "comment": content_data,
                     "contentType": "text/plain",
-                    "published": str(datetime.now().isoformat()),
-                    "id": str(uuid.uuid4())
-                }
+                    #"published": str(datetime.now().isoformat()),
+                    #"id": str(uuid.uuid4())
+            }
             }
             #print("build_data is: " + str(build_data))
             #https://www.programcreek.com/python/example/6251/requests.post
-            r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
-            print("POSTing comment to host: " + str(node.host))
+            r=requests.post(url=build_endpoint, json=build_data, headers=headers, auth=HTTPBasicAuth(str(node_host.username), str(node_host.password)))
+            print("POSTing comment to host: " + str(node_host.host))
+            print ("THE BUILD", build_endpoint, build_data)
             print("Status code for comment POST: " + str(r.status_code))
+    
+
 
 
             #print(r)
             #https://stackoverflow.com/questions/15258728/requests-how-to-tell-if-youre-getting-a-404
             #Credit: Martijn Pieters (https://stackoverflow.com/users/100297/martijn-pieters)
             #Partner group can return "Post Not Found"
-            success = False
-            try:
-                success = json.loads(r.content)['success']
-                if success == True:
-                    break
-            except:
-                pass
-                # success = json.loads(r.content)
-                # if isinstance(success, str):
-                #     print(success)
-                #     break
+            success = json.loads(r.content)['success']
 
         if success:
             redirect_url = str(home_host.host) + '/posts/detail/' + str(post_id)
             return redirect(redirect_url)
         else:
-
+            print ("WEWPPP", obj_id)
             #content_type = ContentType.objects.get(model=comment_type)
             #for_concrete_model=False
             content_type = ContentType.objects.get_for_model(Post())
