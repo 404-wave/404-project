@@ -241,9 +241,13 @@ function checkChanges(localUser,localUserServer,nodeList){
 function standardizeUrl(url){
   let serverUrl = url.replace(/\s+/g,"");
   if(serverUrl.endsWith("/") == false){
-     serverUrl = serverUrl + "/";
+    serverUrl = serverUrl + "/";
   }
-  if(serverUrl.indexOf("https://") === -1){ 
+  if(serverUrl.startsWith("http://")== true){
+    serverUrl = serverUrl.split("http://").pop();
+    serverUrl = "https://"+serverUrl;
+  }
+  else if(/^https?:\/\//.test(serverUrl) == false){ 
     serverUrl = "https://"+serverUrl;
   }
   return serverUrl;
