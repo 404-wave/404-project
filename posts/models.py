@@ -103,8 +103,8 @@ class PostManager(models.Manager):
         query_set = super(PostManager, self).filter(privacy=5, user=user).order_by("-timestamp")
         return query_set
 
-    def find_accessible_posts(self, user):
-        posts = super(PostManager, self).filter(privacy=1).filter(accessible_users__icontains =str(user.id))
+    def find_accessible_posts(self, user_id):
+        posts = super(PostManager, self).filter(privacy=1).filter(accessible_users__icontains =user_id)
         return posts
     """
         Filters all posts based on the privacy setting chosen.
@@ -176,7 +176,7 @@ class PostManager(models.Manager):
         only_me_posts = super(PostManager, self).filter(privacy=5, user=user)
         public_posts = super(PostManager, self).filter(privacy=0)
         #private_posts = []
-        private_posts = self.find_accessible_posts(user)
+        private_posts = self.find_accessible_posts(str(user.id))
 
         # followers = User.objects.filter(follower__user2=user.id, is_active=True)
         # following = User.objects.filter(followee__user1=user.id, is_active=True)
@@ -267,13 +267,8 @@ class PostManager(models.Manager):
         # Probably there is a better way to do this. I can't use the line above
         # since it requires a user instance and if the requestor is on another
         # server then they won't have an instance here.
-        private_posts = Post.objects.none()
-        for post in Post.objects.filter(privacy=1):
-            for user in post.accessible_users.all():
-                pass
-                #if user.id == user_id:
-                    #private_posts |= Post.objects.filter(id=post.id)
-
+        private_posts = self.find_accessible_posts(user_id)
+   
         # followers = User.objects.filter(follower__user2=user_id, is_active=True)
         # following = User.objects.filter(followee__user1=user_id, is_active=True)
         # friends = following & followers
