@@ -72,7 +72,7 @@ class PostForm(forms.ModelForm):
         post.title = username+" - "+timestamp
         if (post.privacy == 1):
             if (isinstance(post.accessible_users, list)):
-                post.accessible_users = post.user.host+'/author/'+str(post.user.id)
+                post.accessible_users = post.user.host+'author/'+str(post.user.id)
         #post.accessible_users.add(*accessible_users)
             post.accessible_users = post.accessible_users[:-1] +', \''+post.user.host+'author/'+str(post.user.id)+'\']'
         post.save()
