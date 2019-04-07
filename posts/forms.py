@@ -39,7 +39,7 @@ class PostForm(forms.ModelForm):
         self.set_form_class()
 
     def choices(self, user_req):
-        users = User.objects.all().exclude(id=user_req.id)
+        users = User.objects.all().exclude(id=user_req.id).exclude(node=True)
         options = []
         followManager = FollowManager()
         friends = followManager.get_friends(user_req)
@@ -123,7 +123,7 @@ class ImageForm(forms.ModelForm):
 
 
     def choices(self, user_req):
-        users = User.objects.all().exclude(id=user_req.id)
+        users = User.objects.all().exclude(id=user_req.id).exclude(node=True)
         options = []
         followManager = FollowManager()
         friends = followManager.get_friends(user_req)
