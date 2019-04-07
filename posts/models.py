@@ -105,7 +105,7 @@ class PostManager(models.Manager):
 
     def find_accessible_posts(self, user_id):
         print ("ACCESSIBLEEE", user_id)
-        posts = Post.objects.filter(privacy=1)
+         posts = super(PostManager, self).filter(privacy=1).filter(accessible_users__icontains =str(user.id))
         if (posts):
             print(type(posts[0]))
         print (type(posts))
