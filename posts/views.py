@@ -114,7 +114,11 @@ def posts_detail(request, id):
     else:
         post_id = instance.id
 
-    home_host = NodeSetting.objects.all()[0]
+    try: 
+        home_host = NodeSetting.objects.all()[0]
+    except:
+        print("No node settings")
+        return HttpResponse(status=500)
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
     if comment_form.is_valid():

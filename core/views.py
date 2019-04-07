@@ -111,11 +111,13 @@ def home(request):
 					streamlist.append(message)
 
 
-		context = {
-			"object_list": streamlist,
-			"user": user,
-			"form": form,
-		}
+		# context = {
+		# 	"object_list": streamlist,
+		# 	"user": user,
+		# 	"form": form,
+		# }
+
+		return HttpResponseRedirect('/home/')
 	else:
 
 		form = PostForm(user_details=request.user)

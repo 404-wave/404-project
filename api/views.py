@@ -10,6 +10,7 @@ from rest_framework.parsers import JSONParser
 import socket
 import requests
 import uuid
+import re
 import json
 from .serializers import UserSerializer, PostSerializer, CommentSerializer, UserFriendSerializer
 from .serializers import UserFriendSerializer
@@ -169,16 +170,14 @@ class PostAPIView(generics.GenericAPIView):
         print ("User Authenticated", request.user.is_authenticated)
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        print ("host", request.user.is_authenticated)
+
         host = get_hostname(request)
+        print ("host", request.user.is_authenticated, host)
         if host is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         if not sharing_posts_enabled(request):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        print ("400 test", requestor_id)
-        print ("400 test", path)
-        print ("400 test", path_all_public_posts)
 
         if requestor_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -261,8 +260,8 @@ class PostAPIView(generics.GenericAPIView):
 
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        try:
+	
+        try:      
             data = request.data
             author_id = uuid.UUID(data['author']['id'].split("/")[-1])
             privacy = self.resolve_privacy(data['visibility'])
@@ -425,11 +424,13 @@ class CommentAPIView(generics.GenericAPIView):
         #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         server_only = allow_server_only_posts(request)
-
+        id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})'	
         try:
             data = request.data
-            post_id = uuid.UUID(data['post'].split("/")[-1])
-            author_id = uuid.UUID(data['comment']['author']['id'].split("/")[-1])
+            re_result = re.search(id_regex, data['post'])
+            post_id = uuid.UUID(re_result.group(2))
+            re_result = re.search(id_regex, data['comment']['author']['id'])
+            author_id = uuid.UUID(re_result.group(2))
             content = data['comment']['comment']
         except Exception as e:
             print("When POSTing a comment, there was an error parsing JSON data.")
