@@ -47,7 +47,7 @@ class PostForm(forms.ModelForm):
             if (user not in friends):
                 options.append((user.host+'author/'+str(user.id),user.username))
         friends =  ((item, item) for item in friends)
-        print ("FREINDS", friends)
+     
         options = options + list(friends)
         return options
 

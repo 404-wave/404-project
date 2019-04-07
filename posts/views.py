@@ -117,7 +117,6 @@ def posts_detail(request, id):
     home_host = NodeSetting.objects.all()[0]
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
-    print ("werwer", comment_form.is_valid())
     if comment_form.is_valid():
         comment_type = comment_form.cleaned_data.get("content_type")
         obj_id = comment_form.cleaned_data.get("object_id")
