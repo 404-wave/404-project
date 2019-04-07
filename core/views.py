@@ -260,6 +260,9 @@ def get_user(parameters):
 		user.first_name = optional_attributes(user.first_name, response, 'firstname')
 		user.last_name = optional_attributes(user.last_name, response, 'lastname')
 		user.email = optional_attributes(user.email, response, 'email')
+
+		print("HOST: ")
+		print(user.host)
 		return user
 	except:
 		return False
