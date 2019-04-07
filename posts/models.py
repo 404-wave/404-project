@@ -146,6 +146,7 @@ class PostManager(models.Manager):
                 print()
                 # print(test_url)
                 print(url)
+                post_ids = []
                 print(response.status_code)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
@@ -154,6 +155,16 @@ class PostManager(models.Manager):
 
                     #if servers are bad and don't include the author server we do
                     for item in responselist["posts"]:
+                        if item['id'] in post_ids:
+                            continue
+                        post_ids.append(item['id'])
+                        print()
+                        print()
+                        print()
+                        print("These are all the processed posts. ",post_ids)
+                        print()
+                        print()
+                        print()
                         if (item['author']['host'] == ''):
                             print ("ADDING HOST")
                             item['author']['host'] = node.host
