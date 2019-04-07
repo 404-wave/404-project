@@ -156,7 +156,7 @@ class PostManager(models.Manager):
 
                     #if servers are bad and don't include the author server we do
                     for item in responselist["posts"]:
-                        if item['id'] in post_ids or item['author']['id'] in post_ids:
+                        if item['id'] in post_ids or item['published']['id'] in post_ids:
                             continue
                         post_ids.append(item['id'])
                         print()
