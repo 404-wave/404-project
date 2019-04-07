@@ -125,6 +125,7 @@ class PostManager(models.Manager):
         """
 
         posts_from_servers = []
+        post_ids = []
         for node in Node.objects.all():
             url = node.host + "/author/posts/"
             # test_url = 'https://cmput-404-proj-test.herokuapp.com/author/posts/'
@@ -146,7 +147,7 @@ class PostManager(models.Manager):
                 print()
                 # print(test_url)
                 print(url)
-                post_ids = []
+           
                 print(response.status_code)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
