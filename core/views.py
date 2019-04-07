@@ -248,6 +248,7 @@ def get_user(parameters):
 	if server_user:
 		return server_user[0]
 	response = try_api_service(server, profile_id)
+	print ("RESPONE", response)
 	try: 
 		user.username = response['displayName']
 		re_result = re.search(id_regex, response['id'])
