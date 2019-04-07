@@ -23,14 +23,12 @@
 	 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> 
 	<script>
-  findFriends("{{ user.id }}");
+  window.addEventListener("pageshow", function() {
+    home_js();
+  }, false);
+
 	 window.onload = function(){
-	   setTabs();
-     setEmptyMessage();
-     auto_text();
-     private();
-     file_listener();
-     setStreamMarkdown();
+    home_js();
 	 }
   </script> 
   {% endblock %} 

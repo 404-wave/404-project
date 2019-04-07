@@ -147,7 +147,7 @@ class PostAPIView(generics.GenericAPIView):
     pagination_class = PostPagination
 
     def get(self, request, *args, **kwargs):
-
+        print ("GETTING POSTS")
         data = None
         queryset = None
         path = request.path
