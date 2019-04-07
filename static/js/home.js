@@ -267,15 +267,13 @@ function strip_host(host){
   return k;
 }
 
-function findFriends(user, e) {
+function findDisplayName(user,node, e) {
   console.log(user);
-  host = window.location.href;
-  host = strip_host(host);
-  path = host+'/author/'+user+'/friends';
+  path = user;
   $.ajax({
     url: path,
     success: function (data) {
-      populateAccessibleList(data);
+      changeDisplayName(data, node);
     },
     error: function(xhr, status, error) {
       console.log(error)
@@ -283,32 +281,29 @@ function findFriends(user, e) {
   });
 }
 
-function createCheckBox(friend, node, size){
-  string_id = "id_accessible_users_"+size;
-  node.firstElementChild.htmlFor = string_id;
-  node.firstElementChild.firstElementChild.id = string_id;
-  node.firstElementChild.firstElementChild.value = friend;
-  node.firstElementChild.childNodes[1].textContent = friend;
-  return node;
+function changeDisplayName(data, node){
+  node.childNodes[0].childNodes[1].textContent = data['displayName']
 }
-function populateAccessibleList(data){
-  var friends = data["authors"].toString();
+
+function populateAccessibleList(){
   var select_parent = $('#id_accessible_users')[0];
   var select = select_parent.children;
   var size = select.length;
-  var current = "";
+  var host = window.location.protocol+'//'+window.location.host
   for (i=0; i<select.length; i++){
-    current+=select[0].firstElementChild.childNodes[0].value;
+    var name = select[i].firstChild.firstChild.value;
+    if (!name.includes(host)){
+      findDisplayName(name, select[i])
+    }
   }
-  for (item of data["authors"]) {
-    console.log(item);
-    if (!current.includes(item)){
-    checkbox = createCheckBox(item, select[0].cloneNode(true), size.toString());
-    select_parent.appendChild(checkbox);
-    size = size +1;
-   }
+
 }
-
-  console.log(data)
-
+function home_js(){
+  setTabs();
+  setEmptyMessage();
+  auto_text();
+  private();
+  file_listener();
+  setStreamMarkdown();
+  populateAccessibleList();
 }
