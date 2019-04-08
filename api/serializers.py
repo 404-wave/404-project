@@ -250,5 +250,7 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
             request = self.context.get('request')
             host = request.scheme + "://" + request.META['HTTP_HOST']
             return host + "/author/" + str(obj.id)
-        except:
+        except Exception as e:
+            print("When serializing the author of a comment, the following exception occured...")
+            print(e)
             return str(obj.id)
