@@ -90,10 +90,13 @@ function isActive(e){
 function private(){
     var values = $("#id_privacy").val();
   if(values == 1){
+    $("#id_accessible_users").prev().show()
     $("#id_accessible_users").show();
   }
-  else
+  else{
+    $("#id_accessible_users").prev().hide()
     $("#id_accessible_users").hide();
+  }
 }
   
 

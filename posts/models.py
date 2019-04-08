@@ -314,10 +314,6 @@ class PostManager(models.Manager):
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
 
 
-        # friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
-        # friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
-        # friends_of_friends = friends_followers & friends_following
-
         #TODO Not efficient, need to find a more efficient way of filtering this
         fr_Q = Q()
         if len(friends) != 0:

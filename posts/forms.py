@@ -15,8 +15,8 @@ class PostForm(forms.ModelForm):
             "content",
             "image",
             "privacy",
-            "content_type",
             "accessible_users",
+            "content_type",     
             "unlisted",
             "user",
             "publish"
@@ -28,8 +28,9 @@ class PostForm(forms.ModelForm):
         super(PostForm, self).__init__(*args, **kwargs)
         self.fields['user'].widget = forms.HiddenInput()
         self.fields['publish'].widget = forms.HiddenInput()
+        self.fields['content_type'].choices = (('text/plain', 'text/plain'), ('text/markdown','text/markdown'))
         self.fields['accessible_users'] = forms.MultipleChoiceField(
-                label="question",
+                label="Accessible Users",
                 required=False,
                 widget=forms.CheckboxSelectMultiple,
                 choices=self.choices(user_details)
@@ -112,7 +113,7 @@ class ImageForm(forms.ModelForm):
         print("KK")
         post = super().save(commit)
         username = post.user.username
-        timestamp = post.timestamp.strftime("%b %-d, %Y, at %H:%M %p")
+        timestamp = post.timestamp.isoformat()
         post.title = username+" - "+timestamp
         if (post.privacy == 1):
             if (isinstance(post.accessible_users, list)):

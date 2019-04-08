@@ -60,8 +60,6 @@ def home(request):
 		query = request.GET.get("query")
 		if query:
 			streamlist = streamlist.filter(content__icontains=query)
-		print("Stream list len: ", len(streamlist))
-		print("Stream list: ", streamlist)
 
 		#Cast QuerySet into a list for Github
 		streamlist = list(streamlist)
@@ -110,14 +108,17 @@ def home(request):
 				if is_oldest:
 					streamlist.append(message)
 
+		try:
+			if (data['unlisted'] == 'on'):
+				context = {
+				"object_list": streamlist,
+		 		"user": user,
+		 		"form": form,
+				}
+		except:
+			return HttpResponseRedirect('/home/')
 
-		# context = {
-		# 	"object_list": streamlist,
-		# 	"user": user,
-		# 	"form": form,
-		# }
 
-		return HttpResponseRedirect('/home/')
 	else:
 
 		form = PostForm(user_details=request.user)
@@ -202,6 +203,7 @@ def home(request):
 			"nodeList": json.dumps(nodeList),
 
 		}
+	print("LLLLLKKKKKK, ", instance )
 	if instance and instance.unlisted is True:
 		context["unlisted_instance"] = instance
 	return render(request, "home.html", context)
