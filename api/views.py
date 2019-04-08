@@ -176,11 +176,6 @@ class PostAPIView(generics.GenericAPIView):
 
         if not sharing_posts_enabled(request):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        print ("400 test", requestor_id)
-        print ("400 test", path)
-        print ("400 test", path_all_public_posts)
-        # if requestor_id is None and path not in path_all_public_posts:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if requestor_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -202,7 +197,6 @@ class PostAPIView(generics.GenericAPIView):
             except: return Response(status=status.HTTP_404_NOT_FOUND)
             queryset = Post.objects.filter_user_visible_posts_by_user_id(
                 user_id=requestor_id, server_only=server_only).filter(id=post_id)
-            queryset = self.filter_out_image_posts(request, queryset)
 
             if queryset.count() == 0:
                 return Response(status=status.HTTP_403_FORBIDDEN)
@@ -216,42 +210,13 @@ class PostAPIView(generics.GenericAPIView):
         elif path in path_all_public_posts:
             queryset = Post.objects.filter(privacy=Post.PUBLIC).filter(unlisted=False).order_by('timestamp')
 
-            queryset = self.filter_out_image_posts(request, queryset)
-            page = self.paginate_queryset(queryset)
-            serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
-            serialized_data = serializer.data
-
-            for node in Node.objects.all():
-                url = node.host + "/posts/"
-
-                try:
-                    headers = {
-                        'Accept':'application/json',
-                        'X-UUID': str(requestor_id)
-                    }
-
-                    response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
-
-                    print("Getting public posts from other servers...")
-                    print(response.status_code)
-                    if (response.status_code > 199 and response.status_code <300):
-                        responselist = response.json()
-                        serialized_data.extend(responselist["posts"])
-
-                except Exception as e:
-                    print(e)
-                    pass
-
-            return self.get_paginated_response(serialized_data)
-
         # Not a valid path
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        queryset = self.filter_out_image_posts(request, queryset)
+        #queryset = self.filter_out_image_posts(request, queryset)
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
-
 
         ########################################################################
         serialized_data = serializer.data
@@ -273,11 +238,12 @@ class PostAPIView(generics.GenericAPIView):
                     serialized_data.extend(responselist["posts"])
 
             except Exception as e:
+                print("When GETting posts from other server, the following exception occured...")
                 print(e)
                 pass
         ########################################################################
 
-        #return self.get_paginated_response(serializer.data)
+        serialized_data = self.filter_out_images(request, serialized_data)
         return self.get_paginated_response(serialized_data)
 
 
@@ -376,6 +342,23 @@ class PostAPIView(generics.GenericAPIView):
             pass
 
         return queryset
+
+    def filter_out_images(self, request, serialized_data):
+
+        new_data = list()
+        host = get_hostname(request)
+        node_settings = NodeSetting.objects.all()[0]
+        if node_settings.share_imgs is False:
+            if not host == node_settings.host:
+                for post in serialized_data:
+                    if post['contentType'] == 'text/plain' or post['contentType'] == 'text/markdown':
+                        new_data.append(post)
+            else:
+                return serialized_data
+        else:
+            return serialized_data
+
+        return new_data
 
     def resolve_privacy(self, privacy_str):
         if privacy_str == "PUBLIC":
