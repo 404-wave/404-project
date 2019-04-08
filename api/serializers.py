@@ -10,6 +10,7 @@ from requests.auth import HTTPBasicAuth
 
 class UserSerializer(serializers.ModelSerializer):
 
+    id = serializers.SerializerMethodField('_id')
     friends = serializers.SerializerMethodField('_friends')
     displayName = serializers.SerializerMethodField('_username')
     firstName = serializers.SerializerMethodField('_first_name')
@@ -21,10 +22,47 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'host', 'displayName', 'url', 'friends', 'github',
                     'firstName', 'lastName', 'email', 'bio')
 
+    def _id(self, obj):
+        request = self.context.get('request')
+        host = request.scheme + "://" + request.META['HTTP_HOST']
+        return host + "/author/" + str(obj.id)
 
     def _friends(self, obj):
-        friends = self.context.get('friends')
-        serialized_friends = UserFriendSerializer(friends, many=True)
+
+        friends = list()
+        friends_list = self.context.get('friends')
+        print("Here is the friends list...")
+        print(friends_list)
+        for friend in friends_list:
+            print(friend)
+            try:
+                friends.append(User.objects.get(id=friend))
+            except:
+                print("Didn't find it in our db, trying foreign servers...")
+                for node in Node.objects.all():
+                    url = node.host + "/author/" + str(friend) + "/"
+                    r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
+                    if (r.status_code == 200):
+                        try:
+                            json = r.json()
+                            username = json['displayName']
+                            github = json['github']
+                            host = json['host']
+                            url = json['url']
+                            id = json['id']
+                            friends.append(User(host=host, id=id, github=github, url=url, username=username))
+                            break
+                        except Exception as e:
+                            print("When attempting to serialize a foreign friend, the following exception occurred...")
+                            print(e)
+                            pass
+                    else:
+                        continue
+
+        serialized_friends = UserFriendSerializer(friends, many=True,
+            context={'request': self.context.get('request')})
+        print("Here is the serialized result of the friends list...")
+        print(serialized_friends.data)
         return serialized_friends.data
 
     def _username(self, obj):
@@ -39,11 +77,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserFriendSerializer(serializers.ModelSerializer):
 
+    id = serializers.SerializerMethodField('_id')
     displayName = serializers.SerializerMethodField('_username')
 
     class Meta:
         model = User
         fields = ('id', 'host', 'displayName', 'url')
+
+    def _id(self, obj):
+        return str(obj.host) + "/author/" + str(obj.id)
 
     def _username(self, obj):
         return obj.username
@@ -72,7 +114,6 @@ class PostSerializer(serializers.ModelSerializer):
                   'published', 'title', 'content', 'author', 'comments', 'visibility',
                   'visibleTo', 'unlisted', 'source', 'origin')
 
-    # TODO
     def _source(self, obj):
         try:
             node_settings = NodeSetting.objects.all()[0]
@@ -81,7 +122,6 @@ class PostSerializer(serializers.ModelSerializer):
         except:
             return ""
 
-    # TODO:
     def _origin(self, obj):
         posts = Post.objects.filter(id=obj.id)
         if posts is None:
@@ -130,20 +170,18 @@ class PostSerializer(serializers.ModelSerializer):
     def _visible_to(self, obj):
         user_list = list()
         if obj.privacy is Post.PRIVATE:
-            for user in obj.accessible_users.all():
-                user_list.append(str(user.id))
-        return user_list
+            return obj.accessible_users
 
     def _author(self, obj):
         # TODO: What if the author is from a different server??? FOAF!
         author = User.objects.get(username=obj.user)
-        serialized_author = PostAuthorSerializer(author, many=False)
+        serialized_author = PostAuthorSerializer(author, many=False, context={'request':self.context.get('request')})
         return serialized_author.data
 
     def _comments(self, obj):
         post_id = obj.id
         comments = Post.objects.filter(id=post_id)[0].comments
-        serialized_comments = CommentSerializer(comments, many=True)
+        serialized_comments = CommentSerializer(comments, many=True, context={'request':self.context.get('request')})
         return serialized_comments.data
 
 
@@ -156,11 +194,13 @@ class PostAuthorSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'host', 'displayName', 'url', 'github')
 
+    def _id(self, obj):
+        request = self.context.get('request')
+        host = request.scheme + "://" + request.META['HTTP_HOST']
+        return host + "/author/" + str(obj.id)
+
     def _username(self, obj):
         return obj.username
-
-    def _id(self, obj):
-        return str(obj.id)
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -203,7 +243,7 @@ class CommentSerializer(serializers.ModelSerializer):
                 # author does exist, but the server is not sharing with us anymore.
                 return dict()
 
-        serialized_author = CommentAuthorSerializer(author, many=False)
+        serialized_author = CommentAuthorSerializer(author, many=False, context={'request':self.context.get('request')})
         return serialized_author.data
 
     def _published(self, obj):
@@ -217,7 +257,6 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
 
     displayName = serializers.SerializerMethodField('_username')
     id = serializers.SerializerMethodField('_id')
-    # url = serializers.SerializerMethodField('_url')
 
     class Meta:
         model = User
@@ -226,8 +265,28 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
     def _username(self, obj):
         return obj.username
 
-    # def _url(self, obj):
-    #     return
-
     def _id(self, obj):
-        return str(obj.id)
+        try:
+
+            author = User.objects.get(id=obj.id)
+            request = self.context.get('request')
+            host = request.scheme + "://" + request.META['HTTP_HOST']
+            return host + "/author/" + str(obj.id)
+
+        except Exception as e:
+
+            for node in Node.objects.all():
+                url = node.host + "/author/" + str(obj.id) + "/"
+                r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
+                if (r.status_code == 200):
+                    try:
+                        json = r.json()
+                        return json['id']
+                    except:
+                        print("When serializing the foreign author of a comment, the following exception occured...")
+                        print(e)
+                        pass
+                else:
+                    continue
+
+            return str(obj.id)

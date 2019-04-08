@@ -47,7 +47,13 @@
         </div>
         {% elif instance|markdown %}
         <div class="markdown post_content">
+          {% if instance|markdown_safe %}
+          {% autoescape off %}
           <pre>{{instance.content}}</pre>
+          {% endautoescape %}
+          {% else %}
+          <pre>{{instance.content}}</pre>
+          {% endif %}
         </div>
         {% else %}
         <div class="post_content">
@@ -107,7 +113,7 @@
         {% for comment in comments %}
         <blockquote>
           <p>{{ comment | get_comment_content }}</p>
-          <p>
+          <p id = "comment_author" class="{{ comment | get_comment_author }}">
             by {{ comment | get_comment_author }} on {{ comment.published }}
           </p>
         </blockquote>

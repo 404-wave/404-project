@@ -118,9 +118,13 @@ def posts_detail(request, id):
     except: 
         home_host = None
 
+    try: 
+        home_host = NodeSetting.objects.all()[0]
+    except:
+        print("No node settings")
+        return HttpResponse(status=500)
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
-    print ("werwer", comment_form.is_valid())
     if comment_form.is_valid():
         comment_type = comment_form.cleaned_data.get("content_type")
         obj_id = comment_form.cleaned_data.get("object_id")
@@ -293,11 +297,13 @@ def posts_update(request, id=None):
     # Give an image form if it is an image post
     if instance.is_image == False:
         form = PostForm(request.POST or None,
-                        request.FILES or None, instance=instance)
+                        request.FILES or None, instance=instance,
+                        user_details=request.user)
 
     else:
         form = ImageForm(request.POST or None,
-                         request.FILES or None, instance=instance)
+                         request.FILES or None, instance=instance,
+                         user_details=request.user)
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user
@@ -306,14 +312,15 @@ def posts_update(request, id=None):
         # instance.is_image == True and instance.image is if you want to change one image to another image
         # instance.is_image == False and instance.image is if you are changing from a text post to an image post
         # this way if image field is blank and you click share, it just doesn't change anything
-        if (instance.is_image == True and instance.image) or (instance.is_image == False and instance.image):
+        if (instance.image):
             # https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
             # Credit: Ykh(https://stackoverflow.com/users/6786283/ykh)
             image_type, encoded_string = image_to_b64(instance.image)
-            instance.content = encoded_string
-            instance.data_uri = "data:" + image_type + ";base64," + encoded_string
+            instance.content = "data:" + image_type + ";base64," + encoded_string
+            instance.content_type = image_type + ";base64"
+            #instance.data_uri = "data:" + image_type + ";base64," + encoded_string
             instance.is_image = True
-            # make it unlisted here
+            #make it unlisted here
             #instance.unlisted = True
             instance.image.delete()
         instance.save()
