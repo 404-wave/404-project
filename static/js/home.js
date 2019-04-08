@@ -130,7 +130,7 @@ function setMarkdown(elem){
     elem.innerHTML = html;
 }
 function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePassword){
-    let path = standardizeUrl(server)+"service/author/"+foreignUser+"/friends/";
+    let path = standardizeUrl(server)+"author/"+foreignUser+"/friends/";
     $.ajax({
       url:path,
       type:"GET",
