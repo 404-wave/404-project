@@ -23,7 +23,8 @@ class UserSerializer(serializers.ModelSerializer):
                     'firstName', 'lastName', 'email', 'bio')
 
     def _id(self, obj):
-        host = request.scheme + "://" + self.context.get('request').META['HTTP_HOST']
+        request = self.context.get('request')
+        host = request.scheme + "://" + request.META['HTTP_HOST']
         return host + "/author/" + str(obj.id)
 
     def _friends(self, obj):
@@ -85,7 +86,8 @@ class PostSerializer(serializers.ModelSerializer):
                   'visibleTo', 'unlisted', 'source', 'origin')
 
     def _id(self, obj):
-        host = request.scheme + "://" + self.context.get('request').META['HTTP_HOST']
+        request = self.context.get('request')
+        host = request.scheme + "://" + request.META['HTTP_HOST']
         return host + "/posts/" + str(obj.id)
 
     def _source(self, obj):
@@ -169,7 +171,8 @@ class PostAuthorSerializer(serializers.ModelSerializer):
         fields = ('id', 'host', 'displayName', 'url', 'github')
 
     def _id(self, obj):
-        host = request.scheme + "://" + self.context.get('request').META['HTTP_HOST']
+        request = self.context.get('request')
+        host = request.scheme + "://" + request.META['HTTP_HOST']
         return host + "/author/" + str(obj.id)
 
     def _username(self, obj):
@@ -244,7 +247,8 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
     def _id(self, obj):
         try:
             author = User.objects.get(id=obj.user)
-            host = request.scheme + "://" + self.context.get('request').META['HTTP_HOST']
+            request = self.context.get('request')
+            host = request.scheme + "://" + request.META['HTTP_HOST']
             return host + "/author/" + str(obj.id)
         except:
             return str(obj.id)
