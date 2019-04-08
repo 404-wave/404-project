@@ -85,12 +85,7 @@ class UserFriendSerializer(serializers.ModelSerializer):
         fields = ('id', 'host', 'displayName', 'url')
 
     def _id(self, obj):
-        return obj.host + "/" + obj.id
-        # try:
-        #     host = request.scheme + "://" + self.context.get('request').META['HTTP_HOST']
-        #     return host + "/author/" + str(obj.id)
-        # except:
-        #     return str(obj.id)
+        return str(obj.host) + "/" + str(obj.id)
 
     def _username(self, obj):
         return obj.username
