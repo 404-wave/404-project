@@ -577,7 +577,15 @@ class FriendAPIView(generics.GenericAPIView):
         # following = User.objects.filter(followee__user1=author_id, is_active=True)
         # friends = following & followers
         friends = manager.get_friends_id(author_id)
+        print("FRIENDS VIA MANAGER: ")
         print(friends)
+        furl = friends.pop().split("/")
+        host = furl[1]
+        print("HOST VIA MANAGER: ")
+        print(host)
+        uid = furl.pop()
+        print("UUID VIA MANAGER: ")
+        print(uid)
 
         friend_list = list()
         for potential_friend in authors:
