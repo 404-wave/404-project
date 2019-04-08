@@ -68,19 +68,7 @@ function populateFriendsList2(data) {
       $("#friendContainer").append(div)
       }
 }
-  // Insert the new users
-  for (var i = 0; i < data.length; ++i) {
-    console.log(data);
-    console.log(data[i]);
-    let id = data[i]["pk"];
-    let host = data[i]["fields"]["host"];
-    host = strip_host(host);
-    let username = data[i]["fields"]["username"];
-    let image = '<img src="/static/images/singleslothwave.png" alt=${username} width="35">'
-    let div = `<div class="friend_name">${image}<a href=\"../profile/${host}${id}\">${username}</a></div>`;
-    $("#friendContainer").append(div)
-  }
-}
+
 
 function RequestDisplayName2(user) {
   console.log(user);
