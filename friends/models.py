@@ -21,6 +21,21 @@ class FollowManager(models.Manager):
         friend2 = (item[1]+'author/'+str(item[0]) for item in friends)
         return(list(friend2))
 
+    def get_friends_id(self, uuid):
+        uid = uuid
+        follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+        friends = list()
+
+        if follow_obj:
+            for follow in follow_obj:
+                recip_object1= Follow.objects.filter(user1=str(uid),user2=follow.user1)
+                recip_object2= Follow.objects.filter(user1=follow.user1,user2=str(uid))
+                if (recip_object1 and recip_object2):
+                    if (recip_object1[0].user1 == recip_object2[0].user2 and recip_object1[0].user2 == recip_object2[0].user1):
+                        friends.append([recip_object2[0].user1,recip_object2[0].user1_server])
+        friend2 = (item[1]+'author/'+str(item[0]) for item in friends)
+        return(list(friend2))
+
 class Follow(models.Model):
     #user1 is follower , user2 is followee
     user1 = models.UUIDField()
