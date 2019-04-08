@@ -11,7 +11,7 @@ import requests
 import core.views
 import traceback
 from users.models import User, Node
-from friends.models import Follow, FriendRequest, FriendRequestManager
+from friends.models import Follow, FriendRequest, FriendRequestManager, FollowManager
 from requests.auth import HTTPBasicAuth
 
 
@@ -87,12 +87,14 @@ def friends(request):
     # followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
     # following = User.objects.filter(followee__user1=request.user.id, is_active=True)
     # friends = following & followers
-
+    follow_manager = FollowManager()
+    friendlist = follow_manager.get_friends(request.user)
+    print (friendlist)
     #TODO make more efficient
     uid = request.user.id
     friends = set()
     follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
-
+    print ()
     if follow_obj:
         for follow in follow_obj:
             if ((follow.user1==uid) & (follow.user2 not in friends)):
