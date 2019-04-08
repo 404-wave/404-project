@@ -27,9 +27,12 @@ def get_post_type(value1):
 @register.filter(name='get_time')
 def get_time(value1):
     if (isinstance(value1, dict)):
-        time =  re.sub(r'.[0-9]{2}:[0-9]{2}$','',value1['published']) 
-        time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%f')  
-        return datetime.strftime(time, '%b %d %Y %I:%M%p')
+        try:
+            time =  re.sub(r'.[0-9]{2}:[0-9]{2}$','',value1['published']) 
+            time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%f')  
+            return datetime.strftime(time, '%b %d %Y %I:%M%p')
+        except:
+            value1['published']
     else:
         return value1.timestamp
 
