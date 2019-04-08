@@ -144,6 +144,9 @@ class UserAPIView(generics.GenericAPIView):
         else:
             friends = User.objects.none()
 
+        for friend in friends:
+            print("OKKKKKKKKK")
+
         serializer = UserSerializer(queryset, many=False, context={'friends':friends, 'request':request})
         return Response(serializer.data)
 
