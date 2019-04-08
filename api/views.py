@@ -115,7 +115,7 @@ class UserAPIView(generics.GenericAPIView):
     serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
-        print (request)
+        print (request, "FREIND REQUEST")
         print
         if 'author_id' in kwargs.keys():
             author_id = self.kwargs['author_id']
@@ -464,7 +464,7 @@ class FriendAPIView(generics.GenericAPIView):
     parser_classes = (JSONParser,)
 
     def get(self, request, *args, **kwargs):
-
+        print ("FREEEEND")
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -622,7 +622,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
 
     def post(self, request, *args, **kwargs):
-
+        print ("POSTwewewe REQUEST")
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -677,9 +677,9 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
             try:
                 print(author_id)
-                print(author_host)
+                print('ATUHOT', author_host)
                 print(friend_id)
-                print(friend_host)
+                print('NOT STU', friend_host)
                 Follow.objects.create(user1=author_id, user1_server =author_host, user2=friend_id, user2_server = friend_host)
             except:
                 print(" Couldn't create object")

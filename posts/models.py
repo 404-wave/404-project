@@ -261,9 +261,6 @@ class PostManager(models.Manager):
             if post['id'] not in post_ids :
                 filtered_posts.append(post)
 
-        # all_posts.extend(posts_from_servers)	      
-        # self.sort_posts(all_posts)
-        # return all_posts
         
         filtered_posts.extend(posts_from_servers)
         self.sort_posts(filtered_posts)
@@ -320,10 +317,6 @@ class PostManager(models.Manager):
             friends = User.objects.none()
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
 
-
-        # friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
-        # friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
-        # friends_of_friends = friends_followers & friends_following
 
         #TODO Not efficient, need to find a more efficient way of filtering this
         fr_Q = Q()
