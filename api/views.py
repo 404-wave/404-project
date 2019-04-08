@@ -17,7 +17,7 @@ from .serializers import UserFriendSerializer
 
 from .paginators import PostPagination, CommentPagination
 
-from friends.models import Follow, FriendRequest
+from friends.models import Follow, FriendRequest,FollowManager
 from users.models import User, Node, NodeSetting
 from comments.models import Comment
 from posts.models import Post
@@ -556,6 +556,7 @@ class FriendAPIView(generics.GenericAPIView):
 
         # Retrieves JSON data
         data = request.data
+        manager = FollowManager()
 
         author_id = None
         author = None
@@ -575,37 +576,9 @@ class FriendAPIView(generics.GenericAPIView):
         # followers = User.objects.filter(follower__user2=author_id, is_active=True)
         # following = User.objects.filter(followee__user1=author_id, is_active=True)
         # friends = following & followers
-        uid = author_id
-        user_Q = Q()
-        follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+        friends = manager.get_friends_id(author_id)
+        print(friends)
 
-        try:
-            uid = author_id
-            follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
-            friends= set()
-
-            if follow_obj:
-                for follow in follow_obj:
-                    if ((follow.user1==uid) & (follow.user2 not in friends)):
-                        recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                        if recip_object:
-                            user = User.objects.filter(id=follow.user2)
-                            if user:
-                                user=user.get()
-                            else:
-                                user = get_user(follow.user2_server,follow.user2)
-                                if user is None:
-                                    continue
-                            friends.add(user)
-                    elif ((follow.user2==uid) & (follow.user1 not in friends)):
-                        recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                        if recip_object:
-                            user= User.objects.filter(id=follow.user1)
-                            if user:
-                                user=user.get()
-                            else:
-                                user= get_user(follow.user1_server,follow.user1)
-                            friends.add(user)
         friend_list = list()
         for potential_friend in authors:
             potential_friend_id = potential_friend.split("/")[-1]
