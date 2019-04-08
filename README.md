@@ -146,8 +146,8 @@ An example of what to POST (this is all that we require):
 {
 	"contentType":"text/plain",
 	"content":"Here is some POSTed post content. Neat-o!",
-	"author":{ "id":"http://127.0.0.1:8000/author/4a47a810-4b00-4c59-8ec3-e0d4ac0b74fc"},
-	"visibility":"PRIVATE",
+	"author":{ "id":"https://cmput404-wave.herokuapp.com/service/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f"},
+	"visibility":"PUBLIC",
 	"visibleTo":["0a38f43f-0467-48a4-ba28-d9ae3a4a88b5"],
     	"unlisted":false
 }
