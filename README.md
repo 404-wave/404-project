@@ -81,7 +81,7 @@ Note: Pagination works for any endpoint endpoint related to posts or comments.
 
 ### Posts
 
-**GET /author/posts/**: returns all posts *visible to the currently authenticated user* from our server **and our connected nodes**. This is the endpoint 
+**GET /author/posts/**: returns all posts *visible to the currently authenticated user* from our server **and our connected nodes**. This is the only endpoint that, as discussed with Alex and Ruby after the lab demos, would be used to showcase that we can, in fact, return posts from other servers using the API. All other endpoints do not return posts from other servers. As discussed in the lab, we were only *required* to have /author/posts/ returning foreign posts.
 
 **GET /posts/**: returns all publicly available posts that exist on *our server*. That is, posts from other servers will *not* be shown when this endpoint is called. This is in coordination with the requirement, "a GET without a postfixed “postid” should return a list of all “PUBLIC” visibility posts ***on your node***"
 
@@ -176,9 +176,9 @@ Response:
                 "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
                 "host": "https://cmput404-wave.herokuapp.com",
                 "displayName": "waveAdmin",
-                "github": ""
+                "github": "Z-Red"
             },
-            "comment": "a comment",
+            "comment": "Wow what a great post, on such a great website.",
             "published": "2019-03-28T21:41:15.965975Z",
             "id": "11085ac2-25a6-4ef3-8b2e-ade3f1e02eed"
         },
