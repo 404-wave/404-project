@@ -13,7 +13,6 @@ import uuid
 import re
 import json
 from .serializers import UserSerializer, PostSerializer, CommentSerializer, UserFriendSerializer
-from .serializers import UserFriendSerializer
 
 from .paginators import PostPagination, CommentPagination
 
@@ -260,8 +259,8 @@ class PostAPIView(generics.GenericAPIView):
 
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-	
-        try:      
+
+        try:
             data = request.data
             author_id = uuid.UUID(data['author']['id'].split("/")[-1])
             privacy = self.resolve_privacy(data['visibility'])
@@ -437,7 +436,7 @@ class CommentAPIView(generics.GenericAPIView):
         #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         server_only = allow_server_only_posts(request)
-        id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})'	
+        id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})'
         try:
             data = request.data
             re_result = re.search(id_regex, data['post'])

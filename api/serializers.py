@@ -157,7 +157,7 @@ class PostSerializer(serializers.ModelSerializer):
     def _comments(self, obj):
         post_id = obj.id
         comments = Post.objects.filter(id=post_id)[0].comments
-        serialized_comments = CommentSerializer(comments, many=True, context={'request':self.context.get('request'))
+        serialized_comments = CommentSerializer(comments, many=True, context={'request':self.context.get('request')})
         return serialized_comments.data
 
 
