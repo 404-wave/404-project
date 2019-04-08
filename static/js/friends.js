@@ -54,7 +54,7 @@ function populateFriendsList2(data) {
   }
     var friends = data['friends'];
     for (item of friends)
-      {var user = RequestDisplayName(item)
+      {var user = RequestDisplayName2(item);
       var re = new RegExp('(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)');
       var id = data['id'];
       var result = id.match(re);
