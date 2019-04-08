@@ -146,7 +146,7 @@ class UserAPIView(generics.GenericAPIView):
 
         #foreign_friends = list()
 
-        friends = get_friends_list(author_id)
+        friends = self.get_friends_list(author_id)
 
         serializer = UserSerializer(queryset, many=False, context={'friends':friends, 'request':request})
         return Response(serializer.data)
