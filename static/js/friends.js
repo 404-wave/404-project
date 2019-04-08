@@ -51,6 +51,41 @@ function strip_host(host){
   return k;
 }
 
+function RequestDisplayName(user) {
+  console.log(user);
+  path = user;
+  $.ajax({
+    url: path,
+    success: function (data) {
+      populateDropDown(data);
+    },
+    error: function(xhr, status, error) {
+      console.log(error)
+    } 
+  });
+}
+
+
+function populateDropDown(data){
+  // Remove the users in the friends list
+  dropdown = document.getElementById("dropdown");
+  while (dropdown.firstChild) {
+    dropdown.removeChild(dropdown.firstChild);
+  }
+  var re = new RegExp('(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)');
+  var id = data['id'];
+  var result = id.match(re);
+  id = result[2];
+  re = new RegExp('^https?:\/\/([^\/]*)');
+  var host = data['host'];
+  result = host.match(re);
+  host = result[1];
+  var username = data['displayName'];
+  var div = `<div><a href=\"../profile/${host}${id}\">${username}</a></div>`;
+    $("#dropdown").append(div)
+  dropdown.classList.toggle("show");
+}
+
 
 function change_follow(followerID,followerUser,followerHost,
   followeeID,followeeUser,followeeHost,e) {
@@ -143,18 +178,9 @@ function populateRequests(data){
   while (dropdown.firstChild) {
     dropdown.removeChild(dropdown.firstChild);
   }
-  //insert users
-  for (var x = 0; x < data['posts'].length; ++x) {
-    let id = data['posts'][x]['id'];
-    let host = data['posts'][x]['host'];
-    if (host.endsWith('/')){
-      host = host.slice(0,-1);
-    }
-    let username = data['posts'][x]['username'];
-    let div = `<div><a href=\"../profile/${host}${id}\">${username}</a></div>`;
-    $("#dropdown").append(div)
-  }
-  dropdown.classList.toggle("show");
+  var friends = data['friends'];
+  for (item of friends)
+    {RequestDisplayName(item)}
 }
 
 
