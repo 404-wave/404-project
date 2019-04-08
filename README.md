@@ -294,22 +294,28 @@ Example request:
 Example response:
 ```
 {
-    "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
-    "host": "https://cmput404-wave.herokuapp.com",
-    "displayName": "waveAdmin",
-    "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+    "id": "https://cmput-404-proj-test.herokuapp.com/author/39500b60-210f-4318-81e0-08e18489d77e",
+    "host": "https://cmput-404-proj-test.herokuapp.com",
+    "displayName": "waveTestAdmin",
+    "url": "https://cmput-404-proj-test.herokuapp.com/author/39500b60-210f-4318-81e0-08e18489d77e",
     "friends": [
-    	{
-            "id": "https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+        {
+            "id": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
             "host": "https://cmput404-wave.herokuapp.com",
-            "displayName": "bpanda",
-            "url": "https://cmput404-wave.herokuapp.com/author/88939ffa-c45d-4c10-a4f0-252ccf87740c"
+            "displayName": "waveAdmin",
+            "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f"
+        },
+        {
+            "id": "https://cmput-404-proj-test.herokuapp.com/author/fc9239c0-5d8c-451c-847b-b68d26a40df9",
+            "host": "https://cmput-404-proj-test.herokuapp.com",
+            "displayName": "boopbop",
+            "url": "https://cmput-404-proj-test.herokuapp.com/author/fc9239c0-5d8c-451c-847b-b68d26a40df9"
         }
     ],
-    "github": "",
-    "firstName": "Wave",
-    "lastName": "Admin",
-    "email": "waveadmin@gmail.com",
-    "bio": "newnew"
+    "github": "Z-Red",
+    "firstName": "Zach",
+    "lastName": "Redfern",
+    "email": "zred@gmail.com",
+    "bio": "\"I like to party\" - Andy Samberg"
 }
 ```
