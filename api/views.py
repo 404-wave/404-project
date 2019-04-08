@@ -146,7 +146,7 @@ class UserAPIView(generics.GenericAPIView):
         else:
             friends = User.objects.none()
 
-        serializer = UserSerializer(queryset, many=False, context={'friends':friends})
+        serializer = UserSerializer(queryset, many=False, context={'friends':friends, 'request':request})
         return Response(serializer.data)
 
 
@@ -170,7 +170,7 @@ class PostAPIView(generics.GenericAPIView):
         print ("User Authenticated", request.user.is_authenticated)
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-            
+
         print ("host", request.user.is_authenticated)
         host = get_hostname(request)
         if host is None:
@@ -217,7 +217,7 @@ class PostAPIView(generics.GenericAPIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         page = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
+        serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id), 'request':request})
 
         ########################################################################
         serialized_data = serializer.data
@@ -416,7 +416,7 @@ class CommentAPIView(generics.GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         page = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(page, many=True)
+        serializer = self.get_serializer(page, many=True, context={'request':request})
         return self.get_paginated_response(serializer.data)
 
 
