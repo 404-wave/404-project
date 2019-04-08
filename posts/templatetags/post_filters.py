@@ -39,10 +39,13 @@ def get_time(value1):
 @register.filter(name ="markdown_safe")
 def markdown_safe(value1):
     if (markdown(value1)):
-        if ('script' in value1['content']):
-            return False
+        if (isinstance(value1, dict)):
+            if ('script' in value1['content']):
+                return False
         else: 
-            return True
+            if ('script' in value1.content_type):
+                return False
+    return True
         
 
 
