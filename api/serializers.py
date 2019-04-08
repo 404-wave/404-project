@@ -252,7 +252,7 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
         except Exception as e:
 
             for node in Node.objects.all():
-                url = node.host + "/author/" + str(obj.user) + "/"
+                url = node.host + "/author/" + str(obj.id) + "/"
                 r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
                 if (r.status_code == 200):
                     try:
