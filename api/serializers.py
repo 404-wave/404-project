@@ -31,6 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         friends = list()
         friends_list = self.context.get('friends')
+        print("Here is the friends list...")
         print(friends_list)
         for friend in friends:
             print(friend)
