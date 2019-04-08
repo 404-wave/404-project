@@ -46,16 +46,19 @@ class UserSerializer(serializers.ModelSerializer):
 # TODO: How does this work with FRIENDS on different servers????????//
 class UserFriendSerializer(serializers.ModelSerializer):
 
-    #id = serializers.SerializerMethodField('_id')
+    id = serializers.SerializerMethodField('_id')
     displayName = serializers.SerializerMethodField('_username')
 
     class Meta:
         model = User
         fields = ('id', 'host', 'displayName', 'url')
 
-    # def _id(self, obj):
-    #     host = request.scheme + "://" + self.context.get('request').META['HTTP_HOST']
-    #     return host + "/author/" + str(obj.id)
+    def _id(self, obj):
+        try:
+            host = request.scheme + "://" + self.context.get('request').META['HTTP_HOST']
+            return host + "/author/" + str(obj.id)
+        except:
+            return str(obj.id)
 
     def _username(self, obj):
         return obj.username
