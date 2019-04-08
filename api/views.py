@@ -17,7 +17,7 @@ from .serializers import UserFriendSerializer
 
 from .paginators import PostPagination, CommentPagination
 
-from friends.models import Follow, FriendRequest
+from friends.models import Follow, FriendRequest,FollowManager
 from users.models import User, Node, NodeSetting
 from comments.models import Comment
 from posts.models import Post
@@ -578,44 +578,36 @@ class FriendAPIView(generics.GenericAPIView):
 
         # Retrieves JSON data
         data = request.data
+        manager = FollowManager()
+
+        author_id = None
+        author = None
+        authors = None
+
         try:
             author = data['author']
+            author_id = author.split('/')[-1]
+            authorObj = User.objects.filter(id=author_id)
+            if(len(authorObj) == 0):
+                return Response(status=status.HTTP_404_NOT_FOUND)
             authors = data['authors']
         except:
             # If the JSON was not what we wanted, send a 400
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        author_id = author.split("/")[-1]
         # followers = User.objects.filter(follower__user2=author_id, is_active=True)
         # following = User.objects.filter(followee__user1=author_id, is_active=True)
         # friends = following & followers
-        uid = author_id
-        user_Q = Q()
-        follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
-
-        if len(follow_obj) != 0:
-            for follow in follow_obj:
-                if follow.user1==uid:
-                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                    if len(recip_object) != 0:
-                        user_Q = user_Q | Q(id=follow.user2)
-                elif follow.user2==uid:
-                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                    if len(recip_object) != 0:
-                        user_Q = user_Q | Q(id=follow.user1)
-            if len(user_Q) != 0:
-                friends = User.objects.filter(user_Q)
-            else:
-                friends = User.objects.none()
-        else:
-            friends = User.objects.none()
+        friends = manager.get_friends_id(author_id)
+        print(friends)
 
         friend_list = list()
         for potential_friend in authors:
             potential_friend_id = potential_friend.split("/")[-1]
             for friend in friends:
-                if str(friend.id) == potential_friend_id:
-                    friend_list.append(potential_friend)
+                if str(friend.id) == str(potential_friend_id):
+                    friend_url = standardize_url(friend.host) + "service/author/"+str(friend.id)
+                    friend_list.append(friend_url)
                     break
 
         response = {
@@ -624,7 +616,7 @@ class FriendAPIView(generics.GenericAPIView):
             "authors": friend_list
         }
 
-        return Response(response)
+        return Response(response,status=status.HTTP_200_OK)
 
 
 class FriendRequestAPIView(generics.GenericAPIView):
