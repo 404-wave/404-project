@@ -1,4 +1,3 @@
-
 .author{
 	font-size: 1.2em;
 	color:#424344;
@@ -31,6 +30,7 @@
 	flex-direction: column;
 	margin-top: 30px;
 	flex-shrink:0;
+	min-width: 700px
 }
 #createPost{
  	background-color: white;
@@ -39,6 +39,8 @@
  	align-items: center;
  	width: 86%;
  	flex-shrink:0;
+ 	min-width: 700px;
+
  }
 #createPost .settings{
  	width: 100%;
@@ -112,26 +114,47 @@ position:absolute;
   z-index: 1;
 }
 
-
+.fieldWrapper_content{
+	display:flex;
+	margin: 20px;
+	flex-direction: column;
+}
 .fieldWrapper_privacy{
 	display: flex;
 	margin: 20px;
+	flex-direction: column;
 	flex-shrink:0;
 	}
 .fieldWrapper_privacy *{
 	height: fit-content;
-	margin: 10px;
+	/* margin: 10px; */
 }	
 .fieldWrapper_photo {
 	margin-top: 2em;
-	
-
+}
+#id_accessible_users{
+	list-style: none;
+	  height: 100px;
+	    overflow:auto;
+}
+#id_accessible_users li{
+	padding: .5em;
+	line-height: 1em;
+	width: 200px;
+}
+#id_accessible_users input[type=checkbox]{
+	margin-right: .3em;
+}
+#id_accessible_users label{
+	margin-bottom:0px;
 }
 .fieldWrapper_submit{
 	display: flex;
 	align-items: center;
 	padding-top: 1em;
 	flex-shrink:0;
+	align-self: flex-end;
+	flex-grow: 2;
 }
 
 
@@ -286,6 +309,8 @@ textarea.form-control{
 }
 .fieldWrapper_row{
 	flex-shrink:0;
+	display: flex;
+	min-width: 700px
 }
 .showing {
 	font-weight: 500 !important;
@@ -334,6 +359,7 @@ textarea.form-control{
 		background-color: white;
 		font-family: 'Nunito', sans-serif;
 		margin-bottom: 100px;
+		min-width: 700px;
 	}
 .post_view, pre {
 	width: 86%;

@@ -10,6 +10,7 @@ from rest_framework.parsers import JSONParser
 import socket
 import requests
 import uuid
+import re
 import json
 from .serializers import UserSerializer, PostSerializer, CommentSerializer, UserFriendSerializer
 from .serializers import UserFriendSerializer
@@ -114,8 +115,6 @@ class UserAPIView(generics.GenericAPIView):
     serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
-        print (request)
-        print
         if 'author_id' in kwargs.keys():
             author_id = self.kwargs['author_id']
             try:
@@ -157,7 +156,6 @@ class PostAPIView(generics.GenericAPIView):
     pagination_class = PostPagination
 
     def get(self, request, *args, **kwargs):
-
         data = None
         queryset = None
         path = request.path
@@ -173,6 +171,7 @@ class PostAPIView(generics.GenericAPIView):
 
         print ("host", request.user.is_authenticated)
         host = get_hostname(request)
+        print ("host", request.user.is_authenticated, host)
         if host is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -261,8 +260,8 @@ class PostAPIView(generics.GenericAPIView):
 
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        try:
+	
+        try:      
             data = request.data
             author_id = uuid.UUID(data['author']['id'].split("/")[-1])
             privacy = self.resolve_privacy(data['visibility'])
@@ -289,12 +288,7 @@ class PostAPIView(generics.GenericAPIView):
 
             # Only set visible users to those on our server
             if privacy == Post.PRIVATE:
-                for author in visible_to:
-                    if not User.objects.filter(id=author).count() == 0:
-                        id = uuid.UUID(author.split("/")[-1])
-                        post.accessible_users.add(id)
-
-            post.accessible_users.add(author_id)
+                post.accessible_users = visible_to
 
         except Exception as e:
             print(e)
@@ -443,11 +437,13 @@ class CommentAPIView(generics.GenericAPIView):
         #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         server_only = allow_server_only_posts(request)
-
+        id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})'	
         try:
             data = request.data
-            post_id = uuid.UUID(data['post'].split("/")[-1])
-            author_id = uuid.UUID(data['comment']['author']['id'].split("/")[-1])
+            re_result = re.search(id_regex, data['post'])
+            post_id = uuid.UUID(re_result.group(2))
+            re_result = re.search(id_regex, data['comment']['author']['id'])
+            author_id = uuid.UUID(re_result.group(2))
             content = data['comment']['comment']
         except Exception as e:
             print("When POSTing a comment, there was an error parsing JSON data.")
@@ -482,9 +478,9 @@ class FriendAPIView(generics.GenericAPIView):
     parser_classes = (JSONParser,)
 
     def get(self, request, *args, **kwargs):
-
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
 
         if 'author_id' in self.kwargs.keys():
             author_id = self.kwargs['author_id']
@@ -536,6 +532,7 @@ class FriendAPIView(generics.GenericAPIView):
                 friend_list.append(url)
 
 
+
             return Response({"query": "friends", "authors": friend_list})
 
         if 'author_id1' in self.kwargs.keys() and 'author_id2' in self.kwargs.keys():
@@ -569,8 +566,6 @@ class FriendAPIView(generics.GenericAPIView):
                 ],
                 "friends": friends
             }
-            print("IS FRIENDS RESPONSE: ")
-            print(response)
             return Response(response)
         else:
             print("URI doesn't exist")
@@ -640,7 +635,6 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
 
     def post(self, request, *args, **kwargs):
-
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -694,14 +688,10 @@ class FriendRequestAPIView(generics.GenericAPIView):
         if not already_following:
 
             try:
-                print(author_id)
-                print(author_host)
-                print(friend_id)
-                print(friend_host)
                 Follow.objects.create(user1=author_id, user1_server =author_host, user2=friend_id, user2_server = friend_host)
             except:
                 print(" Couldn't create object")
-                return Response(status=status.HTTP_409_CONFLICT)
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             print("Created object")
 
             # Query to see if the person they want to follow is already following requestor
@@ -712,7 +702,7 @@ class FriendRequestAPIView(generics.GenericAPIView):
                     FriendRequest.objects.create(requestor= author_id, requestor_server = author_host, recipient= friend_id, recipient_server = friend_host)
                 except:
                     print("Couldn't make FR")
-                    return Response(status=status.HTTP_409_CONFLICT)
+                    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             elif len(exists_in_table) != 0:
                 exists_in_table.delete()
 
