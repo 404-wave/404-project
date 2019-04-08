@@ -151,13 +151,13 @@ class PostSerializer(serializers.ModelSerializer):
     def _author(self, obj):
         # TODO: What if the author is from a different server??? FOAF!
         author = User.objects.get(username=obj.user)
-        serialized_author = PostAuthorSerializer(author, many=False)
+        serialized_author = PostAuthorSerializer(author, many=False, context={'request':self.context.get('request')})
         return serialized_author.data
 
     def _comments(self, obj):
         post_id = obj.id
         comments = Post.objects.filter(id=post_id)[0].comments
-        serialized_comments = CommentSerializer(comments, many=True)
+        serialized_comments = CommentSerializer(comments, many=True, context={'request':self.context.get('request'))
         return serialized_comments.data
 
 
@@ -222,7 +222,7 @@ class CommentSerializer(serializers.ModelSerializer):
                 # author does exist, but the server is not sharing with us anymore.
                 return dict()
 
-        serialized_author = CommentAuthorSerializer(author, many=False, context={'request':request})
+        serialized_author = CommentAuthorSerializer(author, many=False, context={'request':self.context.get('request')})
         return serialized_author.data
 
     def _published(self, obj):
