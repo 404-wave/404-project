@@ -44,6 +44,58 @@ function populateFriendsList(data) {
   }
 }
 
+// TODO: needs adaptation pending finalization of JSON structure of REST API
+function populateFriendsList2(data) {
+
+  // Remove the users in the friends list
+  friendContainer = document.getElementById("friendContainer");
+  while (friendContainer.firstChild) {
+    friendContainer.removeChild(friendContainer.firstChild);
+  }
+    var friends = data['friends'];
+    for (item of friends)
+      {var user = RequestDisplayName(item)
+      var re = new RegExp('(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)');
+      var id = data['id'];
+      var result = id.match(re);
+      id = result[2];
+      re = new RegExp('^https?:\/\/([^\/]*)');
+      var host = data['host'];
+      result = host.match(re);
+      host = result[1];
+      var username = data['displayName'];
+      let div = `<div class="friend_name">${image}<a href=\"../profile/${host}${id}\">${username}</a></div>`;
+      $("#friendContainer").append(div)
+      }
+}
+  // Insert the new users
+  for (var i = 0; i < data.length; ++i) {
+    console.log(data);
+    console.log(data[i]);
+    let id = data[i]["pk"];
+    let host = data[i]["fields"]["host"];
+    host = strip_host(host);
+    let username = data[i]["fields"]["username"];
+    let image = '<img src="/static/images/singleslothwave.png" alt=${username} width="35">'
+    let div = `<div class="friend_name">${image}<a href=\"../profile/${host}${id}\">${username}</a></div>`;
+    $("#friendContainer").append(div)
+  }
+}
+
+function RequestDisplayName2(user) {
+  console.log(user);
+  path = user;
+  $.ajax({
+    url: path,
+    success: function (data) {
+      return data;
+    },
+    error: function(xhr, status, error) {
+      console.log(error)
+    } 
+  });
+}
+
 function strip_host(host){
   reg = /https?:\/\//gi;
   var k = host.replace(reg, '');
