@@ -66,7 +66,6 @@ class UserFriendSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
 
-    #id = serializers.SerializerMethodField('_id')
     source = serializers.SerializerMethodField('_source')
     origin = serializers.SerializerMethodField('_origin')
     author = serializers.SerializerMethodField('_author')
@@ -87,11 +86,6 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'contentType', 'categories', 'description',
                   'published', 'title', 'content', 'author', 'comments', 'visibility',
                   'visibleTo', 'unlisted', 'source', 'origin')
-
-    # def _id(self, obj):
-    #     request = self.context.get('request')
-    #     host = request.scheme + "://" + request.META['HTTP_HOST']
-    #     return host + "/posts/" + str(obj.id)
 
     def _source(self, obj):
         try:
@@ -249,11 +243,26 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
 
     def _id(self, obj):
         try:
+
             author = User.objects.get(id=obj.id)
             request = self.context.get('request')
             host = request.scheme + "://" + request.META['HTTP_HOST']
             return host + "/author/" + str(obj.id)
+
         except Exception as e:
-            print("When serializing the author of a comment, the following exception occured...")
-            print(e)
+
+            for node in Node.objects.all():
+                url = node.host + "/author/" + str(obj.user) + "/"
+                r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
+                if (r.status_code == 200):
+                    try:
+                        json = r.json()
+                        return json['id']
+                    except:
+                        print("When serializing the foreign author of a comment, the following exception occured...")
+                        print(e)
+                        pass
+                else:
+                    continue
+
             return str(obj.id)
