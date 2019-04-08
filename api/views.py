@@ -610,7 +610,7 @@ class FriendAPIView(generics.GenericAPIView):
         for potential_friend in authors:
             potential_friend_id = potential_friend.split("/")[-1]
             for friend in friends:
-                if str(friend.id) == potential_friend_id:
+                if str(friend.id) == str(potential_friend_id):
                     friend_url = standardize_url(friend.host) + "service/author/"+str(friend.id)
                     friend_list.append(friend_url)
                     break
