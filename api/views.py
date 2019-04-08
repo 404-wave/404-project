@@ -247,6 +247,7 @@ class PostAPIView(generics.GenericAPIView):
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+        queryset = self.filter_out_image_posts(request, queryset)
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
         return self.get_paginated_response(serializer.data)
@@ -336,6 +337,8 @@ class PostAPIView(generics.GenericAPIView):
             node_settings = NodeSetting.objects.all()[0]
             if node_settings.share_imgs is False:
                 if not host == node_settings.host:
+                    print("Requesting host: " + str(host))
+                    print("Our host: " + str(node_settings.host))
                     new_queryset = Post.objects.none()
                     for post in queryset:
                         if not post.is_image:
