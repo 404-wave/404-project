@@ -580,7 +580,7 @@ class FriendAPIView(generics.GenericAPIView):
         print("FRIENDS VIA MANAGER: ")
         print(friends)
         furl = friends.pop().split("/")
-        host = furl[1]
+        host = furl.index(1)
         print("HOST VIA MANAGER: ")
         print(host)
         uid = furl.pop()
