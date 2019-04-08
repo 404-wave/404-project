@@ -26,6 +26,7 @@ class PostForm(forms.ModelForm):
         super(PostForm, self).__init__(*args, **kwargs)
         self.fields['user'].widget = forms.HiddenInput()
         self.fields['publish'].widget = forms.HiddenInput()
+        self.fields['content_type'].choices = (('text/plain', 'text/plain'), ('text/markdown','text/markdown'))
         self.set_placeholder('content', 'What\'s on your mind?')
         self.set_form_class()
 
@@ -79,7 +80,7 @@ class ImageForm(forms.ModelForm):
         print(accessible_users)
         post = super().save(commit)
         username = post.user.username
-        timestamp = post.timestamp.strftime("%b %-d, %Y, at %H:%M %p")
+        timestamp = post.timestamp.isoformat()
         post.title = username+" - "+timestamp
         post.save()
         post.accessible_users.add(*accessible_users)
