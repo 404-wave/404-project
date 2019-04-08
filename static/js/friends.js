@@ -67,6 +67,7 @@ function populatefriends(data) {
       var host = data['host'];
       result = host.match(re);
       host = result[1];
+      let image = '<img src="/static/images/singleslothwave.png" alt=${username} width="35">'
       var username = data['displayName'];
       let div = `<div class="friend_name">${image}<a href=\"../profile/${host}${id}\">${username}</a></div>`;
       $("#friendContainer").append(div)
