@@ -11,8 +11,9 @@ import requests
 import core.views
 import traceback
 from users.models import User, Node
-from friends.models import Follow, FriendRequest
+from friends.models import Follow, FriendRequest, FriendRequestManager, FollowManager
 from requests.auth import HTTPBasicAuth
+
 
 # Just get a list of Users on the server, minus the user making the request
 def find(request):
@@ -86,12 +87,16 @@ def friends(request):
     # followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
     # following = User.objects.filter(followee__user1=request.user.id, is_active=True)
     # friends = following & followers
-
+    follow_manager = FollowManager()
+    friendlist = follow_manager.get_friends(request.user)
+    print (friendlist)
+    dict_friends = {"friends": friendlist}
+    print (dict_friends)
     #TODO make more efficient
     uid = request.user.id
     friends = set()
     follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
-
+    print ()
     if follow_obj:
         for follow in follow_obj:
             if ((follow.user1==uid) & (follow.user2 not in friends)):
@@ -122,7 +127,7 @@ def follow(request):
 
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
-
+    print ("HERHEHREH", request.GET['followerserver'])
     followerID = request.GET['followerID']
     followeeID = request.GET['followeeID']
     followerUser = request.GET['followerUser']
@@ -132,15 +137,16 @@ def follow(request):
 
     user1 = followerID
     user2 = followeeID
-    Follow.objects.create(user1=followerID, user1_server = followerServer,  
-    user2=followeeID, user2_server = followeeServer)
+    if not (Follow.objects.filter(user1=followerID,user2=followeeID)):
+        Follow.objects.create(user1=followerID, user1_server = followerServer,  
+        user2=followeeID, user2_server = followeeServer)
 
      ####add into FriendRequest table####
     #Query to see if the person they want to follow is already following requestor
     exists_in_table = FriendRequest.objects.filter(requestor=user2,recipient=user1)
 
     if (len(exists_in_table) == 0) & (follows(user2,user1) == False):
-        FriendRequest.objects.create(requestor= user1,recipient= user2)
+        FriendRequest.objects.create(requestor= user1, requestor_server = followerServer,recipient= user2, recipient_server = followeeServer)
     elif len(exists_in_table) != 0:
         exists_in_table.delete()
     
@@ -210,27 +216,11 @@ def follows(user1ID, user2ID):
 def friend_requests(request):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
-    print ("REQUEST FRIEND")
-    friend_reqs = FriendRequest.objects.filter(recipient=request.user.id)
-    host = request.get_host()
-    data2 = {"posts": []}
-    user_filter = Q()
-    l = list()
-    data2 = {
-    "posts": []}
-    for reqs in friend_reqs:
-        print(reqs.requestor)
-        user_filter = user_filter | Q(username=reqs.requestor)
-        user = User.objects.filter(id = reqs.requestor)
-        if not user:
-            user = get_user(reqs.requestor_server, reqs.requestor)
-            if user is None:
-                continue
-        else:
-            user = user[0]
-        host = strip_host(user.host)
-        data2["posts"].append({'id':str(user.id), 'username':user.username, 'host': host})
-    return HttpResponse(json.dumps(data2), content_type='application/json')
+    friendrequest = FriendRequestManager()
+    friendList = friendrequest.get_friend_requests(request.user)
+    print (friendList)
+    dict_friends = {"friends": friendList}
+    return HttpResponse(json.dumps(dict_friends), content_type='application/json')
 
 def change_ModelDatabase(request):
     
@@ -284,7 +274,7 @@ def get_user(server, id):
 def standardize_url(server):
     server = server.replace(" ","")
     regex = "(^https?:\/\ /)(.*)"
-    http_regex = "(^http:\/\/(.*)"
+    http_regex = "^http:\/\/(.*)"
     if server.endswith("/") is False:
         server = server+"/"
     if re.search(http_regex,server) is True:

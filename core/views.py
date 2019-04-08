@@ -39,10 +39,10 @@ def home(request):
 		data = request.POST.copy()
 		data['user'] = request.user.id
 		data['publish'] = datetime.now()
-		form = PostForm(data, request.FILES or None)
+		form = PostForm(data, request.FILES or None, user_details=request.user)
 		if form.is_valid():
 			instance = form.save()
-			form = PostForm()
+			form = PostForm(user_details=request.user)
 		print(form.errors)
 		user = request.user
 
@@ -60,8 +60,6 @@ def home(request):
 		query = request.GET.get("query")
 		if query:
 			streamlist = streamlist.filter(content__icontains=query)
-		print("Stream list len: ", len(streamlist))
-		print("Stream list: ", streamlist)
 
 		#Cast QuerySet into a list for Github
 		streamlist = list(streamlist)
@@ -110,15 +108,20 @@ def home(request):
 				if is_oldest:
 					streamlist.append(message)
 
+		try:
+			if (data['unlisted'] == 'on'):
+				context = {
+				"object_list": streamlist,
+		 		"user": user,
+		 		"form": form,
+				}
+		except:
+			return HttpResponseRedirect('/home/')
 
-		context = {
-			"object_list": streamlist,
-			"user": user,
-			"form": form,
-		}
+
 	else:
 
-		form = PostForm()
+		form = PostForm(user_details=request.user)
 		user = request.user
 
 
@@ -200,6 +203,7 @@ def home(request):
 			"nodeList": json.dumps(nodeList),
 
 		}
+	print("LLLLLKKKKKK, ", instance )
 	if instance and instance.unlisted is True:
 		context["unlisted_instance"] = instance
 	return render(request, "home.html", context)
@@ -252,15 +256,13 @@ def get_user(parameters):
 		user.username = response['displayName']
 		re_result = re.search(id_regex, response['id'])
 		user.id = re_result.group(2)
-		if (re_result.group(1)== None):
-			re_result = server
-		else:
-			user.host = re_result.group(1)
+		user.host = response['host']
 		user.bio = optional_attributes(user.bio, response, 'bio')
 		user.first_name = optional_attributes(user.first_name, response, 'firstname')
 		user.last_name = optional_attributes(user.last_name, response, 'lastname')
 		user.email = optional_attributes(user.email, response, 'email')
-		
+
+
 		return user
 	except:
 		return False
