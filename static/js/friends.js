@@ -22,6 +22,8 @@ function active_friend_button(e){
   e.className  += " active";
 }
 
+
+
 // TODO: needs adaptation pending finalization of JSON structure of REST API
 function populateFriendsList(data) {
 
@@ -30,31 +32,9 @@ function populateFriendsList(data) {
   while (friendContainer.firstChild) {
     friendContainer.removeChild(friendContainer.firstChild);
   }
-  // Insert the new users
-  for (var i = 0; i < data.length; ++i) {
-    console.log(data);
-    console.log(data[i]);
-    let id = data[i]["pk"];
-    let host = data[i]["fields"]["host"];
-    host = strip_host(host);
-    let username = data[i]["fields"]["username"];
-    let image = '<img src="/static/images/singleslothwave.png" alt=${username} width="35">'
-    let div = `<div class="friend_name">${image}<a href=\"../profile/${host}${id}\">${username}</a></div>`;
-    $("#friendContainer").append(div)
-  }
-}
-
-// TODO: needs adaptation pending finalization of JSON structure of REST API
-function populateFriendsList2(data) {
-
-  // Remove the users in the friends list
-  friendContainer = document.getElementById("friendContainer");
-  while (friendContainer.firstChild) {
-    friendContainer.removeChild(friendContainer.firstChild);
-  }
     var friends = data['friends'];
     for (item of friends)
-      {RequestDisplayName2(item);
+      {requestDisplayNameFriend(item);
       }
 }
 // TODO: needs adaptation pending finalization of JSON structure of REST API
@@ -74,7 +54,7 @@ function populatefriends(data) {
 }
 
 
-function RequestDisplayName2(user) {
+function requestDisplayNameFriend(user) {
   console.log(user);
   path = user;
   $.ajax({
@@ -309,42 +289,7 @@ function addFromOtherNode(data){
   });
 }
 
-// function tempAddNode(){
-//   let path = "https://myblog-cool.herokuapp.com/"+"service/friendrequest/";
-//   let payload = {
-//     "query":"friendrequest",
-//     "author": {
-//         "id":  "https://fast-forest-91959.herokuapp.com/author/aa2d733d-e1b9-413c-a046-dc93b31fd9ac",
-//         "host": "https://fast-forest-91959.herokuapp.com/",
-//         "displayName": "test",
-//         "url":"https://fast-forest-91959.herokuapp.com/author/aa2d733d-e1b9-413c-a046-dc93b31fd9ac",
-//         },  
-//     "friend": {
-//         "id": "https://myblog-cool.herokuapp.com/author/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a",
-//         "host": "https://myblog-cool.herokuapp.com/",
-//         "displayName": "Jackson0",
-//         "url": "https://myblog-cool.herokuapp.com/author/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a"
-//     }
-//   };
 
-//   console.log(JSON.stringify(payload,null,2));
-//   $.ajax({
-//     url:path,
-//     type:"POST",
-//     data:JSON.stringify(payload),
-//     dataType:"json",
-//     contentType:"application/json",
-//     username: "kerry",
-//     password: "kerrypassword",
-//     success: function(){
-//       console.log("Successfully sent ");
-//     },
-//     error: function(xhr,status,error){
-//       console.log("error: ", error,status);
-//     }
-    
-//   });
-// }
 function standardizeUrl(url){
   let serverUrl = url.replace(/\s+/g,"");
   if(serverUrl.endsWith("/") == false){
