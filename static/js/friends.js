@@ -44,11 +44,90 @@ function populateFriendsList(data) {
   }
 }
 
+// TODO: needs adaptation pending finalization of JSON structure of REST API
+function populateFriendsList2(data) {
+
+  // Remove the users in the friends list
+  friendContainer = document.getElementById("friendContainer");
+  while (friendContainer.firstChild) {
+    friendContainer.removeChild(friendContainer.firstChild);
+  }
+    var friends = data['friends'];
+    for (item of friends)
+      {RequestDisplayName2(item);
+      }
+}
+// TODO: needs adaptation pending finalization of JSON structure of REST API
+function populatefriends(data) {
+      var re = new RegExp('(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)');
+      var id = data['id'];
+      var result = id.match(re);
+      id = result[2];
+      re = new RegExp('^https?:\/\/([^\/]*)');
+      var host = data['host'];
+      result = host.match(re);
+      host = result[1];
+      let image = '<img src="/static/images/singleslothwave.png" alt=${username} width="35">'
+      var username = data['displayName'];
+      let div = `<div class="friend_name">${image}<a href=\"../profile/${host}${id}\">${username}</a></div>`;
+      $("#friendContainer").append(div)
+}
+
+
+function RequestDisplayName2(user) {
+  console.log(user);
+  path = user;
+  $.ajax({
+    url: path,
+    success: function (data) {
+      populatefriends(data);
+    },
+    error: function(xhr, status, error) {
+      console.log(error)
+    } 
+  });
+}
+
 function strip_host(host){
   reg = /https?:\/\//gi;
   var k = host.replace(reg, '');
-  k = k.replace(/\/$/gi, '')
+  k = k.replace(/\/$/gi, '');
   return k;
+}
+
+function RequestDisplayName(user) {
+  console.log(user);
+  path = user;
+  $.ajax({
+    url: path,
+    success: function (data) {
+      populateDropDown(data);
+    },
+    error: function(xhr, status, error) {
+      console.log(error)
+    } 
+  });
+}
+
+
+function populateDropDown(data){
+  // Remove the users in the friends list
+  dropdown = document.getElementById("dropdown");
+  while (dropdown.firstChild) {
+    dropdown.removeChild(dropdown.firstChild);
+  }
+  var re = new RegExp('(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)');
+  var id = data['id'];
+  var result = id.match(re);
+  id = result[2];
+  re = new RegExp('^https?:\/\/([^\/]*)');
+  var host = data['host'];
+  result = host.match(re);
+  host = result[1];
+  var username = data['displayName'];
+  var div = `<div><a href=\"../profile/${host}${id}\">${username}</a></div>`;
+    $("#dropdown").append(div)
+  dropdown.classList.toggle("show");
 }
 
 
@@ -143,18 +222,9 @@ function populateRequests(data){
   while (dropdown.firstChild) {
     dropdown.removeChild(dropdown.firstChild);
   }
-  //insert users
-  for (var x = 0; x < data['posts'].length; ++x) {
-    let id = data['posts'][x]['id'];
-    let host = data['posts'][x]['host'];
-    if (host.endsWith('/')){
-      host = host.slice(0,-1);
-    }
-    let username = data['posts'][x]['username'];
-    let div = `<div><a href=\"../profile/${host}${id}\">${username}</a></div>`;
-    $("#dropdown").append(div)
-  }
-  dropdown.classList.toggle("show");
+  var friends = data['friends'];
+  for (item of friends)
+    {RequestDisplayName(item)}
 }
 
 
@@ -195,7 +265,7 @@ function addFromOtherNode(data){
 
   const followerUsername = data['followerUser'];
   const followeeUsername = data['followeeUser']; 
-  let path = serverUrl+"service/friendrequest/";
+  let path = serverUrl+"friendrequest/";
   path = path.replace(/\s+/g, "");
 
   const request_user_url = hostUrl+"author/"+followerID;
@@ -280,7 +350,11 @@ function standardizeUrl(url){
   if(serverUrl.endsWith("/") == false){
      serverUrl = serverUrl + "/";
   }
-  if(serverUrl.indexOf("https://") === -1){ 
+  if(serverUrl.startsWith("http://")== true){
+    serverUrl = serverUrl.split("http://").pop();
+    serverUrl = "https://"+serverUrl;
+  }
+  else if(/^https?:\/\//.test(serverUrl) == false){ 
     serverUrl = "https://"+serverUrl;
   }
   return serverUrl;
