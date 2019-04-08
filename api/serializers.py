@@ -28,7 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
         return host + "/author/" + str(obj.id)
 
     def _friends(self, obj):
-        
+
         friends = list()
         friends_list = self.context.get('friends')
         for friend in friends:
@@ -48,13 +48,17 @@ class UserSerializer(serializers.ModelSerializer):
                             id = json['id']
                             friends.append(User(host=host, id=id, github=github, url=url, username=username))
                             break
-                        except:
+                        except Exception as e:
+                            print("When attempting to serialize a foreign friend, the following exception occurred...")
+                            print(e)
                             pass
                     else:
                         continue
 
         serialized_friends = UserFriendSerializer(friends, many=True,
             context={'request': self.context.get('request')})
+        print("Here is the serialized result of the friends list...")
+        print(serialized_friends.data)
         return serialized_friends.data
 
     def _username(self, obj):

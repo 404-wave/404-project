@@ -123,31 +123,8 @@ class UserAPIView(generics.GenericAPIView):
         else:
             queryset = User.objects.filter(is_active=True)
 
-        # uid = author_id
-        # user_Q = Q()
-        # follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
-        #
-        # if len(follow_obj) != 0:
-        #     for follow in follow_obj:
-        #         if follow.user1==uid:
-        #             recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-        #             if len(recip_object) != 0:
-        #                 user_Q = user_Q | Q(id=follow.user2)
-        #         elif follow.user2==uid:
-        #             recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-        #             if len(recip_object) != 0:
-        #                 user_Q = user_Q | Q(id=follow.user1)
-        #     if len(user_Q) != 0:
-        #         friends = User.objects.filter(user_Q)
-        #     else:
-        #         friends = User.objects.none()
-        # else:
-        #     friends = User.objects.none()
-
-        #foreign_friends = list()
 
         friends = self.get_friends_list(author_id)
-
         serializer = UserSerializer(queryset, many=False, context={'friends':friends, 'request':request})
         return Response(serializer.data)
 
