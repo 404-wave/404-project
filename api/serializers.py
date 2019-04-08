@@ -174,9 +174,6 @@ class PostAuthorSerializer(serializers.ModelSerializer):
 
     def _username(self, obj):
         return obj.username
-    #
-    # def _id(self, obj):
-    #     return str(obj.id)
 
 
 class CommentSerializer(serializers.ModelSerializer):
