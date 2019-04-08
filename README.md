@@ -1,6 +1,7 @@
 # 404-project
 CMPUT 404 Distributed Social Network
 
+Promo Video: https://www.youtube.com/watch?v=7JXo1xYwdx4
 
 # Licensing and Contributors
 
