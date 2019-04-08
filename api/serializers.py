@@ -246,7 +246,7 @@ class CommentAuthorSerializer(serializers.ModelSerializer):
 
     def _id(self, obj):
         try:
-            author = User.objects.get(id=obj.user)
+            author = User.objects.get(id=obj.id)
             request = self.context.get('request')
             host = request.scheme + "://" + request.META['HTTP_HOST']
             return host + "/author/" + str(obj.id)
