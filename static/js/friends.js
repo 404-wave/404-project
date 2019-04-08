@@ -54,7 +54,11 @@ function populateFriendsList2(data) {
   }
     var friends = data['friends'];
     for (item of friends)
-      {var user = RequestDisplayName2(item);
+      {RequestDisplayName2(item);
+      }
+}
+// TODO: needs adaptation pending finalization of JSON structure of REST API
+function populatefriends(data) {
       var re = new RegExp('(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)');
       var id = data['id'];
       var result = id.match(re);
@@ -66,7 +70,6 @@ function populateFriendsList2(data) {
       var username = data['displayName'];
       let div = `<div class="friend_name">${image}<a href=\"../profile/${host}${id}\">${username}</a></div>`;
       $("#friendContainer").append(div)
-      }
 }
 
 
@@ -76,7 +79,7 @@ function RequestDisplayName2(user) {
   $.ajax({
     url: path,
     success: function (data) {
-      return data;
+      populatefriends(data);
     },
     error: function(xhr, status, error) {
       console.log(error)
