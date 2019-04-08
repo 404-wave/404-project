@@ -28,7 +28,31 @@ class UserSerializer(serializers.ModelSerializer):
         return host + "/author/" + str(obj.id)
 
     def _friends(self, obj):
-        friends = self.context.get('friends')
+        
+        friends = list()
+        friends_list = self.context.get('friends')
+        for friend in friends:
+            try:
+                friends.append(User.objects.get(id=friend))
+            except:
+                for node in Node.objects.all():
+                    url = node.host + "/author/" + str(friend) + "/"
+                    r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
+                    if (r.status_code == 200):
+                        try:
+                            json = r.json()
+                            username = json['displayName']
+                            github = json['github']
+                            host = json['host']
+                            url = json['url']
+                            id = json['id']
+                            friends.append(User(host=host, id=id, github=github, url=url, username=username))
+                            break
+                        except:
+                            pass
+                    else:
+                        continue
+
         serialized_friends = UserFriendSerializer(friends, many=True,
             context={'request': self.context.get('request')})
         return serialized_friends.data
