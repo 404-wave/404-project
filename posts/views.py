@@ -303,14 +303,15 @@ def posts_update(request, id=None):
         # instance.is_image == True and instance.image is if you want to change one image to another image
         # instance.is_image == False and instance.image is if you are changing from a text post to an image post
         # this way if image field is blank and you click share, it just doesn't change anything
-        if (instance.is_image == True and instance.image) or (instance.is_image == False and instance.image):
+        if (instance.image):
             # https://stackoverflow.com/questions/44489375/django-have-admin-take-image-file-but-store-it-as-a-base64-string
             # Credit: Ykh(https://stackoverflow.com/users/6786283/ykh)
             image_type, encoded_string = image_to_b64(instance.image)
-            instance.content = encoded_string
-            instance.data_uri = "data:" + image_type + ";base64," + encoded_string
+            instance.content = "data:" + image_type + ";base64," + encoded_string
+            instance.content_type = image_type + ";base64"
+            #instance.data_uri = "data:" + image_type + ";base64," + encoded_string
             instance.is_image = True
-            # make it unlisted here
+            #make it unlisted here
             #instance.unlisted = True
             instance.image.delete()
         instance.save()
