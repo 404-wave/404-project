@@ -140,8 +140,6 @@ class UserAPIView(generics.GenericAPIView):
             if Follow.objects.filter(user1=follow.user2, user2=uid) is not None:
                 friends.append(follow.user2)
 
-        print("A list of the users friends...")
-        print(friends)
         return friends
 
 

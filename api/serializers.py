@@ -31,10 +31,13 @@ class UserSerializer(serializers.ModelSerializer):
 
         friends = list()
         friends_list = self.context.get('friends')
+        print(friends_list)
         for friend in friends:
+            print(friend)
             try:
                 friends.append(User.objects.get(id=friend))
             except:
+                print("Didn't find it in our db, trying foreign servers...")
                 for node in Node.objects.all():
                     url = node.host + "/author/" + str(friend) + "/"
                     r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
