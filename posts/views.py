@@ -113,8 +113,11 @@ def posts_detail(request, id):
         post_id = instance['id']
     else:
         post_id = instance.id
+    try:
+        home_host = NodeSetting.objects.all()[0]
+    except: 
+        home_host = None
 
-    home_host = NodeSetting.objects.all()[0]
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
     print ("werwer", comment_form.is_valid())
