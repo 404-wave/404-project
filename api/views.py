@@ -666,10 +666,6 @@ class FriendRequestAPIView(generics.GenericAPIView):
         if not already_following:
 
             try:
-                print(author_id)
-                print('ATUHOT', author_host)
-                print(friend_id)
-                print('NOT STU', friend_host)
                 Follow.objects.create(user1=author_id, user1_server =author_host, user2=friend_id, user2_server = friend_host)
             except:
                 print(" Couldn't create object")
