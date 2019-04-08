@@ -214,7 +214,6 @@ class PostAPIView(generics.GenericAPIView):
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        #queryset = self.filter_out_image_posts(request, queryset)
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
 
