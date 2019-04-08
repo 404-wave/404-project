@@ -114,10 +114,13 @@ def posts_detail(request, id):
     else:
         post_id = instance.id
 
-    home_host = NodeSetting.objects.all()[0]
+    try: 
+        home_host = NodeSetting.objects.all()[0]
+    except:
+        print("No node settings")
+        return HttpResponse(status=500)
     # Creates a form to post comments
     comment_form = CommentForm(request.POST or None, initial=initial_data)
-    print ("werwer", comment_form.is_valid())
     if comment_form.is_valid():
         comment_type = comment_form.cleaned_data.get("content_type")
         obj_id = comment_form.cleaned_data.get("object_id")
@@ -290,11 +293,13 @@ def posts_update(request, id=None):
     # Give an image form if it is an image post
     if instance.is_image == False:
         form = PostForm(request.POST or None,
-                        request.FILES or None, instance=instance)
+                        request.FILES or None, instance=instance,
+                        user_details=request.user)
 
     else:
         form = ImageForm(request.POST or None,
-                         request.FILES or None, instance=instance)
+                         request.FILES or None, instance=instance,
+                         user_details=request.user)
     if form.is_valid():
         instance = form.save(commit=False)
         instance.user = request.user

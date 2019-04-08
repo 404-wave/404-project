@@ -265,3 +265,49 @@ function findNodeUserAndPass(nodeList,server){
     }
   }
 }
+function strip_host(host){
+  reg = /\/.*\/$/gi;
+  var k = host.replace(reg, '');
+  return k;
+}
+
+function findDisplayName(user,node, e) {
+  console.log(user);
+  path = user;
+  $.ajax({
+    url: path,
+    success: function (data) {
+      changeDisplayName(data, node);
+    },
+    error: function(xhr, status, error) {
+      console.log(error)
+    } 
+  });
+}
+
+function changeDisplayName(data, node){
+  node.childNodes[0].childNodes[1].textContent = " "+data['displayName']
+}
+
+function populateAccessibleList(){
+  var select_parent = $('#id_accessible_users')[0];
+  var select = select_parent.children;
+  var size = select.length;
+  var host = window.location.protocol+'//'+window.location.host
+  for (i=0; i<select.length; i++){
+    var name = select[i].firstChild.firstChild.value;
+    if (!name.includes(host)){
+      findDisplayName(name, select[i])
+    }
+  }
+
+}
+function home_js(){
+  setTabs();
+  setEmptyMessage();
+  auto_text();
+  private();
+  file_listener();
+  setStreamMarkdown();
+  populateAccessibleList();
+}

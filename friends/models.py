@@ -3,10 +3,10 @@ from users.models import User
 from django.db.models import Q
 
 
+
 class FollowManager(models.Manager):
 
     def get_friends(self, user):
-        print("UEREEE", user.id)
         uid = user.id
         follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
         friends = list()
@@ -16,15 +16,10 @@ class FollowManager(models.Manager):
                 recip_object1= Follow.objects.filter(user1=str(uid),user2=follow.user1)
                 recip_object2= Follow.objects.filter(user1=follow.user1,user2=str(uid))
                 if (recip_object1 and recip_object2):
-                    print ("HEREeee", recip_object1[0].user1, recip_object2[0].user1)
                     if (recip_object1[0].user1 == recip_object2[0].user2 and recip_object1[0].user2 == recip_object2[0].user1):
-                        print (recip_object1[0].user1, recip_object2[0].user1)
                         friends.append([recip_object2[0].user1,recip_object2[0].user1_server])
-        print (friends)
         friend2 = (item[1]+'author/'+str(item[0]) for item in friends)
         return(list(friend2))
-
-
 
 class Follow(models.Model):
     #user1 is follower , user2 is followee
@@ -39,11 +34,12 @@ class Follow(models.Model):
     def __str__(self):
         return str(self.id)
 
+    
+
 
 class FriendRequestManager(models.Manager):
 
     def get_friend_requests(self, user):
-        print("UEREEE", user.id)
         uid = user.id
         friend_obj = FriendRequest.objects.filter(Q(recipient=uid))
         friend2 = (item.requestor_server+'author/'+str(item.requestor) for item in friend_obj)
