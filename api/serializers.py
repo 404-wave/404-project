@@ -75,7 +75,6 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.last_name
 
 
-# TODO: How does this work with FRIENDS on different servers????????//
 class UserFriendSerializer(serializers.ModelSerializer):
 
     id = serializers.SerializerMethodField('_id')
@@ -86,11 +85,12 @@ class UserFriendSerializer(serializers.ModelSerializer):
         fields = ('id', 'host', 'displayName', 'url')
 
     def _id(self, obj):
-        try:
-            host = request.scheme + "://" + self.context.get('request').META['HTTP_HOST']
-            return host + "/author/" + str(obj.id)
-        except:
-            return str(obj.id)
+        return obj.host + "/" + obj.id
+        # try:
+        #     host = request.scheme + "://" + self.context.get('request').META['HTTP_HOST']
+        #     return host + "/author/" + str(obj.id)
+        # except:
+        #     return str(obj.id)
 
     def _username(self, obj):
         return obj.username
