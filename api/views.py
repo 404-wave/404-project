@@ -115,8 +115,6 @@ class UserAPIView(generics.GenericAPIView):
     serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
-        print (request, "FREIND REQUEST")
-        print
         if 'author_id' in kwargs.keys():
             author_id = self.kwargs['author_id']
             try:
@@ -158,7 +156,6 @@ class PostAPIView(generics.GenericAPIView):
     pagination_class = PostPagination
 
     def get(self, request, *args, **kwargs):
-        print ("GETTING POSTS")
         data = None
         queryset = None
         path = request.path
@@ -459,7 +456,6 @@ class FriendAPIView(generics.GenericAPIView):
     parser_classes = (JSONParser,)
 
     def get(self, request, *args, **kwargs):
-        print ("FREEEEND")
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -548,8 +544,6 @@ class FriendAPIView(generics.GenericAPIView):
                 ],
                 "friends": friends
             }
-            print("IS FRIENDS RESPONSE: ")
-            print(response)
             return Response(response)
         else:
             print("URI doesn't exist")
@@ -619,7 +613,6 @@ class FriendRequestAPIView(generics.GenericAPIView):
 
 
     def post(self, request, *args, **kwargs):
-        print ("POSTwewewe REQUEST")
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
