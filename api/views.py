@@ -577,23 +577,18 @@ class FriendAPIView(generics.GenericAPIView):
         # following = User.objects.filter(followee__user1=author_id, is_active=True)
         # friends = following & followers
         friends = manager.get_friends_id(author_id)
-        print("FRIENDS VIA MANAGER: ")
-        print(friends)
-        furl = friends.pop().split("/")
-        host = furl.index(1)
-        print("HOST VIA MANAGER: ")
-        print(host)
-        uid = furl.pop()
-        print("UUID VIA MANAGER: ")
-        print(uid)
 
         friend_list = list()
         for potential_friend in authors:
             potential_friend_id = potential_friend.split("/")[-1]
+            print("POTENTIAL FRIEND:")
+            print(potential_friend)
             for friend in friends:
-                if str(friend.id) == str(potential_friend_id):
-                    friend_url = standardize_url(friend.host) + "service/author/"+str(friend.id)
-                    friend_list.append(friend_url)
+                print("FRIEND FROM MANAGER:")
+                print(friend)
+                friend_url = friend.split("/")
+                if str(friend_url[-1]) == str(potential_friend_id):
+                    friend_list.append(friend)
                     break
 
         response = {
