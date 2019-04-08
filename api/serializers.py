@@ -85,7 +85,7 @@ class UserFriendSerializer(serializers.ModelSerializer):
         fields = ('id', 'host', 'displayName', 'url')
 
     def _id(self, obj):
-        return str(obj.host) + "/" + str(obj.id)
+        return str(obj.host) + "/author/" + str(obj.id)
 
     def _username(self, obj):
         return obj.username
