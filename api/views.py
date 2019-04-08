@@ -563,7 +563,7 @@ class FriendAPIView(generics.GenericAPIView):
 
         try:
             author = data['author']
-            author_id = author.split('/').[-1]
+            author_id = author.split('/')[-1]
             authorObj = User.objects.filter(id=author_id)
             if(len(authorObj) == 0):
                 return Response(status=status.HTTP_404_NOT_FOUND)
