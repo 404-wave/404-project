@@ -216,6 +216,7 @@ class PostAPIView(generics.GenericAPIView):
         elif path in path_all_public_posts:
             queryset = Post.objects.filter(privacy=Post.PUBLIC).filter(unlisted=False).order_by('timestamp')
 
+            queryset = self.filter_out_image_posts(request, queryset)
             page = self.paginate_queryset(queryset)
             serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
             serialized_data = serializer.data
@@ -250,7 +251,34 @@ class PostAPIView(generics.GenericAPIView):
         queryset = self.filter_out_image_posts(request, queryset)
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
-        return self.get_paginated_response(serializer.data)
+
+
+        ########################################################################
+        serialized_data = serializer.data
+        for node in Node.objects.all():
+            url = node.host + "/author/posts/"
+
+            try:
+                headers = {
+                    'Accept':'application/json',
+                    'X-UUID': str(requestor_id)
+                }
+
+                response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
+
+                print("Getting public posts from other servers...")
+                print(response.status_code)
+                if (response.status_code > 199 and response.status_code <300):
+                    responselist = response.json()
+                    serialized_data.extend(responselist["posts"])
+
+            except Exception as e:
+                print(e)
+                pass
+        ########################################################################
+
+        #return self.get_paginated_response(serializer.data)
+        return self.get_paginated_response(serialized_data)
 
 
     # Since we only host posts made from our server, POSTing a post requires
