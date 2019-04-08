@@ -81,15 +81,16 @@ Note: Pagination works for any endpoint endpoint related to posts or comments.
 
 ### Posts
 
-**GET /author/posts**: returns all posts *visible to the currently authenticated user*.
+**GET /author/posts/**: returns all posts *visible to the currently authenticated user* from our server **and our connected nodes**. This is the only endpoint that, as discussed with Alex and Ruby after the lab demos, would be used to showcase that we can, in fact, return posts from other servers using the API. All other endpoints do not return posts from other servers. As discussed in the lab, we were only *required* to have /author/posts/ returning foreign posts.
 
-**GET /posts**: returns all publicly available posts.
+**GET /posts/**: returns all publicly available posts that exist on *our server*. That is, posts from other servers will *not* be shown when this endpoint is called. This is in coordination with the requirement, "a GET without a postfixed “postid” should return a list of all “PUBLIC” visibility posts ***on your node***"
 
-**GET /author/{AUTHOR_ID}/posts**: returns all posts from AUTHOR_ID that are *visible to the currently authenticated user*.
+**GET /author/{AUTHOR_ID}/posts/**: returns all posts from AUTHOR_ID that are *visible to the currently authenticated user* that exist solely on *our server*. That is, for an {AUTHOR_ID} that is *not* hosted on our server, you will *not* see their posts.
 
-**GET /posts/{POST_ID}**: returns a single post *if it is visible to the currently authenticated user*.
+**GET /posts/{POST_ID}/**: returns a single post *if it is visible to the currently authenticated user* and that post exists on *our server*. This will not get a post that is hosted on another server.
 
 An example response:
+
 ```
 {
     "query": "posts",
@@ -98,72 +99,47 @@ An example response:
     "next": null,
     "previous": null,
     "posts": [
-        {
-            "id": "3f46f9c3-256f-441c-899e-928b095df627",
-            "user": "54cfdb16-7de4-4ce0-ac7a-68d6e4d90c76",
+    	{
+            "id": "a27b37c4-bae9-4b15-9b01-e1c2f1def47e",
+            "user": "8ac6dd85-2f2f-4b40-8188-791bfd215dfc",
             "contentType": "text/plain",
             "categories": [],
             "description": "Text post",
-            "published": "2019-03-28T02:13:27.833710Z",
-            "title": "zredfern - Mar 28, 2019, at 02:13 AM",
-            "content": "A public post by Zach.",
+            "published": "2019-04-02T13:58:47.164233+00:00",
+            "title": "gary1 - Apr 2, 2019, at 13:58 PM",
+            "content": "Hello! My name is Gary. Everyday I release new cat facts. Follow me and let's chat chat(fr)!",
             "author": {
-                "id": "54cfdb16-7de4-4ce0-ac7a-68d6e4d90c76",
-                "host": "https://cmput404-wave.herokuapp.com/",
-                "displayName": "zredfern",
-                "url": "https://cmput404-wave.herokuapp.com/author/54cfdb16-7de4-4ce0-ac7a-68d6e4d90c76",
+                "id": "8ac6dd85-2f2f-4b40-8188-791bfd215dfc",
+                "host": "https://cmput404-wave.herokuapp.com",
+                "displayName": "gary1",
+                "url": "https://cmput404-wave.herokuapp.com/author/8ac6dd85-2f2f-4b40-8188-791bfd215dfc",
                 "github": ""
             },
             "comments": [
                 {
                     "author": {
-                        "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
-                        "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
-                        "host": "https://cmput404-wave.herokuapp.com",
-                        "displayName": "waveAdmin",
-                        "github": ""
+                        "id": "f6ea3270-3e4d-4547-9ee6-8def7f1fe01a",
+                        "url": "https://myblog-cool.herokuapp.com/service/author/f6ea3270-3e4d-4547-9ee6-8def7f1fe01a",
+                        "host": "https://myblog-cool.herokuapp.com/",
+                        "displayName": "Jackson0",
+                        "github": "https://github.com/Zhipeng-Chang/"
                     },
-                    "comment": "Hello zach -- from admin.",
-                    "published": "2019-03-28T19:45:28.545575Z",
-                    "id": "5c7a0c2f-2163-48f3-995e-16d5642bf9a5"
-                },
-                {
-                    "author": {
-                        "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
-                        "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
-                        "host": "https://cmput404-wave.herokuapp.com",
-                        "displayName": "waveAdmin",
-                        "github": ""
-                    },
-                    "comment": "A POSTed comment for Zach by the Admin.",
-                    "published": "2019-03-28T19:49:25.440094Z",
-                    "id": "6840c410-7e4a-4c04-9a70-be7440c77100"
-                },
-                {
-                    "author": {
-                        "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
-                        "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
-                        "host": "https://cmput404-wave.herokuapp.com",
-                        "displayName": "waveAdmin",
-                        "github": ""
-                    },
-                    "comment": "Hi This is allison",
-                    "published": "2019-03-29T16:37:50.323741Z",
-                    "id": "99a7dc64-19c3-42a7-929c-bf7860c0a647"
+                    "comment": "Hi Gary!",
+                    "published": "2019-04-02T14:32:30.324495Z",
+                    "id": "6ebffa4e-0100-4136-8de2-ecd1ac045c96"
                 }
             ],
             "visibility": "PUBLIC",
-            "visibleTo": [],
+            "visibleTo": null,
             "unlisted": false,
-            "source": "https://cmput404-wave.herokuapp.com/posts/3f46f9c3-256f-441c-899e-928b095df627/",
-            "origin": "https://cmput404-wave.herokuapp.com/posts/3f46f9c3-256f-441c-899e-928b095df627/"
+            "source": "https://cmput404-wave.herokuapp.com/posts/a27b37c4-bae9-4b15-9b01-e1c2f1def47e/",
+            "origin": "https://cmput404-wave.herokuapp.com/posts/a27b37c4-bae9-4b15-9b01-e1c2f1def47e/"
         }
     ]
 }
 ```
 
-
-**POST service/posts/{POST_ID}**: insert a new post.
+**POST service/posts/{POST_ID}**: insert a new post. The restriction that we impose for this is that the author's ID must match a valid user that we host on *our server*.
 
 An example of what to POST (this is all that we require):
 ```
@@ -183,7 +159,7 @@ PUT service/posts/{POST_ID}: update an existing post.
 
 ### Comments
 
-**GET service/posts/{POST_ID}/comments**: returns all comments in a post if the post is visible to the currently authenticated user.
+**GET service/posts/{POST_ID}/comments/**: returns all comments in a post if the post is visible to the currently authenticated user, and that post is hosted on *our server*.
 
 Response:
 ```
@@ -200,9 +176,9 @@ Response:
                 "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
                 "host": "https://cmput404-wave.herokuapp.com",
                 "displayName": "waveAdmin",
-                "github": ""
+                "github": "Z-Red"
             },
-            "comment": "a comment",
+            "comment": "Wow what a great post, on such a great website.",
             "published": "2019-03-28T21:41:15.965975Z",
             "id": "11085ac2-25a6-4ef3-8b2e-ade3f1e02eed"
         },
@@ -212,7 +188,7 @@ Response:
 
 ##### TODO...
 
-**POST service/posts/{POST_ID}/comments**: add a new comment to an existing post.
+**POST service/posts/{POST_ID}/comments/**: add a new comment to an existing post, only if that post is hsoted on *our server*.
 
 Example of what to POST:
 ```
@@ -243,9 +219,8 @@ Response:
 {
     "query": "friends",
     "authors": [
-        "http://127.0.0.1:8000/service/author/88939ffa-c45d-4c10-a4f0-252ccf87740c",
-        "http://127.0.0.1:3000/service/author/8e8b3k23-xx2s-dd2f-z3x1-1231df8i340c",
-        ...
+        "https://cmput404-wave.herokuapp.com/service/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+        "https://cmput-404-proj-test.herokuapp.com/service/author/fc9239c0-5d8c-451c-847b-b68d26a40df9"
     ]
 }
 ```
@@ -319,22 +294,28 @@ Example request:
 Example response:
 ```
 {
-    "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
-    "host": "https://cmput404-wave.herokuapp.com",
-    "displayName": "waveAdmin",
-    "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+    "id": "https://cmput-404-proj-test.herokuapp.com/author/39500b60-210f-4318-81e0-08e18489d77e",
+    "host": "https://cmput-404-proj-test.herokuapp.com",
+    "displayName": "waveTestAdmin",
+    "url": "https://cmput-404-proj-test.herokuapp.com/author/39500b60-210f-4318-81e0-08e18489d77e",
     "friends": [
-    	{
-            "id": "https://cmput404-wave.herokuapp.com/88939ffa-c45d-4c10-a4f0-252ccf87740c",
+        {
+            "id": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
             "host": "https://cmput404-wave.herokuapp.com",
-            "displayName": "bpanda",
-            "url": "https://cmput404-wave.herokuapp.com/author/88939ffa-c45d-4c10-a4f0-252ccf87740c"
+            "displayName": "waveAdmin",
+            "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f"
+        },
+        {
+            "id": "https://cmput-404-proj-test.herokuapp.com/author/fc9239c0-5d8c-451c-847b-b68d26a40df9",
+            "host": "https://cmput-404-proj-test.herokuapp.com",
+            "displayName": "boopbop",
+            "url": "https://cmput-404-proj-test.herokuapp.com/author/fc9239c0-5d8c-451c-847b-b68d26a40df9"
         }
     ],
-    "github": "",
-    "firstName": "Wave",
-    "lastName": "Admin",
-    "email": "waveadmin@gmail.com",
-    "bio": "newnew"
+    "github": "Z-Red",
+    "firstName": "Zach",
+    "lastName": "Redfern",
+    "email": "zred@gmail.com",
+    "bio": "\"I like to party\" - Andy Samberg"
 }
 ```
