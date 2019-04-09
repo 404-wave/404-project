@@ -95,7 +95,7 @@ def follow(request):
     followerServer = request.GET['followerserver']
     followeeServer = request.GET['followeeserver']
 
-    user1 = followerIDfollows
+    user1 = followerID
     user2 = followeeID
     if not (Follow.objects.filter(user1=followerID,user2=followeeID)):
         Follow.objects.create(user1=followerID, user1_server = followerServer,  
