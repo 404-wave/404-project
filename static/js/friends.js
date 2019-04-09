@@ -32,10 +32,12 @@ function populateFriendsList(data) {
   while (friendContainer.firstChild) {
     friendContainer.removeChild(friendContainer.firstChild);
   }
+    if (data.length >0 ){
     var friends = data['friends'];
     for (item of friends)
       {requestDisplayNameFriend(item);
       }
+    }
 }
 // TODO: needs adaptation pending finalization of JSON structure of REST API
 function populatefriends(data) {
