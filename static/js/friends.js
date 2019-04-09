@@ -33,10 +33,31 @@ function populateFriendsList(data) {
     friendContainer.removeChild(friendContainer.firstChild);
   }
     if (data.length >0 ){
-    var friends = data['friends'];
-    for (item of friends)
-      {requestDisplayNameFriend(item);
+      try {
+        var friends = data['friends'];
+        for (item of friends) {
+          requestDisplayNameFriend(item);
       }
+    }
+    catch(e){
+      populate_names(data);
+    }
+  
+      }
+    }
+
+function populate_names(data){
+    // Insert the new users
+    for (var i = 0; i < data.length; ++i) {
+      console.log(data);
+      console.log(data[i]);
+      let id = data[i]["pk"];
+      let host = data[i]["fields"]["host"];
+      host = strip_host(host);
+      let username = data[i]["fields"]["username"];
+      let image = '<img src="/static/images/singleslothwave.png" alt=${username} width="35">'
+      let div = `<div class="friend_name">${image}<a href=\"../profile/${host}${id}\">${username}</a></div>`;
+      $("#friendContainer").append(div)
     }
 }
 // TODO: needs adaptation pending finalization of JSON structure of REST API
