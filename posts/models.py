@@ -13,7 +13,6 @@ from django.db.models.fields import UUIDField, DateTimeField
 from users.models import User
 from users.models import Node
 from friends.models import FollowManager
-from friends.views import get_user,standardize_url
 from django.dispatch import receiver
 from django.db.models.signals import post_save, m2m_changed
 from django.db.models import Q
@@ -48,7 +47,45 @@ def upload_location(instance, filename):
 
 
 class PostManager(models.Manager):
+    def get_user(server, id):
+    user = User()
+    server = standardize_url(server)
+    server = server[:-1]
+    try:
+        node = Node.objects.filter(host = server)[0]
+        print (node.username, node.password)
+    except:
+        print("Couldn't find nodel object through filter")
+        return None
+    server = server+"/"
+    build_request = server+'service/author/'+str(id)
+    print (build_request)
+    print(id)   
 
+    try:
+        r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
+        response = r.json()
+    except:
+        traceback.print_exc
+        print("That user does not exist")
+        return None
+    user.username = response['displayName']
+    user.id = response['id']
+    user.host = server
+    return user
+
+def standardize_url(server):
+    server = server.replace(" ","")
+    regex = "(^https?:\/\ /)(.*)"
+    http_regex = "^http:\/\/(.*)"
+    if server.endswith("/") is False:
+        server = server+"/"
+    if re.search(http_regex,server) is True:
+        server= server.split("http://").pop()
+        server = "https://"+server
+    elif re.search(regex,server) is False:
+        server = "https://"+server
+    return server
    
     def convert_to_date(self,elem):   
         new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
