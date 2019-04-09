@@ -229,13 +229,20 @@ class PostManager(models.Manager):
         fr_Q = Q()
         if len(friends) != 0:
             for fr in friends:
+                print("FRIEND FROM POSTS")
+                print(friends)
                 fr_followers_object = Follow.objects.filter(user2=fr.id)
                 fr_following_object = Follow.objects.filter(user1=fr.id)
+                print(fr_followers_object)
+                print(fr_following_object)
                 for fr_followers in fr_followers_object:
+                    print(fr_followers)
                     fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
                 for fr_followings in fr_following_object:
+                    print(fr_followings)
                     fr_Q = fr_Q | Q(id=fr_followings.user2,is_active=True)
 
+            print(fr_Q)
             if len(fr_Q) != 0:
                 friends_of_friends = User.objects.filter(fr_Q)
             else:
