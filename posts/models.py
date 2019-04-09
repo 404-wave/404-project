@@ -249,6 +249,9 @@ class PostManager(models.Manager):
                 friends_of_friends = User.objects.none()
         else:
             friends_of_friends = User.objects.none()
+        
+        print("FOAFS HERE")
+        print(friends_of_friends)
 
         friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
 
