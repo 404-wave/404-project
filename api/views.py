@@ -215,29 +215,38 @@ class PostAPIView(generics.GenericAPIView):
 
         ########################################################################
         serialized_data = serializer.data
-        if path in path_all_user_visible_posts:
-            for node in Node.objects.all():
-                url = node.host + "/author/posts/"
 
-                try:
-                    headers = {
-                        'Accept':'application/json',
-                        'X-UUID': str(requestor_id)
-                    }
+        # Check if the request came from a local user or foreign user (node)
+        came_from_node = False
+        user = User.objects.get(id=request.user.id)
+        our_host = request.scheme + "://" + request.META['HTTP_HOST']
+        if user.host != our_host:
+            came_from_node = True
 
-                    response = requests.get(url, headers=headers,
-                        auth=HTTPBasicAuth(str(node.username), str(node.password)))
+        if not came_from_node:
+            if path in path_all_user_visible_posts:
+                for node in Node.objects.all():
+                    url = node.host + "/author/posts/"
 
-                    print("Getting public posts from other servers...")
-                    print(response.status_code)
-                    if (response.status_code > 199 and response.status_code <300):
-                        responselist = response.json()
-                        serialized_data.extend(responselist["posts"])
+                    try:
+                        headers = {
+                            'Accept':'application/json',
+                            'X-UUID': str(requestor_id)
+                        }
 
-                except Exception as e:
-                    print("When GETting posts from other server, the following exception occured...")
-                    print(e)
-                    pass
+                        response = requests.get(url, headers=headers,
+                            auth=HTTPBasicAuth(str(node.username), str(node.password)))
+
+                        print("Getting public posts from other servers...")
+                        print(response.status_code)
+                        if (response.status_code > 199 and response.status_code <300):
+                            responselist = response.json()
+                            serialized_data.extend(responselist["posts"])
+
+                    except Exception as e:
+                        print("When GETting posts from other server, the following exception occured...")
+                        print(e)
+                        pass
         ########################################################################
 
         serialized_data = self.filter_out_images(request, serialized_data)
