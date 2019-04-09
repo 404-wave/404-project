@@ -48,46 +48,6 @@ def upload_location(instance, filename):
 
 class PostManager(models.Manager):
 
-    def get_user(server, id):
-        user = User()
-        server = standardize_url(server)
-        server = server[:-1]
-        try:
-            node = Node.objects.filter(host = server)[0]
-            print (node.username, node.password)
-        except:
-            print("Couldn't find nodel object through filter")
-            return None
-        server = server+"/"
-        build_request = server+'service/author/'+str(id)
-        print (build_request)
-        print(id)
-
-        try:
-            r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
-            response = r.json()
-        except:
-            traceback.print_exc
-            print("That user does not exist")
-            return None
-        user.username = response['displayName']
-        user.id = response['id']
-        user.host = server
-        return user
-
-    def standardize_url(server):
-        server = server.replace(" ","")
-        regex = "(^https?:\/\ /)(.*)"
-        http_regex = "^http:\/\/(.*)"
-        if server.endswith("/") is False:
-            server = server+"/"
-        if re.search(http_regex,server) is True:
-            server= server.split("http://").pop()
-            server = "https://"+server
-        elif re.search(regex,server) is False:
-            server = "https://"+server
-        return server
-
     def convert_to_date(self,elem):
         new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
         try:
@@ -238,33 +198,24 @@ class PostManager(models.Manager):
 
         #TODO Inefficient. Need to make it better
         uid = user.id
-        # user_Q = Q()
-        # follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
-        # if len(follow_obj) != 0:
-        #     for follow in follow_obj:
-        #         if follow.user1==uid:
-        #             recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-        #             if len(recip_object) != 0:
-        #                 user_Q = user_Q | Q(id=follow.user2)
-        #         elif follow.user2==uid:
-        #             recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-        #             if len(recip_object) != 0:
-        #                 user_Q = user_Q | Q(id=follow.user1)
-        #     if len(user_Q) != 0:
-        #         friends = User.objects.filter(user_Q)
-        #     else:
-        #         friends = User.objects.none()
-        # else:
-        #     friends = User.objects.none()
-        friend_list = friend_manager.get_friends_id(uid)
-        friends = list()
-        for friend in friend_list:
-            friend_url = friend.split("/")
-            friend_id = friend_url.pop()
-            user = User.objects.filter(id=friend_id)
-            if (user):
-                user = user.get()
-                friends.append(user)
+        user_Q = Q()
+        follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+        if len(follow_obj) != 0:
+            for follow in follow_obj:
+                if follow.user1==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user2)
+                elif follow.user2==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user1)
+            if len(user_Q) != 0:
+                friends = User.objects.filter(user_Q)
+            else:
+                friends = User.objects.none()
+        else:
+            friends = User.objects.none()
 
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
 
@@ -344,33 +295,24 @@ class PostManager(models.Manager):
         # friends = following & followers
 
         uid = user_id
-        # user_Q = Q()
-        # follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
-        # if len(follow_obj) != 0:
-        #     for follow in follow_obj:
-        #         if str(follow.user1)==uid:
-        #             recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-        #             if len(recip_object) != 0:
-        #                 user_Q = user_Q | Q(id=follow.user2)
-        #         elif str(follow.user2)==uid:
-        #             recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-        #             if len(recip_object) != 0:
-        #                 user_Q = user_Q | Q(id=follow.user1)
-        #     if len(user_Q) != 0:
-        #         friends = User.objects.filter(user_Q)
-        #     else:
-        #         friends = User.objects.none()
-        # else:
-        #     friends = User.objects.none()
-        friend_list = friend_manager.get_friends_id(uid)
-        friends = list()
-        for friend in friend_list:
-            friend_url = friend.split("/")
-            friend_id = friend_url.pop()
-            user = User.objects.filter(id=friend_id)
-            if (user):
-                user = user.get()
-                friends.append(user)
+        user_Q = Q()
+        follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
+        if len(follow_obj) != 0:
+            for follow in follow_obj:
+                if str(follow.user1)==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user2)
+                elif str(follow.user2)==uid:
+                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
+                    if len(recip_object) != 0:
+                        user_Q = user_Q | Q(id=follow.user1)
+            if len(user_Q) != 0:
+                friends = User.objects.filter(user_Q)
+            else:
+                friends = User.objects.none()
+        else:
+            friends = User.objects.none()
 
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
 
