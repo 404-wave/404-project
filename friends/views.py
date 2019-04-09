@@ -21,8 +21,6 @@ def find(request):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
 
-
-
     server_users = User.objects.exclude(pk=request.user.id).filter(is_active=True)
 
     data = serializers.serialize('json', server_users, fields=('username', 'host'))

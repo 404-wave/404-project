@@ -219,7 +219,7 @@ Response:
 }
 ```
 
-~~**GET service/author/{AUTHOR_ID1>/friends/{AUTHOR_ID2}**: returns a response specifying if AUTHOR_ID1 is a friend of AUTHOR_ID2.~~ We are using a modified endpoint that achieves the same thing. Please refer below...
+~~**GET service/author/{AUTHOR_ID1>/friends/{AUTHOR_ID2}**: returns a response specifying if AUTHOR_ID1 is a friend of AUTHOR_ID2. AUTHOR_ID1 is from our server and AUTHOR_ID2 is a foreign server. Hostname is the host of AUTHOR_ID2.~~ We are using a modified endpoint that achieves the same thing. Please refer below...
 
 **GET service/author/{AUTHOR_ID1>/friends/{HOSTNAME}/{AUTHOR_ID2}**: TODO (Kerry)
 
