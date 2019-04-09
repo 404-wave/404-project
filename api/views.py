@@ -506,8 +506,9 @@ class FriendAPIView(generics.GenericAPIView):
 
             friend_list = list()
             for friend in friends:
-                url = standardize_url(friend.host) + "service/author/"+str(friend.id)
-                friend_list.append(url)
+                if (friend):
+                    url = standardize_url(friend.host) + "service/author/"+str(friend.id)
+                    friend_list.append(url)
 
 
 
@@ -580,12 +581,9 @@ class FriendAPIView(generics.GenericAPIView):
 
         friend_list = list()
         for potential_friend in authors:
-            potential_friend_id = potential_friend.split("/")[-1]
-            print("POTENTIAL FRIEND:")
-            print(potential_friend)
+            pot_friend_url = potential_friend.split("/")
+            potential_friend_id = pot_friend_url[-1]
             for friend in friends:
-                print("FRIEND FROM MANAGER:")
-                print(friend)
                 friend_url = friend.split("/")
                 if str(friend_url[-1]) == str(potential_friend_id):
                     friend_list.append(friend)
