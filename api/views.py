@@ -13,7 +13,6 @@ import uuid
 import re
 import json
 from .serializers import UserSerializer, PostSerializer, CommentSerializer, UserFriendSerializer
-from .serializers import UserFriendSerializer
 
 from .paginators import PostPagination, CommentPagination
 
@@ -22,7 +21,7 @@ from users.models import User, Node, NodeSetting
 from comments.models import Comment
 from posts.models import Post
 
-from friends.views import follows,standardize_url,get_user
+from friends.views import follows, standardize_url, get_user, friends
 
 from requests.auth import HTTPBasicAuth
 import requests
@@ -58,9 +57,9 @@ def sharing_posts_enabled(request):
     try:
         node_settings = NodeSetting.objects.all()[0]
         if node_settings.share_posts is False:
+            print("Requesting host: " + host)
+            print("Requesting host: " + node_settings.host)
             if not host == node_settings.host:
-                print("Requesting host: " + host)
-                print("Requesting host: " + node_settings.host)
                 return False
     except:
         pass
@@ -124,29 +123,25 @@ class UserAPIView(generics.GenericAPIView):
         else:
             queryset = User.objects.filter(is_active=True)
 
-        uid = author_id
-        user_Q = Q()
-        follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
 
-        if len(follow_obj) != 0:
-            for follow in follow_obj:
-                if follow.user1==uid:
-                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                    if len(recip_object) != 0:
-                        user_Q = user_Q | Q(id=follow.user2)
-                elif follow.user2==uid:
-                    recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                    if len(recip_object) != 0:
-                        user_Q = user_Q | Q(id=follow.user1)
-            if len(user_Q) != 0:
-                friends = User.objects.filter(user_Q)
-            else:
-                friends = User.objects.none()
-        else:
-            friends = User.objects.none()
-
-        serializer = UserSerializer(queryset, many=False, context={'friends':friends})
+        friends = self.get_friends_list(author_id)
+        serializer = UserSerializer(queryset, many=False, context={'friends':friends, 'request':request})
         return Response(serializer.data)
+
+
+    def get_friends_list(self, uid):
+
+        # Find all people that the user follow
+        following = Follow.objects.filter(user1=uid)
+
+        # For everyone that the user follows, see who follows them back
+        friends = list()
+        for follow in following:
+            if Follow.objects.filter(user1=follow.user2, user2=uid) is not None:
+                friends.append(follow.user2)
+
+
+        return friends
 
 
 class PostAPIView(generics.GenericAPIView):
@@ -164,10 +159,12 @@ class PostAPIView(generics.GenericAPIView):
         path_all_public_posts = ['/service/posts/', '/api/posts/', '/posts/']
         path_all_user_visible_posts =['/service/author/posts/',
             '/api/author/posts/', '/author/posts/']
+
         print ("User Authenticated", request.user.is_authenticated)
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+        print ("host", request.user.is_authenticated)
         host = get_hostname(request)
         print ("host", request.user.is_authenticated, host)
         if host is None:
@@ -196,7 +193,6 @@ class PostAPIView(generics.GenericAPIView):
             except: return Response(status=status.HTTP_404_NOT_FOUND)
             queryset = Post.objects.filter_user_visible_posts_by_user_id(
                 user_id=requestor_id, server_only=server_only).filter(id=post_id)
-            queryset = self.filter_out_image_posts(request, queryset)
 
             if queryset.count() == 0:
                 return Response(status=status.HTTP_403_FORBIDDEN)
@@ -210,40 +206,51 @@ class PostAPIView(generics.GenericAPIView):
         elif path in path_all_public_posts:
             queryset = Post.objects.filter(privacy=Post.PUBLIC).filter(unlisted=False).order_by('timestamp')
 
-            page = self.paginate_queryset(queryset)
-            serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
-            serialized_data = serializer.data
-
-            for node in Node.objects.all():
-                url = node.host + "/posts/"
-
-                try:
-                    headers = {
-                        'Accept':'application/json',
-                        'X-UUID': str(requestor_id)
-                    }
-
-                    response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
-
-                    print("Getting public posts from other servers...")
-                    print(response.status_code)
-                    if (response.status_code > 199 and response.status_code <300):
-                        responselist = response.json()
-                        serialized_data.extend(responselist["posts"])
-
-                except Exception as e:
-                    print(e)
-                    pass
-
-            return self.get_paginated_response(serialized_data)
-
         # Not a valid path
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         page = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id)})
-        return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(page, many=True, context={'requestor': str(requestor_id), 'request':request})
+
+        ########################################################################
+        serialized_data = serializer.data
+
+        # Check if the request came from a local user or foreign user (node)
+        came_from_node = False
+        user = User.objects.get(id=request.user.id)
+        our_host = request.scheme + "://" + request.META['HTTP_HOST']
+        if user.host != our_host:
+            came_from_node = True
+
+        if not came_from_node:
+            if path in path_all_user_visible_posts:
+                for node in Node.objects.all():
+                    url = node.host + "/author/posts/"
+
+                    try:
+                        headers = {
+                            'Accept':'application/json',
+                            'X-UUID': str(requestor_id)
+                        }
+
+                        response = requests.get(url, headers=headers,
+                            auth=HTTPBasicAuth(str(node.username), str(node.password)))
+
+                        print("Getting public posts from other servers...")
+                        print(response.status_code)
+                        if (response.status_code > 199 and response.status_code <300):
+                            responselist = response.json()
+                            serialized_data.extend(responselist["posts"])
+
+                    except Exception as e:
+                        print("When GETting posts from other server, the following exception occured...")
+                        print(e)
+                        pass
+        ########################################################################
+
+        serialized_data = self.filter_out_images(request, serialized_data)
+        return self.get_paginated_response(serialized_data)
 
 
     # Since we only host posts made from our server, POSTing a post requires
@@ -257,8 +264,8 @@ class PostAPIView(generics.GenericAPIView):
 
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-	
-        try:      
+
+        try:
             data = request.data
             author_id = uuid.UUID(data['author']['id'].split("/")[-1])
             privacy = self.resolve_privacy(data['visibility'])
@@ -325,6 +332,8 @@ class PostAPIView(generics.GenericAPIView):
             node_settings = NodeSetting.objects.all()[0]
             if node_settings.share_imgs is False:
                 if not host == node_settings.host:
+                    print("Requesting host: " + str(host))
+                    print("Our host: " + str(node_settings.host))
                     new_queryset = Post.objects.none()
                     for post in queryset:
                         if not post.is_image:
@@ -334,6 +343,23 @@ class PostAPIView(generics.GenericAPIView):
             pass
 
         return queryset
+
+    def filter_out_images(self, request, serialized_data):
+
+        new_data = list()
+        host = get_hostname(request)
+        node_settings = NodeSetting.objects.all()[0]
+        if node_settings.share_imgs is False:
+            if not host == node_settings.host:
+                for post in serialized_data:
+                    if post['contentType'] == 'text/plain' or post['contentType'] == 'text/markdown':
+                        new_data.append(post)
+            else:
+                return serialized_data
+        else:
+            return serialized_data
+
+        return new_data
 
     def resolve_privacy(self, privacy_str):
         if privacy_str == "PUBLIC":
@@ -388,7 +414,7 @@ class CommentAPIView(generics.GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         page = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(page, many=True)
+        serializer = self.get_serializer(page, many=True, context={'request':request})
         return self.get_paginated_response(serializer.data)
 
 
@@ -415,7 +441,7 @@ class CommentAPIView(generics.GenericAPIView):
         #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         server_only = allow_server_only_posts(request)
-        id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})'	
+        id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})'
         try:
             data = request.data
             re_result = re.search(id_regex, data['post'])
