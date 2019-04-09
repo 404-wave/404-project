@@ -262,7 +262,7 @@ class PostManager(models.Manager):
             friend_url = friend.split("/")
             friend_id = friend_url.pop()
             user = User.objects.filter(id=friend_id)
-            if (userObj):
+            if (user):
                 user = user.get()
                 friends.append(user)
 
@@ -368,7 +368,7 @@ class PostManager(models.Manager):
             friend_url = friend.split("/")
             friend_id = friend_url.pop()
             user = User.objects.filter(id=friend_id)
-            if (userObj):
+            if (user):
                 user = user.get()
                 friends.append(user)
 
