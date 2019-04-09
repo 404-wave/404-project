@@ -160,24 +160,6 @@ function checkFromOtherNode(localUser,foreignUser,server,nodeUsername,nodePasswo
     });
   }
 
-// function removeFromNotifs(localUser,foreignUser){
-//     let path = 'change_ModelDatabase/';
-
-//     $.ajax({
-//         url:path,
-//         type:"POST",
-//         data: {'local':localUser,'foreign':foreignUser,'follows':"false",
-//         },
-//         headers:{"x-csrftoken":csrfToken},
-//         dataType:"json",
-//         success: function(data){
-//         console.log("Succesfully removed user from FRs");
-//         },
-//         error: function(xhr,status,error){
-//         console.log("error: ", error, status,xhr);
-//         }
-//     });
-// }
 
 function stripProtocol(server){
     let newServer = server;
@@ -239,6 +221,52 @@ function checkChanges(localUser,localUserServer,nodeList){
         console.log("Error: ",error, status);
       }
     });
+}
+
+function checkChanges2(localUser,localUserServer,nodeList){
+
+  let path1 = standardizeUrl(localUserServer)+"service/author/"+localUser+"/friends/";
+  let localFriends;
+  $.ajax({
+    //checks if the local user followed them back
+    url: path1,
+    success: function(content){
+      localFriends= content['friends'];
+
+      if (localFriends){
+          for(let i=0;i<localFriends.length;i++){
+            let friend = localFriends[i];
+            var re = new RegExp('(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)');
+            var id = data['id'];
+            var result = friend.match(re);
+            id = result[2];
+            re = new RegExp('^https?:\/\/([^\/]*)');
+            var host = data['host'];
+            result = host.match(re);
+            host = result[1];
+            var username = data['displayName'];
+            var div = `<div><a href=\"../profile/${host}${id}\">${username}</a></div>`;
+
+            let url = friend.split("/");
+            let hostname = standardizeUrl(url[2]);
+
+            if (hostname != standardizeUrl(localUserServer)){
+              let friendID = url.pop();
+              let userPassObj = findNodeUserAndPass(JSON.parse(nodeList),hostname);
+              let nodeUsername = userPassObj['username'];
+              let nodePassword = userPassObj['password'];
+
+              checkFromOtherNode(localUser,friendID,hostname,nodeUsername,nodePassword);
+
+            }
+          }
+      }
+
+    },
+    error: function(xhr,status,error){
+      console.log("Error: ",error, status);
+    }
+  });
 }
 
 function standardizeUrl(url){
