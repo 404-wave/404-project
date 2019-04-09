@@ -138,7 +138,7 @@ class UserAPIView(generics.GenericAPIView):
         friends = list()
         for follow in following:
             if Follow.objects.filter(user1=follow.user2, user2=uid) is not None:
-                friends.append(follow.user2)
+                friends.append({'id':follow.user2, 'host':str(follow.user2_server)})
 
 
         return friends

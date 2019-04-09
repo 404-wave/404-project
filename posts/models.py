@@ -47,32 +47,33 @@ def upload_location(instance, filename):
 
 
 class PostManager(models.Manager):
+    
     def get_user(server, id):
-    user = User()
-    server = standardize_url(server)
-    server = server[:-1]
-    try:
-        node = Node.objects.filter(host = server)[0]
-        print (node.username, node.password)
-    except:
-        print("Couldn't find nodel object through filter")
-        return None
-    server = server+"/"
-    build_request = server+'service/author/'+str(id)
-    print (build_request)
-    print(id)   
+        user = User()
+        server = standardize_url(server)
+        server = server[:-1]
+        try:
+            node = Node.objects.filter(host = server)[0]
+            print (node.username, node.password)
+        except:
+            print("Couldn't find nodel object through filter")
+            return None
+        server = server+"/"
+        build_request = server+'service/author/'+str(id)
+        print (build_request)
+        print(id)
 
-    try:
-        r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
-        response = r.json()
-    except:
-        traceback.print_exc
-        print("That user does not exist")
-        return None
-    user.username = response['displayName']
-    user.id = response['id']
-    user.host = server
-    return user
+        try:
+            r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
+            response = r.json()
+        except:
+            traceback.print_exc
+            print("That user does not exist")
+            return None
+        user.username = response['displayName']
+        user.id = response['id']
+        user.host = server
+        return user
 
 def standardize_url(server):
     server = server.replace(" ","")
@@ -86,11 +87,11 @@ def standardize_url(server):
     elif re.search(regex,server) is False:
         server = "https://"+server
     return server
-   
-    def convert_to_date(self,elem):   
+
+    def convert_to_date(self,elem):
         new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
         try:
-            new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f') 
+            new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f')
         except:
             try:
                 new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S')
@@ -99,7 +100,7 @@ def standardize_url(server):
         return new_dt
 
     def sort_posts(self, list_post):
-       list_post.sort(key = lambda date: self.convert_to_date(date), reverse=True) 
+       list_post.sort(key = lambda date: self.convert_to_date(date), reverse=True)
 
 
     def all(self, *args, **kwargs):
@@ -123,7 +124,7 @@ def standardize_url(server):
                 user_Q = user_Q | Q(id=follow.user2)
             elif follow.user2==uid & follow.user1.is_active:
                 user_Q = user_Q | Q(id=follow.user1)
-            
+
         friends = User.objects.filter(user_Q)
         query_set = super(PostManager, self).filter(privacy=2, user__in=friends).order_by("-timestamp")
         return query_set
@@ -132,7 +133,7 @@ def standardize_url(server):
         # friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
         # friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
         # friends_of_friends = friends_followers &  friends_following
-        
+
         query_set = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends).order_by("-timestamp")
         return query_set
 
@@ -166,7 +167,7 @@ def standardize_url(server):
         posts_from_servers = []
         post_ids = []
         friend_manager = FollowManager()
-        
+
         for node in Node.objects.all():
             url = node.host + "/author/posts/"
             # test_url = 'https://cmput-404-proj-test.herokuapp.com/author/posts/'
@@ -181,14 +182,14 @@ def standardize_url(server):
                 # response = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('local', 'localpassword'))
                 response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
 
-                print()	
+                print()
 
                 #print(response)
 
                 print()
                 # print(test_url)
                 print(url)
-           
+
                 print(response.status_code)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
@@ -213,9 +214,9 @@ def standardize_url(server):
                             item['author']['host'] = node.host
                     # if responselist["posts"][0]["author"]["host"] == '':
                     #     responselist["posts"][0]["author"]["host"] = node.host
-                    
+
                     posts_from_servers.extend(responselist["posts"])
-            
+
             except Exception as e:
                 print(e)
                 print(e)
@@ -235,7 +236,7 @@ def standardize_url(server):
         # following = User.objects.filter(followee__user1=user.id, is_active=True)
         # friends = following & followers
 
-        #TODO Inefficient. Need to make it better 
+        #TODO Inefficient. Need to make it better
         uid = user.id
         # user_Q = Q()
         # follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
@@ -251,9 +252,9 @@ def standardize_url(server):
         #                 user_Q = user_Q | Q(id=follow.user1)
         #     if len(user_Q) != 0:
         #         friends = User.objects.filter(user_Q)
-        #     else:             
+        #     else:
         #         friends = User.objects.none()
-        # else:           
+        # else:
         #     friends = User.objects.none()
         friend_list = friend_manager.get_friends_id(uid)
         friends = list()
@@ -272,7 +273,7 @@ def standardize_url(server):
         # friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
         # friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
         # friends_of_friends = friends_followers &  friends_following
-        
+
         #TODO Not efficient, need to find a more efficient way of filtering this
         fr_Q = Q()
         if len(friends) != 0:
@@ -283,7 +284,7 @@ def standardize_url(server):
                     fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
                 for fr_followings in fr_following_object:
                     fr_Q = fr_Q | Q(id=fr_followings.user2,is_active=True)
-            
+
             if len(fr_Q) != 0:
                 friends_of_friends = User.objects.filter(fr_Q)
             else:
@@ -305,13 +306,13 @@ def standardize_url(server):
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
         all_posts = [item.to_dict_object() for item in all_posts]
-        
+
 
         filtered_posts = []
         for post in all_posts:
             if post['id'] not in post_ids :
                 filtered_posts.append(post)
-        
+
         filtered_posts.extend(posts_from_servers)
         self.sort_posts(filtered_posts)
 
@@ -337,7 +338,7 @@ def standardize_url(server):
         # since it requires a user instance and if the requestor is on another
         # server then they won't have an instance here.
         private_posts = self.find_accessible_posts(user_id)
-   
+
         # followers = User.objects.filter(follower__user2=user_id, is_active=True)
         # following = User.objects.filter(followee__user1=user_id, is_active=True)
         # friends = following & followers
@@ -390,7 +391,7 @@ def standardize_url(server):
                 friends_of_friends = User.objects.none()
         else:
             friends_of_friends = User.objects.none()
-        
+
         friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
 
         # Need to pass a boolean because the API might call this function and

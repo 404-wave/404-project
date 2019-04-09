@@ -48,10 +48,7 @@ class Follow(models.Model):
 
     def __str__(self):
         return str(self.id)
-
-    
-
-
+        
 class FriendRequestManager(models.Manager):
 
     def get_friend_requests(self, user):
