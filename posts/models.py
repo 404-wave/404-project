@@ -88,16 +88,16 @@ class PostManager(models.Manager):
             server = "https://"+server
         return server
 
-        def convert_to_date(self,elem):
-            new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
+    def convert_to_date(self,elem):
+        new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
+        try:
+            new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f')
+        except:
             try:
-                new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f')
+                new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S')
             except:
-                try:
-                    new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S')
-                except:
-                    return 'no date'
-            return new_dt
+                return 'no date'
+        return new_dt
 
     def sort_posts(self, list_post):
        list_post.sort(key = lambda date: self.convert_to_date(date), reverse=True)
