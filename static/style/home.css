@@ -1,4 +1,4 @@
-.author{
+ g.author{
 	font-size: 1.2em;
 	color:#424344;
 	margin-bottom:0;
@@ -213,7 +213,7 @@ position:absolute;
 	margin-top: 10px;
 }
 .post_content img {
-	width: 150px;	
+	width: 500px;	
 }
 
 .post_date {

@@ -88,10 +88,8 @@ def friends(request):
     return HttpResponse(json.dumps(dict_friends), content_type="application/json") 
 
 def follow(request):
-
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
-    print ("HERHEHREH", request.GET['followerserver'])
     followerID = request.GET['followerID']
     followeeID = request.GET['followeeID']
     followerUser = request.GET['followerUser']
@@ -210,7 +208,6 @@ def get_user(server, id):
     user = User()
     server = standardize_url(server)
     server = server[:-1]
-    print("SERECER", server)
     try:
         node = Node.objects.filter(host = server)[0]
         print (node.username, node.password)
@@ -221,7 +218,6 @@ def get_user(server, id):
     build_request = server+'service/author/'+str(id)
     print (build_request)
     print(id)   
-    print ("REE")
 
     try:
         r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
