@@ -32,9 +32,8 @@ function populateFriendsList(data) {
   while (friendContainer.firstChild) {
     friendContainer.removeChild(friendContainer.firstChild);
   }
-    if (data.length >0 ){
       try {
-        var friends = data['friends'];
+        friends = data['friends'];
         for (item of friends) {
           requestDisplayNameFriend(item);
       }
@@ -42,8 +41,6 @@ function populateFriendsList(data) {
     catch(e){
       populate_names(data);
     }
-  
-      }
     }
 
 function populate_names(data){

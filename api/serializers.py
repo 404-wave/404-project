@@ -42,46 +42,33 @@ class UserSerializer(serializers.ModelSerializer):
 
                 host = friend['host'].strip("/")
                 url = host + "/author/" + str(friend['id']) + "/"
-                
+
                 for node in Node.objects.all():
                     print("Node host: " + node.host)
                     print("Friend host: " + host)
                     if node.host == host:
-                        r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
-                        if (r.status_code == 200):
-                            try:
-                                json = r.json()
-                                username = json['displayName']
-                                github = json['github']
-                                host = json['host']
-                                url = json['url']
-                                id = json['id']
-                                friends.append(User(host=host, id=id, github=github, url=url, username=username))
-                                break
-                            except Exception as e:
-                                print("When attempting to serialize a foreign friend, the following exception occurred...")
-                                print(e)
-                                pass
+                        print("Host match!")
+                        print("Here is the URL we are trying to get an author profile from...")
+                        print(url)
 
-                # for node in Node.objects.all():
-                #     url = node.host + "/author/" + str(friend) + "/"
-                #     r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
-                #     if (r.status_code == 200):
-                #         try:
-                #             json = r.json()
-                #             username = json['displayName']
-                #             github = json['github']
-                #             host = json['host']
-                #             url = json['url']
-                #             id = json['id']
-                #             friends.append(User(host=host, id=id, github=github, url=url, username=username))
-                #             break
-                #         except Exception as e:
-                #             print("When attempting to serialize a foreign friend, the following exception occurred...")
-                #             print(e)
-                #             pass
-                #     else:
-                #         continue
+                        # Why is this so damn slow???
+                        
+                        # r = requests.get(url, auth=HTTPBasicAuth(node.username, node.password))
+                        # if (r.status_code == 200):
+                        #     try:
+                        #         json = r.json()
+                        #         username = json['displayName']
+                        #         github = json['github']
+                        #         host = json['host']
+                        #         url = json['url']
+                        #         id = json['id']
+                        #         friends.append(User(host=host, id=id, github=github, url=url, username=username))
+                        #         break
+                        #     except Exception as e:
+                        #         print("When attempting to serialize a foreign friend, the following exception occurred...")
+                        #         print(e)
+                        #         pass
+
 
         serialized_friends = UserFriendSerializer(friends, many=True,
             context={'request': self.context.get('request')})
