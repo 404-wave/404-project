@@ -91,7 +91,7 @@ def friends(request):
     friendlist = follow_manager.get_friends(request.user)
     print (friendlist)
     dict_friends = {"friends": friendlist}
-    print (dict_friends)
+    print ("FRIENDS", dict_friends)
     #TODO make more efficient
     uid = request.user.id
     friends = set()
