@@ -32,7 +32,6 @@ function populateFriendsList(data) {
   while (friendContainer.firstChild) {
     friendContainer.removeChild(friendContainer.firstChild);
   }
-    if (data.length >0 ){
       try {
         friends = data['friends'];
         for (item of friends) {
@@ -42,8 +41,6 @@ function populateFriendsList(data) {
     catch(e){
       populate_names(data);
     }
-  
-      }
     }
 
 function populate_names(data){
