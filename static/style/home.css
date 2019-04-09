@@ -213,7 +213,7 @@ position:absolute;
 	margin-top: 10px;
 }
 .post_content img {
-	width: 500px;	
+	max-width: 500px;	
 }
 
 .post_date {
