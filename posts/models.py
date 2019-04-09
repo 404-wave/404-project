@@ -47,7 +47,7 @@ def upload_location(instance, filename):
 
 
 class PostManager(models.Manager):
-    
+
     def get_user(server, id):
         user = User()
         server = standardize_url(server)
@@ -75,29 +75,29 @@ class PostManager(models.Manager):
         user.host = server
         return user
 
-def standardize_url(server):
-    server = server.replace(" ","")
-    regex = "(^https?:\/\ /)(.*)"
-    http_regex = "^http:\/\/(.*)"
-    if server.endswith("/") is False:
-        server = server+"/"
-    if re.search(http_regex,server) is True:
-        server= server.split("http://").pop()
-        server = "https://"+server
-    elif re.search(regex,server) is False:
-        server = "https://"+server
-    return server
+    def standardize_url(server):
+        server = server.replace(" ","")
+        regex = "(^https?:\/\ /)(.*)"
+        http_regex = "^http:\/\/(.*)"
+        if server.endswith("/") is False:
+            server = server+"/"
+        if re.search(http_regex,server) is True:
+            server= server.split("http://").pop()
+            server = "https://"+server
+        elif re.search(regex,server) is False:
+            server = "https://"+server
+        return server
 
-    def convert_to_date(self,elem):
-        new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
-        try:
-            new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f')
-        except:
+        def convert_to_date(self,elem):
+            new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
             try:
-                new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S')
+                new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f')
             except:
-                return 'no date'
-        return new_dt
+                try:
+                    new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S')
+                except:
+                    return 'no date'
+            return new_dt
 
     def sort_posts(self, list_post):
        list_post.sort(key = lambda date: self.convert_to_date(date), reverse=True)
