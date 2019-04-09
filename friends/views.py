@@ -80,48 +80,12 @@ def followers(request):
 
 # Get a list of Users who the current user is friends with
 def friends(request):
-
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
-
-    # followers = User.objects.filter(follower__user2=request.user.id, is_active=True)
-    # following = User.objects.filter(followee__user1=request.user.id, is_active=True)
-    # friends = following & followers
     follow_manager = FollowManager()
     friendlist = follow_manager.get_friends(request.user)
-    print (friendlist)
     dict_friends = {"friends": friendlist}
-    print ("FRIENDS OF ALLISONTEST", dict_friends)
-    #TODO make more efficient
-    uid = request.user.id
-    friends = set()
-    follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
-    print ()
-    if follow_obj:
-        for follow in follow_obj:
-            if ((follow.user1==uid) & (follow.user2 not in friends)):
-                recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                if recip_object:
-                    user = User.objects.filter(id=follow.user2)
-                    if user:    
-                        user=user.get()
-                    else:
-                        user = get_user(follow.user2_server,follow.user2)
-                        if user is None:
-                            continue
-                    friends.add(user)
-            elif ((follow.user2==uid) & (follow.user1 not in friends)):
-                recip_object = Follow.objects.filter(user1=follow.user2,user2=follow.user1)
-                if recip_object:
-                    user= User.objects.filter(id=follow.user1)
-                    if user:
-                        user=user.get()
-                    else:
-                        user= get_user(follow.user1_server,follow.user1)
-                    friends.add(user)
-
-    data = serializers.serialize('json', friends, fields=('username','host'))
-    return HttpResponse(data, content_type="application/json") 
+    return HttpResponse(json.dumps(dict_friends), content_type="application/json") 
 
 def follow(request):
 
