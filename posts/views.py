@@ -113,6 +113,10 @@ def posts_detail(request, id):
         post_id = instance['id']
     else:
         post_id = instance.id
+    try:
+        home_host = NodeSetting.objects.all()[0]
+    except: 
+        home_host = None
 
     try: 
         home_host = NodeSetting.objects.all()[0]
