@@ -191,7 +191,7 @@ class PostAPIView(generics.GenericAPIView):
             post_id = self.kwargs['post_id']
             try: Post.objects.get(id=post_id)
             except: return Response(status=status.HTTP_404_NOT_FOUND)
-            queryset = Post.objects.filter_user_visible_posts_by_user_id(
+            queryset = Post.objects.filter_user_visible_posts_by_user_id(host = host,
                 user_id=requestor_id, server_only=server_only).filter(id=post_id)
 
             if queryset.count() == 0:
@@ -199,7 +199,7 @@ class PostAPIView(generics.GenericAPIView):
 
         # Get all posts visible to the requesting user
         elif path in path_all_user_visible_posts:
-            queryset = Post.objects.filter_user_visible_posts_by_user_id(
+            queryset = Post.objects.filter_user_visible_posts_by_user_id(host = host,
                 user_id=requestor_id, server_only=server_only).filter(unlisted=False)
 
         # Get all public posts
@@ -306,7 +306,7 @@ class PostAPIView(generics.GenericAPIView):
         if requestor_id == author_id:
             queryset = Post.objects.filter(user=requestor_id, unlisted=False)
         else:
-            queryset = Post.objects.filter_user_visible_posts_by_user_id(
+            queryset = Post.objects.filter_user_visible_posts_by_user_id(host = host,
                 user_id=requestor_id, server_only=server_only).filter(user=author_id, unlisted=False)
             queryset = queryset | Post.objects.filter(
                 user=author_id, privacy=Post.PUBLIC)
@@ -395,7 +395,7 @@ class CommentAPIView(generics.GenericAPIView):
             except: return Response(status=status.HTTP_404_NOT_FOUND)
 
             try:
-                queryset = Post.objects.filter_user_visible_posts_by_user_id(
+                queryset = Post.objects.filter_user_visible_posts_by_user_id(host = host,
                     user_id=requestor_id, server_only=server_only).filter(id=post_id)[0].comments
             except:
                 Response(status=status.HTTP_404_NOT_FOUND)
@@ -448,7 +448,7 @@ class CommentAPIView(generics.GenericAPIView):
         # Check that the requesting user has visibility of that post
         # posts = Post.objects.filter_user_visible_posts_by_user_id(
         #     user_id=requestor_id, server_only=server_only).filter(id=post_id)
-        posts = Post.objects.filter_user_visible_posts_by_user_id(
+        posts = Post.objects.filter_user_visible_posts_by_user_id(host = host,
             user_id=author_id, server_only=server_only).filter(id=post_id)
         if posts is None:
             print("When POSTing a comment, the requesting user did not have visibility if the post.")

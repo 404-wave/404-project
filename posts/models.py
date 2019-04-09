@@ -267,7 +267,7 @@ class PostManager(models.Manager):
 
         return filtered_posts
 
-    def filter_user_visible_posts_by_user_id(self, user_id, server_only, *args, **kwargs):
+    def filter_user_visible_posts_by_user_id(self, host, user_id, server_only, *args, **kwargs):
 
         # NOTE: Don't add this here right now.
 
@@ -314,7 +314,9 @@ class PostManager(models.Manager):
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
 
 
-        #TODO Not efficient, need to find a more efficient way of filtering this
+"""         #TODO Not efficient, need to find a more efficient way of filtering this
+        requester_friends = self.filter_by_foaf(user_id, host)
+        for friends in req
         fr_Q = Q()
         if len(friends) != 0:
             for fr in friends:
@@ -329,8 +331,25 @@ class PostManager(models.Manager):
             else:
                 friends_of_friends = User.objects.none()
         else:
+            friends_of_friends = User.objects.none() """
+            
+        requester_friends = self.filter_by_foaf(user_id, host)
+        for fr in requester_friends:
+                fr_followers_object = Follow.objects.filter(user2=fr)
+                fr_following_object = Follow.objects.filter(user1=frr)
+                for fr_followers in fr_followers_object:
+                    fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
+                for fr_followings in fr_following_object:
+                    fr_Q = fr_Q | Q(id=fr_followings.user2,is_active=True)
+            if len(fr_Q) != 0:
+                friends_of_friends = User.objects.filter(fr_Q)
+            else:
+                friends_of_friends = User.objects.none()
+        else:
             friends_of_friends = User.objects.none()
-        
+            
+
+
         friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
 
         # Need to pass a boolean because the API might call this function and
@@ -355,6 +374,33 @@ class PostManager(models.Manager):
     def filter_server_posts(self, user, *args, **kwargs):
         all_posts = self.filter_user_visible_posts(user, server_only=False)
         return all_posts
+
+    def filter_by_foaf(self, userid, server):
+        #http://service/author/<authorid>/friends/
+	    node = Node.objects.filter(host__contains = server)
+	    if (node):
+		    node = node[0]
+        else: 
+            return 
+	    try: 
+		    build_request = node.host+'/author/'+profile_id+'/friends/'
+		    r=requests.get(build_request, auth=HTTPBasicAuth(node.username, node.password))
+		    response = r.json()
+		except:
+			print("That user does not exist")
+			return False
+        response = response['authors']
+        id_regex = '(.*)([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)'	
+        for respo in response:    
+	        re_result = re.search(id_regex, parameters)
+	        server = re_result.group(1)
+	        profile_id = re_result.group(2)
+
+	    return response
+
+
+
+
 
 
 
