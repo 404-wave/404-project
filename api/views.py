@@ -138,7 +138,7 @@ class UserAPIView(generics.GenericAPIView):
         friends = list()
         for follow in following:
             if Follow.objects.filter(user1=follow.user2, user2=uid) is not None:
-                friends.append(follow.user2)
+                friends.append({'id':follow.user2, 'host':str(follow.user2_server)})
 
 
         return friends
@@ -215,29 +215,38 @@ class PostAPIView(generics.GenericAPIView):
 
         ########################################################################
         serialized_data = serializer.data
-        if path in path_all_user_visible_posts:
-            for node in Node.objects.all():
-                url = node.host + "/author/posts/"
 
-                try:
-                    headers = {
-                        'Accept':'application/json',
-                        'X-UUID': str(requestor_id)
-                    }
+        # Check if the request came from a local user or foreign user (node)
+        came_from_node = False
+        user = User.objects.get(id=request.user.id)
+        our_host = request.scheme + "://" + request.META['HTTP_HOST']
+        if user.host != our_host:
+            came_from_node = True
 
-                    response = requests.get(url, headers=headers,
-                        auth=HTTPBasicAuth(str(node.username), str(node.password)))
+        if not came_from_node:
+            if path in path_all_user_visible_posts:
+                for node in Node.objects.all():
+                    url = node.host + "/author/posts/"
 
-                    print("Getting public posts from other servers...")
-                    print(response.status_code)
-                    if (response.status_code > 199 and response.status_code <300):
-                        responselist = response.json()
-                        serialized_data.extend(responselist["posts"])
+                    try:
+                        headers = {
+                            'Accept':'application/json',
+                            'X-UUID': str(requestor_id)
+                        }
 
-                except Exception as e:
-                    print("When GETting posts from other server, the following exception occured...")
-                    print(e)
-                    pass
+                        response = requests.get(url, headers=headers,
+                            auth=HTTPBasicAuth(str(node.username), str(node.password)))
+
+                        print("Getting public posts from other servers...")
+                        print(response.status_code)
+                        if (response.status_code > 199 and response.status_code <300):
+                            responselist = response.json()
+                            serialized_data.extend(responselist["posts"])
+
+                    except Exception as e:
+                        print("When GETting posts from other server, the following exception occured...")
+                        print(e)
+                        pass
         ########################################################################
 
         serialized_data = self.filter_out_images(request, serialized_data)
@@ -523,8 +532,9 @@ class FriendAPIView(generics.GenericAPIView):
 
             friend_list = list()
             for friend in friends:
-                url = standardize_url(friend.host) + "service/author/"+str(friend.id)
-                friend_list.append(url)
+                if (friend):
+                    url = standardize_url(friend.host) + "service/author/"+str(friend.id)
+                    friend_list.append(url)
 
 
 
@@ -597,12 +607,9 @@ class FriendAPIView(generics.GenericAPIView):
 
         friend_list = list()
         for potential_friend in authors:
-            potential_friend_id = potential_friend.split("/")[-1]
-            print("POTENTIAL FRIEND:")
-            print(potential_friend)
+            pot_friend_url = potential_friend.split("/")
+            potential_friend_id = pot_friend_url[-1]
             for friend in friends:
-                print("FRIEND FROM MANAGER:")
-                print(friend)
                 friend_url = friend.split("/")
                 if str(friend_url[-1]) == str(potential_friend_id):
                     friend_list.append(friend)

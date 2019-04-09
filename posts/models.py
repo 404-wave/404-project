@@ -12,6 +12,7 @@ from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.db.models.fields import UUIDField, DateTimeField
 from users.models import User
 from users.models import Node
+from friends.models import FollowManager
 from django.dispatch import receiver
 from django.db.models.signals import post_save, m2m_changed
 from django.db.models import Q
@@ -47,11 +48,10 @@ def upload_location(instance, filename):
 
 class PostManager(models.Manager):
 
-   
-    def convert_to_date(self,elem):   
+    def convert_to_date(self,elem):
         new_dt = re.sub(r'.[0-9]{2}:[0-9]{2}$','',elem['published'])
         try:
-            new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f') 
+            new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S.%f')
         except:
             try:
                 new_dt = datetime.datetime.strptime(new_dt, '%Y-%m-%dT%H:%M:%S')
@@ -60,7 +60,7 @@ class PostManager(models.Manager):
         return new_dt
 
     def sort_posts(self, list_post):
-       list_post.sort(key = lambda date: self.convert_to_date(date), reverse=True) 
+       list_post.sort(key = lambda date: self.convert_to_date(date), reverse=True)
 
 
     def all(self, *args, **kwargs):
@@ -84,7 +84,7 @@ class PostManager(models.Manager):
                 user_Q = user_Q | Q(id=follow.user2)
             elif follow.user2==uid & follow.user1.is_active:
                 user_Q = user_Q | Q(id=follow.user1)
-            
+
         friends = User.objects.filter(user_Q)
         query_set = super(PostManager, self).filter(privacy=2, user__in=friends).order_by("-timestamp")
         return query_set
@@ -93,7 +93,7 @@ class PostManager(models.Manager):
         # friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
         # friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
         # friends_of_friends = friends_followers &  friends_following
-        
+
         query_set = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends).order_by("-timestamp")
         return query_set
 
@@ -126,6 +126,8 @@ class PostManager(models.Manager):
 
         posts_from_servers = []
         post_ids = []
+        friend_manager = FollowManager()
+
         for node in Node.objects.all():
             url = node.host + "/author/posts/"
             # test_url = 'https://cmput-404-proj-test.herokuapp.com/author/posts/'
@@ -140,14 +142,14 @@ class PostManager(models.Manager):
                 # response = requests.get(test_url, headers=headers, auth=HTTPBasicAuth('local', 'localpassword'))
                 response = requests.get(url, headers=headers, auth=HTTPBasicAuth(str(node.username), str(node.password)))
 
-                print()	
+                print()
 
                 #print(response)
 
                 print()
                 # print(test_url)
                 print(url)
-           
+
                 print(response.status_code)
                 if (response.status_code > 199 and response.status_code <300):
                     responselist = response.json()
@@ -172,9 +174,9 @@ class PostManager(models.Manager):
                             item['author']['host'] = node.host
                     # if responselist["posts"][0]["author"]["host"] == '':
                     #     responselist["posts"][0]["author"]["host"] = node.host
-                    
+
                     posts_from_servers.extend(responselist["posts"])
-            
+
             except Exception as e:
                 print(e)
                 print(e)
@@ -194,7 +196,7 @@ class PostManager(models.Manager):
         # following = User.objects.filter(followee__user1=user.id, is_active=True)
         # friends = following & followers
 
-        #TODO Inefficient. Need to make it better 
+        #TODO Inefficient. Need to make it better
         uid = user.id
         user_Q = Q()
         follow_obj = Follow.objects.filter(Q(user2=uid)|Q(user1=uid))
@@ -210,9 +212,9 @@ class PostManager(models.Manager):
                         user_Q = user_Q | Q(id=follow.user1)
             if len(user_Q) != 0:
                 friends = User.objects.filter(user_Q)
-            else:             
+            else:
                 friends = User.objects.none()
-        else:           
+        else:
             friends = User.objects.none()
 
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
@@ -222,18 +224,25 @@ class PostManager(models.Manager):
         # friends_followers = User.objects.filter(follower__user2__in=friends, is_active=True)
         # friends_following = User.objects.filter(followee__user1__in=friends, is_active=True)
         # friends_of_friends = friends_followers &  friends_following
-        
+
         #TODO Not efficient, need to find a more efficient way of filtering this
         fr_Q = Q()
         if len(friends) != 0:
             for fr in friends:
+                print("FRIEND FROM POSTS")
+                print(friends)
                 fr_followers_object = Follow.objects.filter(user2=fr.id)
                 fr_following_object = Follow.objects.filter(user1=fr.id)
+                print(fr_followers_object)
+                print(fr_following_object)
                 for fr_followers in fr_followers_object:
+                    print(fr_followers)
                     fr_Q = fr_Q | Q(id=fr_followers.user1,is_active=True)
                 for fr_followings in fr_following_object:
+                    print(fr_followings)
                     fr_Q = fr_Q | Q(id=fr_followings.user2,is_active=True)
-            
+
+            print(fr_Q)
             if len(fr_Q) != 0:
                 friends_of_friends = User.objects.filter(fr_Q)
             else:
@@ -255,13 +264,13 @@ class PostManager(models.Manager):
         if kwargs.get('remove_unlisted', True):
             all_posts = all_posts.filter(unlisted=False)
         all_posts = [item.to_dict_object() for item in all_posts]
-        
+
 
         filtered_posts = []
         for post in all_posts:
             if post['id'] not in post_ids :
                 filtered_posts.append(post)
-        
+
         filtered_posts.extend(posts_from_servers)
         self.sort_posts(filtered_posts)
 
@@ -287,7 +296,7 @@ class PostManager(models.Manager):
         # since it requires a user instance and if the requestor is on another
         # server then they won't have an instance here.
         private_posts = self.find_accessible_posts(user_id)
-   
+
         # followers = User.objects.filter(follower__user2=user_id, is_active=True)
         # following = User.objects.filter(followee__user1=user_id, is_active=True)
         # friends = following & followers
@@ -311,6 +320,7 @@ class PostManager(models.Manager):
                 friends = User.objects.none()
         else:
             friends = User.objects.none()
+
         friends_posts = super(PostManager, self).filter(privacy=2, user__in=friends)
 
 
@@ -330,7 +340,7 @@ class PostManager(models.Manager):
                 friends_of_friends = User.objects.none()
         else:
             friends_of_friends = User.objects.none()
-        
+
         friends_of_friends_posts = super(PostManager, self).filter(privacy=3, user__in=friends_of_friends)
 
         # Need to pass a boolean because the API might call this function and
