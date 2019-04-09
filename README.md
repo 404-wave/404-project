@@ -155,10 +155,6 @@ An example of what to POST (this is all that we require):
 }
 ```
 
-##### TODO...
-
-PUT service/posts/{POST_ID}: update an existing post.
-
 ### Comments
 
 **GET service/posts/{POST_ID}/comments/**: returns all comments in a post if the post is visible to the requesting user, and that post is hosted on *our server*.
