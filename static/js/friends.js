@@ -34,7 +34,7 @@ function populateFriendsList(data) {
   }
     if (data.length >0 ){
       try {
-        var friends = data['friends'];
+        friends = data['friends'];
         for (item of friends) {
           requestDisplayNameFriend(item);
       }
