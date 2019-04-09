@@ -81,13 +81,13 @@ Note: Pagination works for any endpoint endpoint related to posts or comments.
 
 ### Posts
 
-**GET /author/posts/**: returns all posts *visible to the currently authenticated user* from our server **and our connected nodes**. This is the only endpoint that, as discussed with Alex and Ruby after the lab demos, would be used to showcase that we can, in fact, return posts from other servers using the API. All other endpoints do not return posts from other servers. As discussed in the lab, we were only *required* to have /author/posts/ returning foreign posts.
+**GET /author/posts/**: returns all posts *visible to the currently authenticated user* from our server *and our connected nodes* **only if the request came from an author that we are hosting**. The point here is that we could call our own endpoint to get the posts an author could see. However, we **stronlgy disagree** that we should be sharing posts from our connected nodes with our other connected nodes. For this reason, if the request _came from_ one of our connected nodes then they will _not receive foreign posts_. E.g., requests for posts that came from nodes will only be returned posts hosted on our server. Two example CURL wil be provided to highlight the difference.
 
-**GET /posts/**: returns all publicly available posts that exist on *our server*. That is, posts from other servers will *not* be shown when this endpoint is called. This is in coordination with the requirement, "a GET without a postfixed “postid” should return a list of all “PUBLIC” visibility posts ***on your node***"
+**GET /posts/**: returns all publicly available posts that exist on *our server only*. That is, posts from other servers will *not* be shown when this endpoint is called. This is in coordination with the requirement, "a GET without a postfixed “postid” should return a list of all “PUBLIC” visibility posts ***on your node***"
 
-**GET /author/{AUTHOR_ID}/posts/**: returns all posts from AUTHOR_ID that are *visible to the currently authenticated user* that exist solely on *our server*. That is, for an {AUTHOR_ID} that is *not* hosted on our server, you will *not* see their posts.
+**GET /author/{AUTHOR_ID}/posts/**: returns all posts from AUTHOR_ID that are *visible to the currently authenticated user* that exist on *our server only*. That is, for an {AUTHOR_ID} that is *not* hosted on our server, you will *not* see their posts.
 
-**GET /posts/{POST_ID}/**: returns a single post *if it is visible to the currently authenticated user* and that post exists on *our server*. This will not get a post that is hosted on another server.
+**GET /posts/{POST_ID}/**: returns a single post *if it is visible to the currently authenticated user* and that post exists on *our server only*. This will not get a post that is hosted on another server.
 
 An example response:
 
@@ -153,10 +153,6 @@ An example of what to POST (this is all that we require):
 }
 ```
 
-##### TODO...
-
-PUT service/posts/{POST_ID}: update an existing post.
-
 ### Comments
 
 **GET service/posts/{POST_ID}/comments/**: returns all comments in a post if the post is visible to the currently authenticated user, and that post is hosted on *our server*.
@@ -172,7 +168,7 @@ Response:
     "comments": [
         {
             "author": {
-                "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+                "id": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
                 "url": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
                 "host": "https://cmput404-wave.herokuapp.com",
                 "displayName": "waveAdmin",
@@ -186,8 +182,6 @@ Response:
 }
 ```
 
-##### TODO...
-
 **POST service/posts/{POST_ID}/comments/**: add a new comment to an existing post, only if that post is hsoted on *our server*.
 
 Example of what to POST:
@@ -197,7 +191,7 @@ Example of what to POST:
     "post": "3f46f9c3-256f-441c-899e-928b095df627",
     "comment": {
         "author": {
-            "id": "da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
+            "id": "https://cmput404-wave.herokuapp.com/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
             "host": "https://cmput404-wave.herokuapp.com/",
             "url": "https://cmput404-wave.herokuapp.com/service/author/da986903-8f86-4fc3-ba02-69ef5e6e6e9f",
             "github": ""
@@ -225,7 +219,7 @@ Response:
 }
 ```
 
-**GET service/author/{AUTHOR_ID1>/friends/{AUTHOR_ID2}**: returns a response specifying if AUTHOR_ID1 is a friend of AUTHOR_ID2.
+~~**GET service/author/{AUTHOR_ID1>/friends/{AUTHOR_ID2}**: returns a response specifying if AUTHOR_ID1 is a friend of AUTHOR_ID2.~~ We are using a modified endpoint that achieves the same thing. Please refer below...
 
 Response:
 ```
